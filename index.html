@@ -192,7 +192,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2026-01-04 18:31:40 / 修改时间：19:00:50" itemprop="dateCreated datePublished" datetime="2026-01-04T18:31:40+08:00">2026-01-04</time>
+              <time title="创建时间：2026-01-04 18:31:40 / 修改时间：19:03:44" itemprop="dateCreated datePublished" datetime="2026-01-04T18:31:40+08:00">2026-01-04</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -215,25 +215,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="模型总览">模型总览</h1>
-<p>ODSVM 将子空间学习和 SVM 分类放在一个统一的数学框架内共同进化。</p>
-<h2 id="投影矩阵-p数据的特征提取器">投影矩阵 <span
-class="math inline"><em>P</em></span>：数据的特征提取器</h2>
-<p><span class="math inline"><em>P</em></span> 是一个大小为 <span
-class="math inline"><em>d</em> × <em>m</em></span> 的矩阵（<span
-class="math inline"><em>d</em></span> 是原始高维特征维度，<span
-class="math inline"><em>m</em></span>
-是降维后的维度）。它的作用是将原始样本 <span
-class="math inline"><em>x</em><sub><em>i</em></sub></span>
-投影到低维子空间： <span
-class="math display"><em>z</em><sub><em>i</em></sub> = <em>P</em><sup>⊤</sup><em>x</em><sub><em>i</em></sub></span>
-<span class="math inline"><em>P</em></span>
-的目标在于丢弃大部分冗余信息的同时，精准地保留最有利于分类的信息。在
-ODSVM 中，<span class="math inline"><em>P</em></span> 的构建受到 SVM
-边距最大化的约束。这意味着 <span class="math inline"><em>P</em></span>
-提取出的特征 <span
-class="math inline"><em>z</em><sub><em>i</em></sub></span> 必须让 SVM
-能够更容易地找到一个宽阔的分类间隔（Margin）。</p>
+          <h1 id="模型总览"><a href="#模型总览" class="headerlink" title="模型总览"></a>模型总览</h1><p>ODSVM 将子空间学习和 SVM 分类放在一个统一的数学框架内共同进化。</p>
+<h2 id="投影矩阵-P-：数据的特征提取器"><a href="#投影矩阵-P-：数据的特征提取器" class="headerlink" title="投影矩阵 $P$：数据的特征提取器"></a>投影矩阵 $P$：数据的特征提取器</h2><p>$P$ 是一个大小为 $d \times m$ 的矩阵（$d$ 是原始高维特征维度，$m$ 是降维后的维度）。它的作用是将原始样本 $x_i$ 投影到低维子空间：</p>
+<script type="math/tex; mode=display">
+z_i = P^{\top} x_i</script><p>$P$ 的目标在于丢弃大部分冗余信息的同时，精准地保留最有利于分类的信息。在 ODSVM 中，$P$ 的构建受到 SVM 边距最大化的约束。这意味着 $P$ 提取出的特征 $z_i$ 必须让 SVM 能够更容易地找到一个宽阔的分类间隔（Margin）。</p>
 
       
     </div>
@@ -468,7 +453,7 @@ class="math inline"><em>z</em><sub><em>i</em></sub></span> 必须让 SVM
     };
     (function () {
       var script = document.createElement('script');
-      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.src = '//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML';
       script.defer = true;
       document.head.appendChild(script);
     })();
