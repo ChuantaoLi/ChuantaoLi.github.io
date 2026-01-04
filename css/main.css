@@ -1200,7 +1200,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #ffd017;
+  background: #7a98ff;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2470,7 +2470,7 @@ hr {
   display: inline-block;
 }
 /* =========================================================
-   1. 背景与全局字体设置
+   1. 全局背景与字体
    ========================================================= */
 body {
   background-image: url("/uploads/background.png") !important;
@@ -2478,99 +2478,85 @@ body {
   background-attachment: fixed !important;
   background-position: center !important;
   background-size: cover !important;
+  font-family: 'LXGW WenKai Screen', sans-serif !important;
 }
 /* =========================================================
-   2. 内容容器半透明（防止文字看不清）
+   2. 侧边栏（头像卡片）
    ========================================================= */
-.main-inner,
+.sidebar {
+  background: transparent !important;
+  box-shadow: none !important;
+  margin-top: 24px !important;
+}
 .sidebar-inner {
   background: rgba(255,255,255,0.85) !important;
-  padding: 0px 40px 40px 40px;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  margin: 0 24px 24px 24px !important;
+  padding: 20px !important;
+  position: relative !important;
+  top: 0 !important;
 }
-.post-block,
-.comments,
+/* =========================================================
+   3. 首页多卡片化布局（核心设计）
+   ========================================================= */
+/* 让最外层容器透明，这样卡片之间才有间隙感 */
+.main-inner {
+  background: transparent !important;
+  box-shadow: none !important;
+  margin-top: 24px !important;
+}
+/* 独立文章卡片设计 */
+.post-block {
+  background: rgba(255,255,255,0.85) !important;
+  margin-bottom: 35px !important; /* 卡片与卡片之间的美观间隙 */
+  padding: 40px !important;
+  border-radius: 20px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important;
+  transition: all 0.3s ease; /* 加入平滑过渡动画 */
+}
+/* 鼠标悬停动效：卡片轻微上浮并加深阴影 */
+.post-block:hover {
+  transform: translateY(-5px); /* 向上浮动 5px */
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+  background: rgba(255,255,255,0.92) !important; /* 悬停时略微变白，增加质感 */
+}
+/* 分页器、评论区也设为独立卡片 */
 .pagination,
+.comments {
+  background: rgba(255,255,255,0.85) !important;
+  padding: 20px !important;
+  border-radius: 20px !important;
+  margin-bottom: 50px !important;
+}
+/* =========================================================
+   4. 细节组件去杂质
+   ========================================================= */
 .header-inner {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
 }
 /* =========================================================
-   3. LaTeX 公式保护（防止乱码）
+   5. 图片与 LaTeX 保护
    ========================================================= */
-.mjx-container,
-.katex,
-.katex-display,
-.math,
-.mjx-chtml,
-.mjx-math {
-  font-family: inherit !important;
-  background: transparent !important;
-  color: inherit;
-}
-.katex * {
-  font-family: KaTeX_Main, 'Times New Roman', serif !important;
-}
-/* =========================================================
-   1. 背景与全局字体设置
-   ========================================================= */
-body {
-  background-image: url("/uploads/background.png") !important;
-  background-repeat: no-repeat !important;
-  background-attachment: fixed !important;
-  background-position: center !important;
-  background-size: cover !important;
-}
-/* =========================================================
-   2. 内容容器半透明（防止文字看不清）
-   ========================================================= */
-.main-inner,
-.sidebar-inner {
-  background: rgba(255,255,255,0.85) !important;
-  padding: 0px 40px 40px 40px;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-.post-block,
-.comments,
-.pagination,
-.header-inner {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-/* =========================================================
-   3. LaTeX 公式保护（防止乱码）
-   ========================================================= */
-.mjx-container,
-.katex,
-.katex-display,
-.math,
-.mjx-chtml,
-.mjx-math {
-  font-family: inherit !important;
-  background: transparent !important;
-  color: inherit;
-}
-.katex * {
-  font-family: KaTeX_Main, 'Times New Roman', serif !important;
-}
-/* 增强版：让文章内的图片强制自动居中 */
-.post-body img,
-.post-block img,
-.posts-expand .post-body img {
+.post-body img {
   display: block !important;
-  margin: 20px auto !important; /* 上下留白20px，左右自动对齐 */
+  margin: 20px auto !important;
   max-width: 100%;
   height: auto;
+  border-radius: 10px; /* 图片加点小圆角更美观 */
 }
-/* 针对可能有独立段落包裹图片的情况 */
-.post-body p {
-  text-align: center; /* 尝试让段落内的行内元素居中 */
+.mjx-container,
+.katex,
+.katex-display,
+.math,
+.mjx-chtml,
+.mjx-math {
+  font-family: inherit !important;
+  background: transparent !important;
+  color: inherit;
 }
-/* 重新修正文字对齐，防止上一条规则把正文也居中了 */
-.post-body p {
-  text-align: justify; /* 或者 left，确保文字还是正常排版 */
+.katex * {
+  font-family: KaTeX_Main, 'Times New Roman', serif !important;
 }

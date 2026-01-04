@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="#bber { margin-top: 20px; }   .bb-list-item { background: #fff; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eee; }   .bb-c">
+  <meta name="description" content="#bber { margin-top: 20px; font-family: &#39;LXGW WenKai Screen&#39;, sans-serif; }   .bb-list-item {      background: rgba(255, 255, 255, 0.85);      border-radius: 20px;      padding: 25px;      mar">
 <meta property="og:type" content="website">
 <meta property="og:title" content="生活记录">
 <meta property="og:url" content="http://example.com/memos/index.html">
 <meta property="og:site_name" content="梨串桃的生活日记">
-<meta property="og:description" content="#bber { margin-top: 20px; }   .bb-list-item { background: #fff; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eee; }   .bb-c">
+<meta property="og:description" content="#bber { margin-top: 20px; font-family: &#39;LXGW WenKai Screen&#39;, sans-serif; }   .bb-list-item {      background: rgba(255, 255, 255, 0.85);      border-radius: 20px;      padding: 25px;      mar">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2026-01-04T09:38:29.841Z">
-<meta property="article:modified_time" content="2026-01-04T09:38:29.841Z">
+<meta property="article:published_time" content="2026-01-04T15:03:19.822Z">
+<meta property="article:modified_time" content="2026-01-04T15:03:19.822Z">
 <meta property="article:author" content="ChuantaoLi">
 <meta name="twitter:card" content="summary">
 
@@ -191,27 +191,87 @@
       
       <div class="post-body">
           <style>
-  #bber { margin-top: 20px; }
-  .bb-list-item { background: #fff; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #eee; }
+  #bber { margin-top: 20px; font-family: 'LXGW WenKai Screen', sans-serif; }
+  .bb-list-item { 
+    background: rgba(255, 255, 255, 0.85); 
+    border-radius: 20px; 
+    padding: 25px; 
+    margin-bottom: 24px; 
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+  }
+  .bb-list-item:hover { transform: translateY(-5px); }
   .bb-content { font-size: 15px; color: #333; line-height: 1.6; }
-  .bb-datetime { font-size: 12px; color: #999; margin-top: 8px; }
+  .bb-datetime { font-size: 12px; color: #999; margin-top: 12px; border-top: 1px dashed #eee; padding-top: 8px; }
+
+  /* --- 图片展示优化设计 --- */
+  .bb-content img { 
+    cursor: zoom-in;               /* 鼠标移动上去显示放大镜图标 */
+    max-width: 400px;              /* 限制图片最大宽度，不至于撑满屏幕 */
+    max-height: 300px;             /* 限制高度，防止长图过长 */
+    object-fit: cover;             /* 保持图片比例缩放 */
+    border-radius: 12px; 
+    margin: 10px 0; 
+    display: block;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+    transition: opacity 0.3s ease;
+  }
+  .bb-content img:hover { opacity: 0.8; } /* 鼠标悬停略微变暗提示可点击 */
+
+  /* 适配手机端：图片自动充满宽度 */
+  @media screen and (max-width: 768px) {
+    .bb-content img {
+      max-width: 100%;
+      max-height: 400px;
+    }
+  }
 </style>
 <div id="bber">
-
+正在加载备忘录…
 </div>
-<script type="module" src="https://immmmm.com/emaction.js?v=230811"></script>
 <script src="https://fastly.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://fastly.jsdelivr.net/gh/Tokinx/ViewImage/view-image.min.js"></script>
-<script src="https://fastly.jsdelivr.net/gh/Tokinx/Lately/lately.min.js"></script>
 <script type="text/javascript">
   var bbMemos = {
-    memos : 'https://lct-memos.pages.dev/',
-    limit : '10',
+    memos: 'https://memos-api.lct-memos.workers.dev/', 
+    limit: '10',
     creatorId: '1', 
     domId: '#bber',
   }
+
+  async function loadMemos() {
+    const bber = document.querySelector(bbMemos.domId);
+    // 适配 Memos v1 API 路径（如果加载不出，尝试去掉末尾的 s）
+    const fetchUrl = `${bbMemos.memos}api/v1/memo?creatorId=${bbMemos.creatorId}&limit=${bbMemos.limit}&rowStatus=NORMAL`;
+
+    try {
+      const res = await fetch(fetchUrl);
+      const memos = await res.json();
+      let html = "";
+      
+      memos.forEach(memo => {
+        let content = marked.parse(memo.content);
+        let date = new Date(memo.createdTs * 1000).toLocaleString();
+        
+        html += `
+          <div class="bb-list-item">
+            <div class="bb-content">${content}</div>
+            <div class="bb-datetime">${date}</div>
+          </div>`;
+      });
+      
+      bber.innerHTML = html;
+      
+      // 初始化图片点击放大功能
+      window.ViewImage && ViewImage.init('.bb-content img');
+      
+    } catch (err) {
+      bber.innerHTML = "加载失败，请检查后端设置。";
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', loadMemos);
 </script>
-<script src="https://immmmm.com/bb-lmm-mk.js?v=230811"></script>
 
       </div>
       
