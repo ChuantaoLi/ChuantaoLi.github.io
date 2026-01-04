@@ -192,7 +192,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2026-01-04 18:31:40 / 修改时间：18:34:56" itemprop="dateCreated datePublished" datetime="2026-01-04T18:31:40+08:00">2026-01-04</time>
+              <time title="创建时间：2026-01-04 18:31:40 / 修改时间：18:36:56" itemprop="dateCreated datePublished" datetime="2026-01-04T18:31:40+08:00">2026-01-04</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -216,124 +216,9 @@
 
       
           <h1 id="模型总览"><a href="#模型总览" class="headerlink" title="模型总览"></a>模型总览</h1><p>ODSVM 将子空间学习和 SVM 分类放在一个统一的数学框架内共同进化。</p>
-<h2 id="投影矩阵-P-：数据的特征提取器"><a href="#投影矩阵-P-：数据的特征提取器" class="headerlink" title="投影矩阵 $P$：数据的特征提取器"></a>投影矩阵 $P$：数据的特征提取器</h2><p>$P$ 是一个大小为 $d \times m$ 的矩阵（$d$ 是原始高维特征维度，$m$ 是降维后的维度）。它的作用是将原始样本 $x_i$ 投影到低维子空间：<br>$$<br>z_i &#x3D; P^\top x_i<br>$$<br>$P$ 的目标在于丢弃大部分冗余信息的同时，精准地保留最有利于分类的信息。在 ODSVM 中，$P$ 的构建受到 SVM 边距最大化的约束。这意味着 $P$ 提取出的特征 $z_i$ 必须让 SVM 能够更容易地找到一个宽阔的分类间隔（Margin）。</p>
-<h2 id="重构矩阵-Q-：数据的结构保持器"><a href="#重构矩阵-Q-：数据的结构保持器" class="headerlink" title="重构矩阵 $Q$：数据的结构保持器"></a>重构矩阵 $Q$：数据的结构保持器</h2><p>$Q$ 同样是一个 $d \times m$ 的矩阵。在很多传统降维算法中，$P$ 和 $Q$ 往往是同一个矩阵，或者是转置关系，但在 ODSVM 的框架里，它们扮演了类似自编码器（Auto-Encoder）中编码器和解码器的角色。</p>
-<p>重构矩阵 $Q$ 用于衡量投影后的低维特征 $z_i$ 是否还保留了原始数据 $x_i$ 的核心结构。数学上表现为最小化重构误差：$|x_i - Qz_i|^2$。 如果只追求分类准确率（只优化 $P$ 和 SVM 参数），模型可能会陷入过拟合，或者提取出极其扭曲的特征。$Q$ 的存在就像是一条绳子，拉住 $P$，要求提取的特征不仅要能分得开类别，还得能代表原本的数据。</p>
-<h2 id="迭代优化"><a href="#迭代优化" class="headerlink" title="迭代优化"></a>迭代优化</h2><p>在 ODSVM 的目标函数中，SVM 的参数（$w, b$）、投影矩阵 $P$ 和重构矩阵 $Q$ 是紧密耦合在一起的。我们无法直接求出所有变量的最优解，因此采用交替迭代优化（Alternating Optimization）的策略。</p>
-<ol>
-<li><p>第一步：固定 $P$ 和 $Q$，优化 SVM，找最强判别平面</p>
-<p>此时，$P$ 已经把数据变成了低维特征 $z_i$。模型退化成一个标准的 SVM 问题。当前的子空间里，找到能把不同类别分得最开的超平面 $(w, b)$。</p>
-</li>
-<li><p>第二步：固定 SVM 参数和 $Q$，优化 $P$</p>
-<p>$P$ 需要同时满足两个要求：SVM 要求投影 $z_i$ 得让它的分类间隔更大，$Q$ 要求投影 $z_i$ 要能配合重构矩阵更好地还原回 $x_i$。在这种约束下，$P$ 会被微调，使得投影后的数据点在保持结构的同时，向着更有利于分类的方向偏移。</p>
-</li>
-<li><p>第三步：固定 $P$ 和 SVM，优化 $Q$</p>
-<p>由于 $P$ 已经变了，原来的恢复方案 $Q$ 可能不再准确。这一步更新 $Q$，使得它能根据新的低维特征 $z_i$ 更好地重建原始数据。</p>
-</li>
-</ol>
-<h1 id="图正则化重构"><a href="#图正则化重构" class="headerlink" title="图正则化重构"></a>图正则化重构</h1><p>如主成分分析等传统的重构是“各扫门前雪”，即每个样本只关心自己投影后能不能还原回去。而 ODSVM 引入了有监督图正则化（Supervised Graph Regularization），让子空间学习具备了“社交属性”。</p>
-<h2 id="构建有监督图-G"><a href="#构建有监督图-G" class="headerlink" title="构建有监督图 $G$"></a>构建有监督图 $G$</h2><p>在进入迭代优化前，算法先为所有训练样本构建一个图 $G$，利用了类别信息和欧氏距离：</p>
-<ul>
-<li><strong>同类近邻：</strong> 如果样本 $x_i$ 和 $x_j$ 属于同一类，且 $x_j$ 是 $x_i$ 的 $k$ 个最近邻之一，那么就在它们之间连一条边，并赋予一个权重 $S_{ij} &gt; 0$。</li>
-<li><strong>异类或远邻：</strong> 如果类别不同或者距离太远，权重 $S_{ij} &#x3D; 0$。</li>
-</ul>
-<h2 id="邻域编码"><a href="#邻域编码" class="headerlink" title="邻域编码"></a>邻域编码</h2><p>在构建子空间（学习 $P$ 和 $Q$）时，目标函数不再仅仅是最小化 $|x_i - Q P^\top x_i|^2$，而是加入了基于图的约束。如果 $S_{ij}$ 很大，算法会强制要求：</p>
-<ul>
-<li><p><strong>在低维空间 $z$ 中靠得更近：</strong> $z_i$ 和 $z_j$ 的距离必须尽可能小。</p>
-</li>
-<li><p><strong>共享重构特征：</strong> 它们的重构过程应该具有一致性。</p>
-</li>
-</ul>
-<p>对于投影矩阵 $P$ 要求局部紧致性（Local Compactness）。$P$ 在寻找投影方向时，会被要求最小化同类邻居在子空间中的方差。如果 $P$ 选的方向让原本在一起的同类样本分开了，那么图正则化项就会产生很高的“惩罚值”。因此，$P$ 提取出的特征能够保持数据的局部流形结构，即在原始高维空间里邻近的同类点，在低维子空间依然是邻居。</p>
-<p>对于重构矩阵 $Q$ 要求结构一致性。$Q$ 不仅仅是一个数学上的逆变换，它被赋予了“平滑”数据的任务。通过考虑邻域， $Q$ 学习到的是该类别数据在子空间中的分布规律，而不仅仅是单个点的坐标映射。因此，如果某个样本 $x_i$ 含有噪声，但它的邻居们是干净的，邻域编码会利用邻居的结构信息来辅助 $Q$ 的重构，从而“纠正”噪声样本在子空间中的偏离。</p>
-<h1 id="优化过程"><a href="#优化过程" class="headerlink" title="优化过程"></a>优化过程</h1><p>以二分类为例，定义目标函数：<br>$$<br>\min_{w, P, Q} \mathcal{J} &#x3D; \underbrace{\frac{1}{2}|w|<em>2^2 + c \sum</em>{i&#x3D;1}^n [1 - y_i w^\top P^\top x_i]<em>+}</em>{\text{SVM 分类项}} + \underbrace{\frac{\lambda}{2} \sum_{i,j&#x3D;1}^n |x_i - Q P^\top x_j|<em>2^2 G</em>{ij}}<em>{\text{图正则化重构项}} + \underbrace{\frac{\gamma}{2}|P|<em>F^2}</em>{\text{正则化项}}<br>$$<br>约束条件为：$Q^\top Q &#x3D; I$。其中，$P$ 是投影矩阵，$Q$ 是重构字典，$w$ 是低维空间中的分类权重，$G</em>{ij}$ 是刻画局部结构的图权重矩阵，$c$ 用于平衡“最大化分类间隔”和“最小化分类错误”之间的权重，$c$ 越大，对分类错误的容忍度越低，$\lambda$ 用于控制“特征提取&#x2F;结构保持”这一项在总目标函数中的重要性，$\lambda$ 越大，模型越强调整体数据的结构保持和类内紧凑性。$\gamma$ 用于控制投影矩阵的复杂度。$[1 - y_i w^\top P^\top x_i]_+ &#x3D; \max\left(0, \ 1 - y_i w^\top P^\top x_i\right)$ 是取正值的意思，在 SVM 中用来定义 Hinge Loss，若分对了且离边界够远，就不产生 Loss。分类错误或分类正确但离边界太近，损失就为正数，离正确边界越远，惩罚越大，迫使模型去修正参数。</p>
-<ul>
-<li>$\frac{1}{2}|w|<em>2^2 + c \sum [1 - y_i w^\top P^\top x_i]</em>+$ 是标准的 SVM 损失函数，但输入数据变成了 $P^\top x_i$，这意味着我们在寻找 $P$ 和 $w$ 使得数据在投影后能被最大间隔分开（最大化类间间隔）。</li>
-<li>$\frac{\lambda}{2} \sum |x_i - Q P^\top x_j|<em>2^2 G</em>{ij}$ 这一项利用邻居 $x_j$ 的投影 $P^\top x_j$，通过 $Q$ 映射回来去重构 $x_i$，同类样本在低维空间应该靠得很近，并且能保留原始数据的信息。这起到了“最小化类内散度”的作用。</li>
-<li>$\frac{\gamma}{2}|P|_F^2$ 是正则化项，防止投影矩阵 $P$ 的值过大。</li>
-</ul>
-<h2 id="第一阶段：固定-P-和-Q-，优化-SVM"><a href="#第一阶段：固定-P-和-Q-，优化-SVM" class="headerlink" title="第一阶段：固定 $P$ 和 $Q$，优化 SVM"></a>第一阶段：固定 $P$ 和 $Q$，优化 SVM</h2><p>当 $P$ 和 $Q$ 固定时，目标函数中与 $P, Q$ 相关的重构项和正则项都变成了常数。此时问题退化为：<br>$$<br>\min_{w} \frac{1}{2}|w|<em>2^2 + c \sum</em>{i&#x3D;1}^n [1 - y_i w^\top (P^\top x_i)]_+<br>$$<br>这就是一个标准的线性 SVM 训练问题。目标是在投影后的低维子空间内，找到一个超平面系数 $w$，使得分类间隔（Margin）最大化。</p>
-<h2 id="第二阶段：固定-SVM-参数和-Q-，优化-P"><a href="#第二阶段：固定-SVM-参数和-Q-，优化-P" class="headerlink" title="第二阶段：固定 SVM 参数和 $Q$，优化 $P$"></a>第二阶段：固定 SVM 参数和 $Q$，优化 $P$</h2><p>因为 $P$ 同时存在于分类项和重构项中。为了求解，作者引入松弛变量 $\xi$ 并利用对偶理论。</p>
-<p>首先进行目标函数重构，利用矩阵迹（Trace）的性质，重构项可以转化为：<br>$$<br>\sum_{i,j&#x3D;1}^n |x_i - Q P^\top x_j|<em>2^2 G</em>{ij} &#x3D; Tr(P^\top S_A P) - 2 Tr(P^\top S_B Q) + \text{const}<br>$$<br>其中 $S_A &#x3D; X D X^\top$ 和 $S_B &#x3D; X G X^\top$，这两个矩阵被称为散射矩阵（Scatter Matrices）。$S_A$ 通常与数据的全局能量或总方差有关，而 $S_B$ 捕获了基于图结构的局部相关性。$D$ 是度矩阵（Degree Matrix），是一个对角矩阵，其对角线上的元素 $D_{ii}$ 是 $G$ 矩阵第 $i$ 行（或列）元素的总和：<br>$$<br>D_{ii} &#x3D; \sum_{j&#x3D;1}^n G_{ij}<br>$$<br>在矩阵运算中，迹 $Tr(A)$ 是矩阵对角线元素之和。向量或矩阵的二范数平方可以写成迹的形式：$|a|_2^2 &#x3D; a^\top a &#x3D; Tr(a a^\top)$。对于矩阵 $A$：$|A|_F^2 &#x3D; Tr(A^\top A) &#x3D; Tr(AA^\top)$。矩阵的迹还有循环移位的性质：$Tr(ABC) &#x3D; Tr(BCA) &#x3D; Tr(CAB)$。如果一个运算的结果是标量，那么它的迹等于它本身：$a^\top b &#x3D; Tr(a^\top b)$。</p>
-<h3 id="推导过程"><a href="#推导过程" class="headerlink" title="推导过程"></a>推导过程</h3><p>首先利用向量范数公式 $|a - b|<em>2^2 &#x3D; a^\top a - 2 a^\top b + b^\top b$，将目标函数展开为三项：<br>$$<br>L &#x3D; \sum</em>{i,j&#x3D;1}^n \left( \underbrace{x_i^\top x_i}<em>{\text{第一项}} - \underbrace{2 x_i^\top (Q P^\top x_j)}</em>{\text{第二项}} + \underbrace{(Q P^\top x_j)^\top (Q P^\top x_j)}<em>{\text{第三项}} \right) G</em>{ij}<br>$$<br>第一项是常数项，由于 $x_i$ 和 $D$ 在优化阶段都是已知的，这一项不包含变量 $P$ 和 $Q$，因此记为 const：<br>$$<br>\sum_{i,j&#x3D;1}^n x_i^\top x_i G_{ij} &#x3D; \sum_{i&#x3D;1}^n |x_i|<em>2^2 \left( \sum</em>{j&#x3D;1}^n G_{ij} \right) &#x3D; \sum_{i&#x3D;1}^n |x_i|<em>2^2 D</em>{ii}<br>$$<br>在第二项中，由于 $x_i^\top Q P^\top x_j$ 是一个标量，它等于自身的迹：<br>$$<br>-2 \sum_{i,j&#x3D;1}^n G_{ij} Tr(x_i^\top Q P^\top x_j)<br>$$<br>利用迹的循环性质 $Tr(ABC) &#x3D; Tr(CAB)$，将 $P^\top x_j$ 移到前面：<br>$$<br>-2 \sum_{i,j&#x3D;1}^n Tr(P^\top x_j G_{ij} x_i^\top Q)<br>$$<br>由于迹运算对求和是线性的，提取 $P^\top$ 和 $Q$：<br>$$<br>-2 Tr \left( P^\top \left( \sum_{i,j&#x3D;1}^n x_j G_{ij} x_i^\top \right) Q \right)<br>$$<br>由于 $\sum_{i,j&#x3D;1}^n x_j G_{ij} x_i^\top$ 正好是矩阵乘法 $X G X^\top$ 的展开形式，定义 $S_B &#x3D; X G X^\top$，则该项为：<br>$$<br>-2 Tr(P^\top S_B Q)<br>$$<br>第三项首先利用正交约束 $Q^\top Q &#x3D; I$ 简化内部项：<br>$$<br>(Q P^\top x_j)^\top (Q P^\top x_j) &#x3D; x_j^\top P \underbrace{Q^\top Q}<em>{I} P^\top x_j &#x3D; x_j^\top P P^\top x_j<br>$$<br>$Q$ 的作用是将低维特征 $z$ “还原”回原始空间。如果没有 $Q^\top Q &#x3D; I$ 这个约束，算法可以通过无限缩小 $P$ 并无限放大 $Q$ 来保持乘积不变。这会导致计算极其不稳定。正交基意味着我们是在一个标准直角坐标系下进行重构。这保证了重构过程只是在寻找原始数据在子空间上的投影点，而不会对数据产生非线性的拉伸或剪切。对于投影矩阵而言，$P$ 的角色是寻找最有利于分类的特征，虽然 $P$ 没有正交约束，但它有 $|P|<em>F^2$ 正则化项。这里的正则化是 Frobenius 范数，把矩阵里所有的元素先平方、再求和、最后开根号。Frobenius 范数限制了投影矩阵 $P$ 中元素的大小。如果没有这一项，$P$ 的数值可能会为了迎合某些噪声数据而变得极大，导致模型泛化能力变差：<br>$$<br>|P|<em>F &#x3D; \sqrt{\sum</em>{i&#x3D;1}^m \sum</em>{j&#x3D;1}^n p</em>{ij}^2}<br>$$<br>回到公式的推导，代回原式并考虑对 $i$ 的求和：<br>$$<br>\sum_{i,j&#x3D;1}^n (x_j^\top P P^\top x_j) G_{ij} &#x3D; \sum_{j&#x3D;1}^n (x_j^\top P P^\top x_j) \left( \sum_{i&#x3D;1}^n G_{ij} \right)<br>$$<br>利用度矩阵定义 $\sum_i G_{ij} &#x3D; D_{jj}$：<br>$$<br>\sum_{j&#x3D;1}^n D_{jj} (x_j^\top P P^\top x_j)<br>$$<br>转化为迹的形式并利用循环性质：<br>$$<br>\sum_{j&#x3D;1}^n D_{jj} Tr(x_j^\top P P^\top x_j) &#x3D; Tr \left( P^\top \left( \sum_{j&#x3D;1}^n D_{jj} x_j x_j^\top \right) P \right)<br>$$<br>由于 $\sum_j D_{jj} x_j x_j^\top$ 正好是矩阵乘法 $X D X^\top$ 的对角加权形式，定义 $S_A &#x3D; X D X^\top$，则该项为：<br>$$<br>Tr(P^\top S_A P)<br>$$<br>将三项合并，得到了论文中的简洁形式：<br>$$<br>\sum_{i,j&#x3D;1}^n |x_i - Q P^\top x_j|<em>2^2 G</em>{ij} &#x3D; Tr(P^\top S_A P) - 2 Tr(P^\top S_B Q) + \text{const}<br>$$<br>在固定 $w$ 和 $Q$ 后，ODSVM 的目标函数 $\mathcal{J}$ 与变量 $P$ 和松弛变量 $\xi$ 相关的部分可以写成：<br>$$<br>\min_{P, \xi} \mathcal{J}(P, \xi) &#x3D; \underbrace{\frac{\lambda}{2} Tr(P^\top S_A P - 2 P^\top S_B Q)}<em>{\text{重构项}} + \underbrace{\frac{\gamma}{2}|P|<em>F^2}</em>{\text{P 的正则项}} + \underbrace{c \sum</em>{i&#x3D;1}^n \xi_i}_{\text{SVM 误差项}}<br>$$<br>约束条件来自于 SVM 的基本要求，即样本必须落在间隔之外或通过松弛变量补偿：$y_i (w^\top P^\top x_i) \geq 1 - \xi_i, \quad \forall i&#x3D;1, \dots, n$，松弛变量非负：$\xi_i \geq 0, \quad \forall i&#x3D;1, \dots, n$。</p>
-<p>拉格朗日乘数法要求约束条件写成 $g(x) \leq 0$ 的形式：$1 - \xi_i - y_i w^\top P^\top x_i \leq 0$，$-\xi_i \leq 0$。</p>
-<p>拉格朗日函数的基本构造公式为：$L &#x3D; \text{目标函数} + \sum (\text{乘子} \times \text{约束})$。引入两组拉格朗日乘子：$\alpha_i \geq 0$ 对应分类约束，$\beta_i \geq 0$ 对应非负约束：<br>$$<br>\begin{aligned}<br>L(P, \xi, \alpha, \beta) &amp;&#x3D; \frac{\lambda}{2} Tr(P^\top S_A P - 2 P^\top S_B Q) + \frac{\gamma}{2}|P|<em>F^2 + c \sum</em>{i&#x3D;1}^n \xi_i \<br>&amp;\quad + \sum_{i&#x3D;1}^n \alpha_i (1 - \xi_i - y_i w^\top P^\top x_i) \<br>&amp;\quad + \sum_{i&#x3D;1}^n \beta_i (-\xi_i)<br>\end{aligned}<br>$$<br>进一步把上式进行化简：<br>$$<br>L(P, \xi, \alpha, \beta) &#x3D; \frac{\lambda}{2} Tr(P^\top S_A P - 2 P^\top S_B Q) + \frac{\gamma}{2}|P|_F^2 + c e^\top \xi + \sum \alpha_i (1 - \xi_i - y_i w^\top P^\top x_i)<br>$$<br>$c e^\top \xi$ 是对分类错误的惩罚总和，其中 $e &#x3D; [1, 1, \dots, 1]^\top$，所以 $e^\top \xi &#x3D; \sum \xi_i$。这里省略了 $\beta_i$项，是因为后续的求偏导过程有：<br>$$<br>\frac{\partial L}{\partial \xi_i} &#x3D; c - \alpha_i - \beta_i &#x3D; 0 \implies \alpha_i + \beta_i &#x3D; c<br>$$<br>由于 $\beta_i \geq 0$，这个条件隐含了 $0 \leq \alpha_i \leq c$。因此，针对 $P$ 优化拉格朗日函数时通常可以省略 $\beta_i \xi_i$ 项，通过在后续求解 $\alpha$ 的对偶问题时，给 $\alpha_i$ 加上上限 $c$（即 $0 \leq \alpha_i \leq c$）来等价地处理 $\xi_i \geq 0$ 的约束。</p>
-<p>接着求导得出 $P$ 的显式表达，令 $\nabla_P L &#x3D; 0$，可以解出 $P$ 关于 $\alpha$ 的函数。</p>
-<p>首先，从完整的拉格朗日函数中，剔除掉所有不包含 $P$ 的项，因为求导后会变成0，得到关于 $P$ 的子函数 $L_P$：<br>$$<br>L_P &#x3D; \underbrace{\frac{\lambda}{2} Tr(P^\top S_A P)}<em>{\text{项 1}} - \underbrace{\lambda Tr(P^\top S_B Q)}</em>{\text{项 2}} + \underbrace{\frac{\gamma}{2} Tr(P^\top P)}<em>{\text{项 3}} - \underbrace{\sum</em>{i&#x3D;1}^n \alpha_i y_i w^\top P^\top x_i}_{\text{项 4}}<br>$$<br>在推导过程需要用到以下三个矩阵求导公式：</p>
-<ol>
-<li><strong>公式 A：</strong> $\frac{\partial Tr(P^\top A P)}{\partial P} &#x3D; (A + A^\top) P$。由于 $S_A &#x3D; XDX^\top$ 是对称矩阵，结果为 $2 S_A P$。</li>
-<li><strong>公式 B：</strong> $\frac{\partial Tr(P^\top B)}{\partial P} &#x3D; B$。</li>
-<li><strong>公式 C：</strong> $\frac{\partial (a^\top P^\top b)}{\partial P} &#x3D; b a^\top$。</li>
-</ol>
-<p>将 $\nabla_P L_P$ 分成四部分进行计算：</p>
-<p>求导项 1：$\frac{\partial}{\partial P} \left( \frac{\lambda}{2} Tr(P^\top S_A P) \right)$</p>
-<p>根据公式 A，由于 $S_A$ 是对称的：<br>$$<br>\nabla_P (\text{项 1}) &#x3D; \frac{\lambda}{2} \cdot 2 S_A P &#x3D; \lambda S_A P<br>$$<br>求导项 2：$\frac{\partial}{\partial P} \left( -\lambda Tr(P^\top S_B Q) \right)$</p>
-<p>根据公式 B，其中 $B &#x3D; S_B Q$：<br>$$<br>\nabla_P (\text{项 2}) &#x3D; -\lambda S_B Q<br>$$<br>求导项 3：$\frac{\partial}{\partial P} \left( \frac{\gamma}{2} Tr(P^\top P) \right)$</p>
-<p>这等价于公式 A 中 $A&#x3D;I$ 的情况：<br>$$<br>\nabla_P (\text{项 3}) &#x3D; \frac{\gamma}{2} \cdot 2 I P &#x3D; \gamma P<br>$$<br>求导项 4：$\frac{\partial}{\partial P} \left( -\sum_{i&#x3D;1}^n \alpha_i y_i w^\top P^\top x_i \right)$</p>
-<p>这一步需要先进行矩阵化处理。</p>
-<ol>
-<li><p>观察单个项：$\alpha_i y_i w^\top P^\top x_i$。这里 $w$ 是分类权重，$x_i$ 是样本。</p>
-</li>
-<li><p>利用公式 C，其中 $a^\top &#x3D; \alpha_i y_i w^\top$， $b &#x3D; x_i$。其导数为 $x_i (\alpha_i y_i w^\top) &#x3D; \alpha_i y_i x_i w^\top$。</p>
-</li>
-<li><p>对所有 $i$ 求和：<br>$$<br>\nabla_P (\text{项 4}) &#x3D; - \sum_{i&#x3D;1}^n \alpha_i y_i x_i w^\top &#x3D; - \left( \sum_{i&#x3D;1}^n \alpha_i y_i x_i \right) w^\top<br>$$<br>引入矩阵 $Z &#x3D; [y_1 x_1, y_2 x_2, \dots, y_n x_n] \in \mathbb{R}^{d \times n}$ 和向量 $\alpha &#x3D; [\alpha_1, \dots, \alpha_n]^\top$，上面的求和项 $\sum \alpha_i y_i x_i$ 正好等于矩阵乘积 $Z \alpha$。所以有：<br>$$<br>\nabla_P (\text{项 4}) &#x3D; - Z \alpha w^\top<br>$$</p>
-</li>
-</ol>
-<p>将上述所有结果合并，得到总梯度：<br>$$<br>\nabla_P L &#x3D; \lambda S_A P - \lambda S_B Q + \gamma P - Z \alpha w^\top &#x3D; 0<br>$$<br>化简后得到：<br>$$<br>P &#x3D; (\lambda S_A + \gamma I)^{-1} (\lambda S_B Q + Z \alpha w^\top)<br>$$<br>这里包含三部分：</p>
-<ul>
-<li>$\lambda S_B Q$ 要求投影矩阵配合重构字典 $Q$ 和图结构 $S_B$，尽量保留数据的原始几何信息</li>
-<li>$Z \alpha w^\top$ 要求投影矩阵参考 SVM 的分类结果，把不同类别的样本拉开，其通过拉格朗日乘子 $\alpha$ 和权重 $w$ 传递</li>
-<li>$(\lambda S_A + \gamma I)^{-1}$ 则起到了一个“归一化”和“稳定器”的作用，确保 $P$ 不会因为单方面的力量而数值爆炸</li>
-</ul>
-<p>当得到了上述投影矩阵的显示表达后，接下来要求解针对 $\alpha$ 的二次规划问题（QPP），需要将第二阶段求得的 $P$ 的显式表达代回拉格朗日函数中，这个过程被称为对偶化（Dualization）。</p>
-<p>首先对拉格朗日函数进行简化：<br>$$<br>\begin{align*}<br>L(P, \xi, \alpha, \beta) &amp;&#x3D; \frac{\lambda}{2} Tr(P^\top S_A P - 2 P^\top S_B Q) + \frac{\gamma}{2}|P|_F^2 + c e^\top \xi + \sum \alpha_i (1 - \xi_i - y_i w^\top P^\top x_i)\[4pt]<br>&amp;&#x3D; \frac{1}{2} Tr(P^\top M^{-1} P) - Tr(P^\top (\lambda S_B Q + Z \alpha w^\top)) + \alpha^\top e + (c e - \alpha - \beta)^\top \xi<br>\end{align*}<br>$$<br>上式合并了重构项和 $P$ 的正则项，使用 $M^{-1} &#x3D; \lambda S_A + \gamma I$，以及将分类约束项 $\sum \alpha_i (1 - \xi_i - y_i w^\top P^\top x_i)$ 写成了矩阵形式：$\alpha^\top e - \alpha^\top \xi - Tr(P^\top Z \alpha w^\top)$。</p>
-<p>利用 Karush-Kuhn-Tucker（KKT） 条件简化 $\xi$ 和约束，先针对松弛变量 $\xi$ 求偏导：<br>$$<br>\frac{\partial L}{\partial \xi} &#x3D; c e - \alpha - \beta &#x3D; 0 \implies \alpha + \beta &#x3D; c e<br>$$<br>因为乘子 $\alpha, \beta \geq 0$，这直接给出了 $\alpha$ 的范围约束：<br>$$<br>0 \leq \alpha_i \leq c<br>$$<br>同时，由于 $\alpha + \beta &#x3D; c e$，拉格朗日函数中的 $(c e - \alpha - \beta)^\top \xi$ 项变为 0。</p>
-<p>把在上一阶段求得 $P$ 的最优解化简为：<br>$$<br>\begin{align*}<br>P &amp;&#x3D; (\lambda S_A + \gamma I)^{-1} (\lambda S_B Q + Z \alpha w^\top)\[4pt]<br>&amp;&#x3D; MB<br>\end{align*}<br>$$<br>其中 $B &#x3D; \lambda S_B Q + Z \alpha w^\top$。</p>
-<p>将 $P &#x3D; M B$ 代入拉格朗日函数中关于 $P$ 的部分（记为 $L_P$）：<br>$$<br>L_P &#x3D; \frac{1}{2} Tr((M B)^\top M^{-1} (M B)) - Tr((M B)^\top B)<br>$$<br>由于 $S_A$ 是对称矩阵，因此 $M$ 也是对称矩阵，有 $M^\top &#x3D; M$，简化得：<br>$$<br>L_P &#x3D; \frac{1}{2} Tr(B^\top M B) - Tr(B^\top M B) &#x3D; -\frac{1}{2} Tr(B^\top M B)<br>$$<br>将 $B &#x3D; \lambda S_B Q + Z \alpha w^\top$ 代入：<br>$$<br>\begin{align*}<br>B^\top M B &amp;&#x3D; (\lambda Q^\top S_B^\top + w \alpha^\top Z^\top) M (\lambda S_B Q + Z \alpha w^\top)\[4pt]<br>&amp;&#x3D; \lambda^2 Q^\top S_B^\top M S_B Q + \lambda Q^\top S_B^\top M Z \alpha w^\top + \lambda w \alpha^\top Z^\top M S_B Q + w \alpha^\top Z^\top M Z \alpha w^\top<br>\end{align*}<br>$$<br>展开后得到四项：</p>
-<ol>
-<li><strong>第一项：</strong> $\lambda^2 Q^\top S_B^\top M S_B Q$。这不包含 $\alpha$，在优化时是常数。</li>
-<li><strong>第二项：</strong> $\lambda Q^\top S_B^\top M Z \alpha w^\top$。</li>
-<li><strong>第三项：</strong> $\lambda w \alpha^\top Z^\top M S_B Q$。</li>
-<li><strong>第四项：</strong> $w \alpha^\top Z^\top M Z \alpha w^\top$。</li>
-</ol>
-<p>接下来对上述四项分别求迹，因为第二项和第三项互为转置，因此：<br>$$<br>Tr(\lambda w \alpha^\top Z^\top M S_B Q) &#x3D; \lambda w^\top (Q^\top S_B^\top M Z \alpha) &#x3D; \lambda (Z^\top M S_B Q w)^\top \alpha<br>$$<br>对于第四项利用 $Tr(ABC) &#x3D; Tr(CAB)$，得到：<br>$$<br>Tr(w \alpha^\top Z^\top M Z \alpha w^\top) &#x3D; Tr(w^\top w \cdot \alpha^\top Z^\top M Z \alpha) &#x3D; |w|_2^2 (\alpha^\top Z^\top M Z \alpha)<br>$$<br>回到一开始的拉格朗日函数：<br>$$<br>L(P, \xi, \alpha, \beta) &#x3D; \frac{1}{2} Tr(P^\top M^{-1} P) - Tr(P^\top (\lambda S_B Q + Z \alpha w^\top)) + \alpha^\top e + (c e - \alpha - \beta)^\top \xi<br>$$<br>刚刚的化简和求迹都是针对 $L_P$ 进行的，$\alpha^\top e$ 被放在了一边，现在计算完成后需要将结果和 $\alpha^\top e$ 合并：<br>$$<br>\begin{align*}<br>D(\alpha) &amp;&#x3D; -\frac{1}{2} \left( |w|_2^2 \alpha^\top Z^\top M Z \alpha + 2 \lambda (Z^\top M S_B Q w)^\top \alpha + \text{const} \right) + e^\top \alpha\[4pt]<br>&amp;&#x3D; -\frac{|w|<em>2^2}{2} \alpha^\top (Z^\top M Z) \alpha + (e - \lambda Z^\top M S_B Q w)^\top \alpha + \text{const}<br>\end{align*}<br>$$<br>最大化这个对偶函数 $D(\alpha)$，即得到了论文中的 QPP 问题：<br>$$<br>\max</em>{\alpha} -\frac{|w|_2^2}{2} \alpha^\top Z^\top M Z \alpha + (e - \lambda Z^\top M S_B Q w)^\top \alpha, \quad \text{s.t. } 0 \leq \alpha_i \leq c<br>$$<br>这里的二次项 $-\frac{|w|_2^2}{2} \alpha^\top (Z^\top M Z) \alpha$ 反映了样本在经过 $M$ 缩放处理后的相关性，$|w|_2^2$ 的存在说明分类器的权重直接影响了子空间的拉伸。一次项 $e^\top \alpha$ 表示标准 SVM 要求样本离开超平面，而减去的 $\lambda Z^\top M S_B Q w$ 部分则是来自重构误差的修正。它告诉模型：如果某个样本为了重构而必须待在某个位置，那么 SVM 对它的分类约束可以稍微“妥协”一点。</p>
-<h2 id="第三阶段：固定-P-和-SVM，优化-Q"><a href="#第三阶段：固定-P-和-SVM，优化-Q" class="headerlink" title="第三阶段：固定 $P$ 和 SVM，优化 $Q$"></a>第三阶段：固定 $P$ 和 SVM，优化 $Q$</h2><p>当 $P$ 和 $w$ 固定时，目标函数只剩下与重构相关的部分。</p>
-<p>这里把最开始目标函数的简洁形式搬过来：<br>$$<br>\sum_{i,j&#x3D;1}^n |x_i - Q P^\top x_j|<em>2^2 G</em>{ij} &#x3D; Tr(P^\top S_A P) - 2 Tr(P^\top S_B Q) + \text{const}<br>$$<br>在这一阶段要优化的重构形式为：<br>$$<br>\max_{Q} Tr(P^\top S_B Q), \quad \text{s.t. } Q^\top Q &#x3D; I<br>$$<br>这是一个经典的正交普鲁克分析（Orthogonal Procrustes Problem），它有闭式解（Closed-form solution）：</p>
-<p>首先计算矩阵乘积 $S_B^\top P$，对该结果进行奇异值分解（SVD）：$S_B^\top P &#x3D; U \Sigma V^\top$，得到的最优的重构矩阵为：$Q &#x3D; U V^\top$。</p>
-<h2 id="从二分类扩展到多分类"><a href="#从二分类扩展到多分类" class="headerlink" title="从二分类扩展到多分类"></a>从二分类扩展到多分类</h2><p>在 ODSVM 的框架下，从二分类扩展到多分类通过构建一个共享子空间完成，使得这个子空间能同时满足所有类别的分类需求。</p>
-<p>假设有 $K$ 个类别。对于每一个类别 $k \in {1, \dots, K}$，在低维子空间中学习一个对应的分类面参数 $w_k$。多分类 ODSVM 的联合优化目标函数定义为：<br>$$<br>\min_{W, P, Q, \Xi} \sum_{k&#x3D;1}^K \left( \frac{1}{2}|w_k|<em>2^2 + C \sum</em>{i&#x3D;1}^n \xi_i^{(k)} \right) + \frac{\lambda}{2} \sum_{i,j&#x3D;1}^n |x_i - Q P^\top x_j|<em>2^2 G</em>{ij} + \frac{\gamma}{2}|P|_F^2<br>$$<br>约束条件：</p>
-<ol>
-<li><strong>分类约束：</strong> $y_i^{(k)} (w_k^\top P^\top x_i) \geq 1 - \xi_i^{(k)}, \quad \forall i, k$</li>
-<li><strong>松弛变量：</strong> $\xi_i^{(k)} \geq 0$</li>
-<li><strong>正交约束：</strong> $Q^\top Q &#x3D; I$</li>
-</ol>
-<p>这里 $y_i^{(k)} \in {1, -1}$ 表示第 $i$ 个样本是否属于第 $k$ 类。所有 $K$ 个分类器共享同一个投影矩阵 $P$ 和重构矩阵 $Q$。$\Xi$ 代表的是所有类别松弛变量的集合，$\Xi &#x3D; [\xi^{(1)}, \xi^{(2)}, \dots, \xi^{(K)}]$。</p>
-<h3 id="多分类拉格朗日函数的推导"><a href="#多分类拉格朗日函数的推导" class="headerlink" title="多分类拉格朗日函数的推导"></a>多分类拉格朗日函数的推导</h3><p>由于 $Q$ 的优化与二分类完全一致，这里只推导固定 $W$ 和 $Q$ 求解 $P$ 的过程。</p>
-<p>针对 $P$ 和所有 $\xi^{(k)}$，引入 $K$ 组拉格朗日乘子 $\alpha^{(k)} &#x3D; [\alpha_1^{(k)}, \dots, \alpha_n^{(k)}]^\top$：<br>$$<br>\begin{aligned}<br>L(P, \Xi, \alpha) &#x3D; &amp;\frac{\lambda}{2} Tr(P^\top S_A P - 2 P^\top S_B Q) + \frac{\gamma}{2} Tr(P^\top P) + C \sum_{k&#x3D;1}^K e^\top \xi^{(k)} \<br>&amp;+ \sum_{k&#x3D;1}^K \sum_{i&#x3D;1}^n \alpha_i^{(k)} (1 - \xi_i^{(k)} - y_i^{(k)} w_k^\top P^\top x_i)<br>\end{aligned}<br>$$<br>在固定 $W$（所有类别的分类权重）、$Q$（重构字典）和 $\alpha$（拉格朗日乘子）的情况下，拉格朗日函数中与投影矩阵 $P$ 相关的项共有四个部分：<br>$$<br>L_P &#x3D; \underbrace{\frac{\lambda}{2} Tr(P^\top S_A P)}<em>{\text{项 1}} - \underbrace{\lambda Tr(P^\top S_B Q)}</em>{\text{项 2}} + \underbrace{\frac{\gamma}{2} Tr(P^\top P)}<em>{\text{项 3}} - \underbrace{\sum</em>{k&#x3D;1}^K \sum_{i&#x3D;1}^n \alpha_i^{(k)} y_i^{(k)} (w_k^\top P^\top x_i)}_{\text{项 4}}<br>$$<br>这里 $|P|_F^2 &#x3D; Tr(P^\top P)$。$y_i^{(k)}$ 是第 $i$ 个样本在第 $k$ 个分类器下的标签。</p>
-<p>利用公式 $a^\top P^\top b &#x3D; Tr(P^\top b a^\top)$ 将“项 4”进行转化，方便后续对矩阵 $P$ 整体求导：<br>$$<br>\begin{align*}<br>\sum_{i&#x3D;1}^n \alpha_i^{(k)} y_i^{(k)} (w_k^\top P^\top x_i) &amp;&#x3D; \sum_{i&#x3D;1}^n Tr(P^\top (\alpha_i^{(k)} y_i^{(k)} x_i) w_k^\top)\[4pt]<br>&amp;&#x3D; Tr(P^\top \underbrace{\sum_{i&#x3D;1}^n \alpha_i^{(k)} y_i^{(k)} x_i}_{\text{标记为向量 } V_k} w_k^\top)<br>\end{align*}<br>$$<br>这里需要用到两个矩阵求导公式：</p>
-<ol>
-<li>$\frac{\partial Tr(X^\top A X)}{\partial X} &#x3D; (A + A^\top) X$</li>
-<li>$\frac{\partial Tr(X^\top B)}{\partial X} &#x3D; B$</li>
-</ol>
-<p>第一项求导：$\nabla_P \left[ \frac{\lambda}{2} Tr(P^\top S_A P) \right]$</p>
-<p>$S_A$ 是对称矩阵（$S_A &#x3D; XDX^\top$），根据公式 1：<br>$$<br>\nabla_P (\text{项 1}) &#x3D; \frac{\lambda}{2} \cdot (S_A + S_A^\top) P &#x3D; \frac{\lambda}{2} \cdot 2 S_A P &#x3D; \lambda S_A P<br>$$<br>第二项求导：$\nabla_P \left[ -\lambda Tr(P^\top S_B Q) \right]$</p>
-<p>根据公式 2，这里 $B &#x3D; S_B Q$：<br>$$<br>\nabla_P (\text{项 2}) &#x3D; -\lambda S_B Q<br>$$<br>第三项求导：$\nabla_P \left[ \frac{\gamma}{2} Tr(P^\top P) \right]$</p>
-<p>这相当于公式 1 中 $A$ 是单位阵 $I$ 的情况：<br>$$<br>\nabla_P (\text{项 3}) &#x3D; \frac{\gamma}{2} \cdot 2 I P &#x3D; \gamma P<br>$$<br>第四项求导：$\nabla_P \left[ -\sum_{k&#x3D;1}^K Tr(P^\top V_k w_k^\top) \right]$</p>
-<p>再次利用公式 2，针对每一个类别 $k$：<br>$$<br>\nabla_P (\text{第 } k \text{ 类的项}) &#x3D; -V_k w_k^\top &#x3D; -(\sum_{i&#x3D;1}^n \alpha_i^{(k)} y_i^{(k)} x_i) w_k^\top<br>$$<br>定义矩阵 $Z_k &#x3D; [y_1^{(k)}x_1, \dots, y_n^{(k)}x_n]$，那么 $\sum \alpha_i^{(k)} y_i^{(k)} x_i &#x3D; Z_k \alpha^{(k)}$。所以，所有类别 $K$ 的导数总和为：<br>$$<br>\nabla_P (\text{项 4}) &#x3D; -\sum_{k&#x3D;1}^K Z_k \alpha^{(k)} w_k^\top<br>$$<br>将以上四部分的导数相加并令其等于零：<br>$$<br>\lambda S_A P - \lambda S_B Q + \gamma P - \sum_{k&#x3D;1}^K Z_k \alpha^{(k)} w_k^\top &#x3D; 0<br>$$<br>求逆矩阵得到显示解：<br>$$<br>P &#x3D; (\lambda S_A + \gamma I)^{-1} \left( \lambda S_B Q + \sum_{k&#x3D;1}^K Z_k \alpha^{(k)} w_k^\top \right)<br>$$<br>为了得到每一类的 $\alpha^{(k)}$，需要处理对偶问题。由于 $K$ 个分类器是通过 $P$ 耦合在一起的，直接求解非常困难。论文设计了带剪枝的 SMO 算法部分进行求解。</p>
-<h2 id="带剪枝的-SMO-算法"><a href="#带剪枝的-SMO-算法" class="headerlink" title="带剪枝的 SMO 算法"></a>带剪枝的 SMO 算法</h2><p>在优化 $\alpha$ 的过程中，最优解必须满足 KKT 条件。对于多分类 ODSVM 中的第 $i$ 个样本和第 $k$ 个分类器，其对应的拉格朗日乘子 $\alpha_i^{(k)}$ 有三种情况：</p>
-<ol>
-<li>$\alpha_i^{(k)} &#x3D; 0$： 样本 $i$ 位于第 $k$ 类的分类间隔外。这类样本对分类超平面的位置没有影响。</li>
-<li>$0 &lt; \alpha_i^{(k)} &lt; c$： 样本 $i$ 恰好位于分类间隔边界上。它们是真正的支持向量（Support Vectors）。</li>
-<li>$\alpha_i^{(k)} &#x3D; c$： 样本 $i$ 位于分类间隔内，或者是被误分类的样本。</li>
-</ol>
-<p>剪枝的核心逻辑是，在迭代的早期阶段，如果一个样本的 $\alpha_i^{(k)}$ 已经稳定在 $0$ 且其对应的梯度显示它远离边界，那么在接下来的几次子问题求解中，可以认为它大概率依然是 $0$。</p>
-<p>论文定义了一个活跃集（Active Set） $\mathcal{A}$，用于存放那些可能成为支持向量的样本索引。</p>
-<p>对于第 $k$ 个类别的优化，首先检查梯度 $\nabla_{\alpha_i^{(k)}} D(\alpha)$：</p>
-<ul>
-<li>如果 $\alpha_i^{(k)} &#x3D; 0$ 且 $\nabla_{\alpha_i^{(k)}} D(\alpha) &lt; -\epsilon$（$\epsilon$ 是一个极小的正数阈值）；</li>
-<li>或者 $\alpha_i^{(k)} &#x3D; C$ 且 $\nabla_{\alpha_i^{(k)}} D(\alpha) &gt; \epsilon$。</li>
-</ul>
-<p>满足上述条件的样本被认为是“非活跃”的。算法会将这些样本从当前的计算中剔除（Prune），不再为它们计算复杂的矩阵乘法 $Z^\top MZ$。</p>
+<h2 id="投影矩阵-P-：数据的特征提取器"><a href="#投影矩阵-P-：数据的特征提取器" class="headerlink" title="投影矩阵 $P$：数据的特征提取器"></a>投影矩阵 $P$：数据的特征提取器</h2><p>$P$ 是一个大小为 $d \times m$ 的矩阵（$d$ 是原始高维特征维度，$m$ 是降维后的维度）。它的作用是将原始样本 $x_i$ 投影到低维子空间：</p>
+<script type="math/tex; mode=display">
+z_i = P^\top x_i</script><p>$P$ 的目标在于丢弃大部分冗余信息的同时，精准地保留最有利于分类的信息。在 ODSVM 中，$P$ 的构建受到 SVM 边距最大化的约束。这意味着 $P$ 提取出的特征 $z_i$ 必须让 SVM 能够更容易地找到一个宽阔的分类间隔（Margin）。</p>
 
       
     </div>
@@ -523,6 +408,8 @@
 
 
 
+
+  
 
   
 
