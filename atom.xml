@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>梨串桃的生活日记</title>
+  
+  
+  <link href="http://example.com/atom.xml" rel="self"/>
+  
+  <link href="http://example.com/"/>
+  <updated>2026-01-04T11:11:52.185Z</updated>
+  <id>http://example.com/</id>
+  
+  <author>
+    <name>ChuantaoLi</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Optimal Discriminant Support Vector Machine阅读笔记</title>
+    <link href="http://example.com/2026/01/04/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0/"/>
+    <id>http://example.com/2026/01/04/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0/</id>
+    <published>2026-01-04T10:31:40.000Z</published>
+    <updated>2026-01-04T11:11:52.185Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="模型总览">模型总览</h1><p>ODSVM 将子空间学习和 SVM 分类放在一个统一的数学框架内共同进化。</p><h2 id="投影矩阵-p数据的特征提取器">投影矩阵 <spanclass="math inline"><em>P</em></span>：数据的特征提取器</h2><p><span class="math inline"><em>P</em></span> 是一个大小为 <spanclass="math inline"><em>d</em> × <em>m</em></span> 的矩阵（<spanclass="math inline"><em>d</em></span> 是原始高维特征维度，<spanclass="math inline"><em>m</em></span>是降维后的维度）。它的作用是将原始样本 <spanclass="math inline"><em>x</em><sub><em>i</em></sub></span>投影到低维子空间： <spanclass="math display"><em>z</em><sub><em>i</em></sub> = <em>P</em><sup>⊤</sup><em>x</em><sub><em>i</em></sub></span><span class="math inline"><em>P</em></span>的目标在于丢弃大部分冗余信息的同时，精准地保留最有利于分类的信息。在ODSVM 中，<span class="math inline"><em>P</em></span> 的构建受到 SVM边距最大化的约束。这意味着 <span class="math inline"><em>P</em></span>提取出的特征 <spanclass="math inline"><em>z</em><sub><em>i</em></sub></span> 必须让 SVM能够更容易地找到一个宽阔的分类间隔（Margin）。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;模型总览&quot;&gt;模型总览&lt;/h1&gt;
+&lt;p&gt;ODSVM 将子空间学习和 SVM 分类放在一个统一的数学框架内共同进化。&lt;/p&gt;
+&lt;h2 id=&quot;投影矩阵-p数据的特征提取器&quot;&gt;投影矩阵 &lt;span
+class=&quot;math inline&quot;&gt;&lt;em&gt;P&lt;/em&gt;&lt;/s</summary>
+      
+    
+    
+    
+    <category term="机器学习" scheme="http://example.com/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+    
+    <category term="集成学习" scheme="http://example.com/tags/%E9%9B%86%E6%88%90%E5%AD%A6%E4%B9%A0/"/>
+    
+  </entry>
+  
+</feed>
