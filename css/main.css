@@ -1200,7 +1200,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #f97981;
+  background: #83a7d7;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2470,7 +2470,7 @@ hr {
   display: inline-block;
 }
 /* =========================================================
-   1. 全局背景与字体
+   1. 全局背景：海浪背景图
    ========================================================= */
 body {
   background-image: url("/uploads/background.png") !important;
@@ -2478,90 +2478,147 @@ body {
   background-attachment: fixed !important;
   background-position: center !important;
   background-size: cover !important;
-  font-family: 'LXGW WenKai Screen', sans-serif !important;
 }
 /* =========================================================
-   2. 侧边栏（头像卡片）
+   2. 顶部导航栏 (解决重叠与美观问题)
    ========================================================= */
+.header {
+  background: transparent !important;
+}
+.header-inner {
+  background: rgba(255,255,255,0.85) !important;
+  border-radius: 20px !important;
+  padding: 15px 40px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  margin-top: 24px !important;
+  margin-bottom: 24px !important;
+  border: none !important;
+}
+/* 隐藏 Mist 默认的顶部横条 */
+.headband {
+  display: none;
+}
+/* =========================================================
+   3. 侧边栏与开关 (解决突兀感与间距)
+   ========================================================= */
+/* 侧边栏整体容器透明，只显示内部卡片 */
 .sidebar {
   background: transparent !important;
-  box-shadow: none !important;
   margin-top: 24px !important;
 }
 .sidebar-inner {
   background: rgba(255,255,255,0.85) !important;
+  padding: 24px !important;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  margin: 0 24px 24px 24px !important;
-  padding: 20px !important;
-  position: relative !important;
-  top: 0 !important;
+  margin-left: 24px !important; /* 与左边缘保持 24px */
+}
+/* 侧边栏开关按钮美化 */
+.sidebar-toggle {
+  background: rgba(255,255,255,0.8) !important;
+  border-radius: 8px !important;
+  left: 24px !important; /* 与左边缘对齐 */
+  bottom: 44px !important;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.sidebar-toggle:hover {
+  background: #fff !important;
 }
 /* =========================================================
-   3. 首页多卡片化布局（核心设计）
+   4. 文章内容卡片与图片居中
    ========================================================= */
-/* 让最外层容器透明，这样卡片之间才有间隙感 */
-.main-inner {
-  background: transparent !important;
-  box-shadow: none !important;
-  margin-top: 24px !important;
-}
-/* 独立文章卡片设计 */
 .post-block {
   background: rgba(255,255,255,0.85) !important;
-  margin-bottom: 35px !important; /* 卡片与卡片之间的美观间隙 */
+  margin-bottom: 24px !important;
   padding: 40px !important;
   border-radius: 20px !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important;
-  transition: all 0.3s ease; /* 加入平滑过渡动画 */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
-/* 鼠标悬停动效：卡片轻微上浮并加深阴影 */
-.post-block:hover {
-  transform: translateY(-5px); /* 向上浮动 5px */
-  box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
-  background: rgba(255,255,255,0.92) !important; /* 悬停时略微变白，增加质感 */
+/* 图片居中显示 */
+.post-body img {
+  display: block !important;
+  margin: 0 auto 20px auto !important;
+  border-radius: 10px;
 }
-/* 分页器、评论区也设为独立卡片 */
+/* 图片说明文字居中 */
+.post-body .image-caption,
+.post-body .caption {
+  text-align: center !important;
+  display: block !important;
+  margin-top: -15px !important;
+  margin-bottom: 20px !important;
+  color: #666;
+  font-size: 0.9em;
+}
+/* =========================================================
+   5. 标签样式优化 (新增：解决标签颜色过浅问题)
+   ========================================================= */
+/* 标签页面：标签云中的链接 */
+.tag-cloud a {
+  color: #000 !important; /* 强制设为黑色 */
+  border-bottom: 1px solid #ccc !important;
+  transition: all 0.3s;
+}
+/* 列表形式的标签 */
+.tag-list-link,
+.category-list-link {
+  color: #000 !important;
+}
+/* 文章底部的标签链接 */
+.post-tags a {
+  color: #000 !important;
+  background: rgba(0,0,0,0.05); /* 淡淡的灰色背景增加识别度 */
+  padding: 2px 8px;
+  border-radius: 5px;
+  text-decoration: none !important;
+  border: none !important;
+}
+/* 悬停效果：变成主题橙色 */
+.tag-cloud a:hover,
+.tag-list-link:hover,
+.post-tags a:hover {
+  color: #fc6423 !important;
+  background: rgba(252,100,35,0.1);
+}
+/* =========================================================
+   6. 文章目录 (TOC) 逻辑修复
+   ========================================================= */
+.post-toc ol a {
+  color: #666 !important;
+  border-bottom: none !important;
+}
+.post-toc .nav .active > a {
+  color: #555 !important;
+}
+.post-toc .nav .active-current > a {
+  color: #fc6423 !important;
+  font-weight: bold !important;
+}
+/* =========================================================
+   7. 首页其他元素与间距
+   ========================================================= */
 .pagination,
 .comments {
   background: rgba(255,255,255,0.85) !important;
-  padding: 20px !important;
   border-radius: 20px !important;
-  margin-bottom: 50px !important;
-}
-/* =========================================================
-   4. 细节组件去杂质
-   ========================================================= */
-.header-inner {
-  background: transparent !important;
+  padding: 20px 40px !important;
+  margin-bottom: 24px !important;
   border: none !important;
-  box-shadow: none !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+.footer {
+  margin-top: 24px !important;
+  padding-bottom: 24px !important;
 }
 /* =========================================================
-   5. 图片与 LaTeX 保护
+   8. LaTeX 公式保护
    ========================================================= */
-.post-body img {
-  display: block !important;
-  margin: 20px auto !important;
-  max-width: 100%;
-  height: auto;
-  border-radius: 10px; /* 图片加点小圆角更美观 */
-}
 .mjx-container,
 .katex,
-.katex-display,
 .math,
 .mjx-chtml,
-.mjx-math {
+.mjx-math,
+.katex * {
   font-family: inherit !important;
   background: transparent !important;
-  color: inherit;
-}
-.katex * {
-  font-family: KaTeX_Main, 'Times New Roman', serif !important;
-}
-/* 隐藏首页（列表页）的文章字数和阅读时长统计 */
-.index .post-meta-item.post-symbols-count,
-.index .post-meta-item.post-symbols-time {
-  display: none !important;
 }
