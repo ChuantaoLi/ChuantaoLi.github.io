@@ -74,119 +74,7 @@
   </style>
 </noscript>
 
-<style>mjx-container[jax="SVG"] {
-  direction: ltr;
-}
-
-mjx-container[jax="SVG"] > svg {
-  overflow: visible;
-}
-
-mjx-container[jax="SVG"][display="true"] {
-  display: block;
-  text-align: center;
-  margin: 1em 0;
-}
-
-mjx-container[jax="SVG"][justify="left"] {
-  text-align: left;
-}
-
-mjx-container[jax="SVG"][justify="right"] {
-  text-align: right;
-}
-
-g[data-mml-node="merror"] > g {
-  fill: red;
-  stroke: red;
-}
-
-g[data-mml-node="merror"] > rect[data-background] {
-  fill: yellow;
-  stroke: none;
-}
-
-g[data-mml-node="mtable"] > line[data-line] {
-  stroke-width: 70px;
-  fill: none;
-}
-
-g[data-mml-node="mtable"] > rect[data-frame] {
-  stroke-width: 70px;
-  fill: none;
-}
-
-g[data-mml-node="mtable"] > .mjx-dashed {
-  stroke-dasharray: 140;
-}
-
-g[data-mml-node="mtable"] > .mjx-dotted {
-  stroke-linecap: round;
-  stroke-dasharray: 0,140;
-}
-
-g[data-mml-node="mtable"] > svg {
-  overflow: visible;
-}
-
-[jax="SVG"] mjx-tool {
-  display: inline-block;
-  position: relative;
-  width: 0;
-  height: 0;
-}
-
-[jax="SVG"] mjx-tool > mjx-tip {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-mjx-tool > mjx-tip {
-  display: inline-block;
-  padding: .2em;
-  border: 1px solid #888;
-  font-size: 70%;
-  background-color: #F8F8F8;
-  color: black;
-  box-shadow: 2px 2px 5px #AAAAAA;
-}
-
-g[data-mml-node="maction"][data-toggle] {
-  cursor: pointer;
-}
-
-mjx-status {
-  display: block;
-  position: fixed;
-  left: 1em;
-  bottom: 1em;
-  min-width: 25%;
-  padding: .2em .4em;
-  border: 1px solid #888;
-  font-size: 90%;
-  background-color: #F8F8F8;
-  color: black;
-}
-
-foreignObject[data-mjx-xml] {
-  font-family: initial;
-  line-height: normal;
-  overflow: visible;
-}
-
-.MathJax path {
-  stroke-width: 3;
-}
-
-mjx-container[display="true"] {
-  overflow: auto hidden;
-}
-
-mjx-container[display="true"] + br {
-  display: none;
-}
-</style></head>
+</head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
   <div class="container use-motion">
@@ -329,15 +217,22 @@ mjx-container[display="true"] + br {
       
           <h1 id="模型总览">模型总览</h1>
 <p>ODSVM 将子空间学习和 SVM 分类放在一个统一的数学框架内共同进化。</p>
-<h2 id="投影矩阵-p数据的特征提取器">投影矩阵 <span class="math inline"><em>P</em></span>：数据的特征提取器</h2>
-<p><span class="math inline"><em>P</em></span> 是一个大小为 <span class="math inline"><em>d</em> × <em>m</em></span> 的矩阵（<span class="math inline"><em>d</em></span> 是原始高维特征维度，<span class="math inline"><em>m</em></span>
-是降维后的维度）。它的作用是将原始样本 <span class="math inline"><em>x</em><sub><em>i</em></sub></span>
-投影到低维子空间： <span class="math display"><em>z</em><sub><em>i</em></sub> = <em>P</em><sup>⊤</sup><em>x</em><sub><em>i</em></sub></span>
+<h2 id="投影矩阵-p数据的特征提取器">投影矩阵 <span
+class="math inline"><em>P</em></span>：数据的特征提取器</h2>
+<p><span class="math inline"><em>P</em></span> 是一个大小为 <span
+class="math inline"><em>d</em> × <em>m</em></span> 的矩阵（<span
+class="math inline"><em>d</em></span> 是原始高维特征维度，<span
+class="math inline"><em>m</em></span>
+是降维后的维度）。它的作用是将原始样本 <span
+class="math inline"><em>x</em><sub><em>i</em></sub></span>
+投影到低维子空间： <span
+class="math display"><em>z</em><sub><em>i</em></sub> = <em>P</em><sup>⊤</sup><em>x</em><sub><em>i</em></sub></span>
 <span class="math inline"><em>P</em></span>
 的目标在于丢弃大部分冗余信息的同时，精准地保留最有利于分类的信息。在
 ODSVM 中，<span class="math inline"><em>P</em></span> 的构建受到 SVM
 边距最大化的约束。这意味着 <span class="math inline"><em>P</em></span>
-提取出的特征 <span class="math inline"><em>z</em><sub><em>i</em></sub></span> 必须让 SVM
+提取出的特征 <span
+class="math inline"><em>z</em><sub><em>i</em></sub></span> 必须让 SVM
 能够更容易地找到一个宽阔的分类间隔（Margin）。</p>
 
       
