@@ -177,7 +177,7 @@ body {
 body {
   background: var(--body-bg-color);
   color: var(--text-color);
-  font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: 'LXGW WenKai Screen', "PingFang SC", "Microsoft YaHei", sans-serif;
   font-size: 1em;
   line-height: 2;
 }
@@ -193,7 +193,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: 'LXGW WenKai Screen', "PingFang SC", "Microsoft YaHei", sans-serif;
   font-weight: bold;
   line-height: 1.5;
   margin: 20px 0 15px;
@@ -743,8 +743,9 @@ pre .javascript .function {
   margin-bottom: 20px;
   padding: 1em;
   position: relative;
-  border: 1px solid #eee;
-  border-left-width: 5px;
+  background: #f9f9f9;
+  border: initial;
+  border-left: 3px solid #eee;
 }
 .post-body .note h2,
 .post-body .note h3,
@@ -775,6 +776,7 @@ pre .javascript .function {
   margin-bottom: 0;
 }
 .post-body .note.default {
+  background: #f7f7f7;
   border-left-color: #777;
 }
 .post-body .note.default h2,
@@ -785,6 +787,7 @@ pre .javascript .function {
   color: #777;
 }
 .post-body .note.primary {
+  background: #f5f0fa;
   border-left-color: #6f42c1;
 }
 .post-body .note.primary h2,
@@ -795,6 +798,7 @@ pre .javascript .function {
   color: #6f42c1;
 }
 .post-body .note.info {
+  background: #eef7fa;
   border-left-color: #428bca;
 }
 .post-body .note.info h2,
@@ -805,6 +809,7 @@ pre .javascript .function {
   color: #428bca;
 }
 .post-body .note.success {
+  background: #eff8f0;
   border-left-color: #5cb85c;
 }
 .post-body .note.success h2,
@@ -815,6 +820,7 @@ pre .javascript .function {
   color: #5cb85c;
 }
 .post-body .note.warning {
+  background: #fdf8ea;
   border-left-color: #f0ad4e;
 }
 .post-body .note.warning h2,
@@ -825,6 +831,7 @@ pre .javascript .function {
   color: #f0ad4e;
 }
 .post-body .note.danger {
+  background: #fcf1f2;
   border-left-color: #d9534f;
 }
 .post-body .note.danger h2,
@@ -1010,7 +1017,7 @@ pre .javascript .function {
   color: var(--brand-hover-color);
 }
 .site-title {
-  font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: 'LXGW WenKai Screen', "PingFang SC", "Microsoft YaHei", sans-serif;
   font-size: 1.375em;
   font-weight: normal;
   margin: 0;
@@ -1193,7 +1200,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #d4ffff;
+  background: #ffd017;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -1537,7 +1544,7 @@ pre .javascript .function {
   }
 }
 .post-body {
-  font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: 'LXGW WenKai Screen', "PingFang SC", "Microsoft YaHei", sans-serif;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
@@ -1835,7 +1842,7 @@ pre .javascript .function {
 }
 .posts-expand .post-meta {
   color: #999;
-  font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: 'LXGW WenKai Screen', "PingFang SC", "Microsoft YaHei", sans-serif;
   font-size: 0.75em;
   margin: 3px 0 60px 0;
   text-align: center;
@@ -2461,4 +2468,109 @@ hr {
 }
 .sub-menu .menu-item {
   display: inline-block;
+}
+/* =========================================================
+   1. 背景与全局字体设置
+   ========================================================= */
+body {
+  background-image: url("/uploads/background.png") !important;
+  background-repeat: no-repeat !important;
+  background-attachment: fixed !important;
+  background-position: center !important;
+  background-size: cover !important;
+}
+/* =========================================================
+   2. 内容容器半透明（防止文字看不清）
+   ========================================================= */
+.main-inner,
+.sidebar-inner {
+  background: rgba(255,255,255,0.85) !important;
+  padding: 0px 40px 40px 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+.post-block,
+.comments,
+.pagination,
+.header-inner {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+/* =========================================================
+   3. LaTeX 公式保护（防止乱码）
+   ========================================================= */
+.mjx-container,
+.katex,
+.katex-display,
+.math,
+.mjx-chtml,
+.mjx-math {
+  font-family: inherit !important;
+  background: transparent !important;
+  color: inherit;
+}
+.katex * {
+  font-family: KaTeX_Main, 'Times New Roman', serif !important;
+}
+/* =========================================================
+   1. 背景与全局字体设置
+   ========================================================= */
+body {
+  background-image: url("/uploads/background.png") !important;
+  background-repeat: no-repeat !important;
+  background-attachment: fixed !important;
+  background-position: center !important;
+  background-size: cover !important;
+}
+/* =========================================================
+   2. 内容容器半透明（防止文字看不清）
+   ========================================================= */
+.main-inner,
+.sidebar-inner {
+  background: rgba(255,255,255,0.85) !important;
+  padding: 0px 40px 40px 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+.post-block,
+.comments,
+.pagination,
+.header-inner {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+/* =========================================================
+   3. LaTeX 公式保护（防止乱码）
+   ========================================================= */
+.mjx-container,
+.katex,
+.katex-display,
+.math,
+.mjx-chtml,
+.mjx-math {
+  font-family: inherit !important;
+  background: transparent !important;
+  color: inherit;
+}
+.katex * {
+  font-family: KaTeX_Main, 'Times New Roman', serif !important;
+}
+/* 增强版：让文章内的图片强制自动居中 */
+.post-body img,
+.post-block img,
+.posts-expand .post-body img {
+  display: block !important;
+  margin: 20px auto !important; /* 上下留白20px，左右自动对齐 */
+  max-width: 100%;
+  height: auto;
+}
+/* 针对可能有独立段落包裹图片的情况 */
+.post-body p {
+  text-align: center; /* 尝试让段落内的行内元素居中 */
+}
+/* 重新修正文字对齐，防止上一条规则把正文也居中了 */
+.post-body p {
+  text-align: justify; /* 或者 left，确保文字还是正常排版 */
 }
