@@ -1200,7 +1200,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #7a98ff;
+  background: #f97981;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2559,4 +2559,9 @@ body {
 }
 .katex * {
   font-family: KaTeX_Main, 'Times New Roman', serif !important;
+}
+/* 隐藏首页（列表页）的文章字数和阅读时长统计 */
+.index .post-meta-item.post-symbols-count,
+.index .post-meta-item.post-symbols-time {
+  display: none !important;
 }
