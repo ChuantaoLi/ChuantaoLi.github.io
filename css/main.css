@@ -1200,7 +1200,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #128553;
+  background: #0eff58;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2461,9 +2461,34 @@ body {
   display: none;
 }
 /* =========================================================
-   3. 侧边栏与开关 (解决突兀感与间距)
+   3. 侧边栏按钮 (解决鼠标触碰时的黑色斜杆问题)
    ========================================================= */
-/* 侧边栏整体容器透明，只显示内部卡片 */
+/* 按钮外框 */
+.sidebar-toggle {
+  background: rgba(255,255,255,0.8) !important;
+  border-radius: 8px !important;
+  left: 24px !important; /* 距离左边缘 24px */
+  bottom: 44px !important;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  padding: 8px !important;
+  transition: all 0.3s ease !important;
+  border: none !important; /* 消除可能出现的黑色边框线 */
+}
+/* 按钮内部的线条 (解决您提到的斜杆瑕疵) */
+.sidebar-toggle-line {
+  background: #555 !important; /* 初始线条颜色：深灰 */
+  transition: all 0.3s !important;
+}
+/* 鼠标悬停时的状态 */
+.sidebar-toggle:hover {
+  background: #fff !important;
+}
+.sidebar-toggle:hover .sidebar-toggle-line {
+  background: #fc6423 !important; /* 悬停时线条变为主题橙色 */
+}
+/* =========================================================
+   4. 侧边栏 (Sidebar) 内部样式
+   ========================================================= */
 .sidebar {
   background: transparent !important;
   margin-top: 24px !important;
@@ -2473,36 +2498,37 @@ body {
   padding: 24px !important;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  margin-left: 24px !important; /* 与左边缘保持 24px */
+  margin-left: 24px !important;
 }
-/* 侧边栏开关按钮美化 */
-.sidebar-toggle {
-  background: rgba(255,255,255,0.8) !important;
-  border-radius: 8px !important;
-  left: 24px !important; /* 与左边缘对齐 */
-  bottom: 44px !important;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+/* 名字设为黑色 */
+.site-author-name {
+  color: #000 !important;
+  font-weight: bold !important;
 }
-.sidebar-toggle:hover {
-  background: #fff !important;
+/* 描述文字和统计数据加深 */
+.site-description {
+  color: #333 !important;
+}
+.site-state-item-count,
+.site-state-item-name {
+  color: #000 !important;
 }
 /* =========================================================
-   4. 文章内容卡片与图片居中
+   5. 文章内容卡片与图片居中
    ========================================================= */
 .post-block {
   background: rgba(255,255,255,0.85) !important;
-  margin-bottom: 24px !important;
+  margin-bottom: 24px !important; /* 卡片间距 24px */
   padding: 40px !important;
   border-radius: 20px !important;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
-/* 图片居中显示 */
+/* 图片居中 */
 .post-body img {
   display: block !important;
   margin: 0 auto 20px auto !important;
   border-radius: 10px;
 }
-/* 图片说明文字居中 */
 .post-body .image-caption,
 .post-body .caption {
   text-align: center !important;
@@ -2513,51 +2539,33 @@ body {
   font-size: 0.9em;
 }
 /* =========================================================
-   5. 标签样式优化 (新增：解决标签颜色过浅问题)
+   6. 标签黑色加深
    ========================================================= */
-/* 标签页面：标签云中的链接 */
-.tag-cloud a {
-  color: #000 !important; /* 强制设为黑色 */
-  border-bottom: 1px solid #ccc !important;
-  transition: all 0.3s;
-}
-/* 列表形式的标签 */
+.tag-cloud a,
 .tag-list-link,
 .category-list-link {
   color: #000 !important;
 }
-/* 文章底部的标签链接 */
 .post-tags a {
   color: #000 !important;
-  background: rgba(0,0,0,0.05); /* 淡淡的灰色背景增加识别度 */
+  background: rgba(0,0,0,0.05);
   padding: 2px 8px;
   border-radius: 5px;
-  text-decoration: none !important;
   border: none !important;
 }
-/* 悬停效果：变成主题橙色 */
-.tag-cloud a:hover,
-.tag-list-link:hover,
-.post-tags a:hover {
-  color: #fc6423 !important;
-  background: rgba(252,100,35,0.1);
-}
 /* =========================================================
-   6. 文章目录 (TOC) 逻辑修复
+   7. 文章目录 (TOC) 高亮
    ========================================================= */
 .post-toc ol a {
   color: #666 !important;
   border-bottom: none !important;
-}
-.post-toc .nav .active > a {
-  color: #555 !important;
 }
 .post-toc .nav .active-current > a {
   color: #fc6423 !important;
   font-weight: bold !important;
 }
 /* =========================================================
-   7. 首页其他元素与间距
+   8. 间距与其它元素
    ========================================================= */
 .pagination,
 .comments {
@@ -2565,15 +2573,15 @@ body {
   border-radius: 20px !important;
   padding: 20px 40px !important;
   margin-bottom: 24px !important;
-  border: none !important;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border: none !important;
 }
 .footer {
   margin-top: 24px !important;
   padding-bottom: 24px !important;
 }
 /* =========================================================
-   8. LaTeX 公式保护
+   9. LaTeX 公式保护
    ========================================================= */
 .mjx-container,
 .katex,
@@ -2583,15 +2591,4 @@ body {
 .katex * {
   font-family: inherit !important;
   background: transparent !important;
-}
-/* =========================================================
-   9. 字体设置：霞鹜文楷屏幕阅读版
-   ========================================================= */
-/* 直接使用CDN链接加载字体 */
-@import url("https://npm.elemecdn.com/lxgw-wenkai-screen-webfont@1.1.0/style.css");
-body {
-  font-family: 'LXGW WenKai Screen', "PingFang SC", "Microsoft YaHei", sans-serif !important;
-}
-.post-body {
-  font-family: 'LXGW WenKai Screen', "PingFang SC", "Microsoft YaHei", sans-serif !important;
 }
