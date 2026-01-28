@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 8.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="王树森推荐系统学习笔记，包括推荐系统的评估指标、实验流程、链路、A&#x2F;B测试等模块。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="推荐系统学习笔记1：推荐系统基础">
+<meta property="og:url" content="http://example.com/2026/01/28/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01%EF%BC%9A%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="梨串桃的生活日记">
+<meta property="og:description" content="王树森推荐系统学习笔记，包括推荐系统的评估指标、实验流程、链路、A&#x2F;B测试等模块。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/23b4229139c56d3095d9ed4b492d70f2.jpg">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/c1aa1359953bcede403ad0470e208ef1.jpg">
+<meta property="article:published_time" content="2026-01-28T04:28:55.000Z">
+<meta property="article:modified_time" content="2026-01-28T04:30:56.050Z">
+<meta property="article:author" content="ChuantaoLi">
+<meta property="article:tag" content="推荐系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/23b4229139c56d3095d9ed4b492d70f2.jpg">
+
+<link rel="canonical" href="http://example.com/2026/01/28/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01%EF%BC%9A%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%9F%BA%E7%A1%80/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>推荐系统学习笔记1：推荐系统基础 | 梨串桃的生活日记</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style><link rel="alternate" href="/atom.xml" title="梨串桃的生活日记" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">梨串桃的生活日记</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-说说">
+
+    <a href="/memos/" rel="section"><i class="far fa-comment-dots fa-fw"></i>说说</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/01/28/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B01%EF%BC%9A%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/%E7%8C%AB%E5%92%AA%E5%A4%B4%E5%83%8F.jpg">
+      <meta itemprop="name" content="ChuantaoLi">
+      <meta itemprop="description" content="感知幸福是一种能力">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梨串桃的生活日记">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          推荐系统学习笔记1：推荐系统基础
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2026-01-28 12:28:55 / 修改时间：12:30:56" itemprop="dateCreated datePublished" datetime="2026-01-28T12:28:55+08:00">2026-01-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">算法学习</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <div class="note success">
+            <p>王树森推荐系统学习笔记，包括推荐系统的评估指标、实验流程、链路、A/B测试等模块。<span id="more"></span></p>
+          </div>
+<h1 id="评价推荐系统的指标">1. 评价推荐系统的指标</h1>
+<p>消费指标包括点击率、曝光率、收藏率、转发率、阅读完成率等，这些都是短期指标，更重要的是北极星指标（North
+Star Metric）。</p>
+<p>北极星指标包括日活用户数（DAU）、月活用户数（MAU）、人均使用推荐的时长、人均阅读笔记的数量、发布渗透率、人均发布量等。其中，发布渗透率指的是发布过内容的人数与总活跃人数的比值，用于衡量用户从“围观者”转变为“创作者”的比例。</p>
+<h1 id="实验流程">2. 实验流程</h1>
+<p>首先进行离线实验，收集历史数据，在历史数据上做训练、测试，快速迭代模型参数。通过
+AUC、准确率、召回率等数学指标，筛选出表现最好的几个算法版本。算法没有部署到产品中，没有跟用户交互。</p>
+<p>随后进行小流量A/B测试，将小流量池分为A组（原算法）和B组（新算法），观察两者在点击率、留存、转化等指标上的差异。</p>
+<p>最后进行全流量上线，在确认小流量实验效果显著且稳定后，将新算法推广给全站用户。</p>
+<h1 id="推荐系统的链路">3. 推荐系统的链路</h1>
+<p>推荐系统的目标是从几亿个物品中选出几十个物品展示给用户，推荐系统的链路可分为四个环节：</p>
+<ol type="1">
+<li><p>召回（Recall）</p>
+<p>快速从几亿篇笔记中快速召回用户感兴趣的几千篇笔记，常见的召回通道包括协同过滤、双塔模型等。</p></li>
+<li><p>粗排（Pre-Ranking）</p>
+<p>使用小规模神经网络进行打分，将召回的几千篇笔记缩小到几百篇。</p></li>
+<li><p>精排（Ranking）</p>
+<p>使用大规模神经网络，输入更加丰富的特征对几百篇笔记进行综合打分。</p></li>
+<li><p>重排（Re-ranking）</p>
+<p>从精排出的几百篇中选出最终展示的几十篇，为了防止用户刷到的全是同类内容，系统进行多样性打分，打散相似内容，同时在这里插入广告、运营推广内容，根据规则调整顺序。</p></li>
+</ol>
+<h1 id="ab测试">4. A/B测试</h1>
+<h2 id="ab测试的基本流程">4.1 A/B测试的基本流程</h2>
+<p>所有对模型和策略的改进都需要通过A/B测试，用实验数据来验证模型和策略是否有效。例如，观察新的召回通道对线上指标的影响、GNN深度的取值选择。</p>
+<h2 id="随机分桶">4.2 随机分桶</h2>
+<p>利用哈希函数将用户ID映射成整数，然后均匀随机分成<span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.025ex;" xmlns="http://www.w3.org/2000/svg" width="0.971ex" height="1.595ex" role="img" focusable="false" viewBox="0 -694 429 705"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D44F" d="M73 647Q73 657 77 670T89 683Q90 683 161 688T234 694Q246 694 246 685T212 542Q204 508 195 472T180 418L176 399Q176 396 182 402Q231 442 283 442Q345 442 383 396T422 280Q422 169 343 79T173 -11Q123 -11 82 27T40 150V159Q40 180 48 217T97 414Q147 611 147 623T109 637Q104 637 101 637H96Q86 637 83 637T76 640T73 647ZM336 325V331Q336 405 275 405Q258 405 240 397T207 376T181 352T163 330L157 322L136 236Q114 150 114 114Q114 66 138 42Q154 26 178 26Q211 26 245 58Q270 81 285 114T318 219Q336 291 336 325Z"></path></g></g></g></svg></mjx-container></span>个桶，例如10个桶，每个桶占10%用户。这里的分桶使用哈希函数，而不是直接进行抽样，是因为如果简单地给用户抽样，系统必须维护一张巨大的表格来记录“用户A在1号桶，用户B在2号桶…….”，这在亿级用户面前极难维护的。对于哈希函数而言，只要用户ID不变，算出来的哈希值永远一致。</p>
+<h2 id="同层互斥与不同层正交">4.3 同层互斥与不同层正交</h2>
+<p>同层互斥：在同一层中，100%的流量被划分为多个不重叠的桶，如果一个用户进入了实验A，他就绝对不会进入实验B。假设现在需要测试两个互相冲突的策略：实验A是把按钮改红，实验B是把同一个按钮改绿。一个用户不能同时看到红绿按钮，所以它们必须在同一层中互斥。</p>
+<p>不同层正交：流量在进入每一层时，都会被重新洗牌。第一层桶0的用户，在进入第二层时，会均匀分布在第二层的0-99个桶中。假设现在需要测试不相关的策略时：第一层测试搜索算法，第二层测试底栏图标颜色。通过正交，可以让搜索实验和UI实验同时进行且互不干扰。</p>
+<p>对于同类的策略而言，如精排模型的两种结构，它们天然互斥，对于一个用户只能用其中一种；再如添加两条召回通道，效果会增强或相互抵消，互斥可以避免同类策略相互干扰。不同类型的策略，如添加召回通道和优化粗排模型，它们通常不会相互干扰，可以作为正交的两层。</p>
+<p>仿真代码：</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> mmh3</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> uuid</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TrafficSharding</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, num_buckets=<span class="number">1000</span>, layers=<span class="number">3</span></span>):</span><br><span class="line">        <span class="variable language_">self</span>.num_buckets = num_buckets</span><br><span class="line">        <span class="comment"># 为每一层生成独立的 Salt，确保正交</span></span><br><span class="line">        <span class="variable language_">self</span>.layer_salts = []</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(layers):</span><br><span class="line">            <span class="comment"># 生成一个 0 到 10000 之间的随机数，增加随机性</span></span><br><span class="line">            random_num = random.randint(<span class="number">0</span>, <span class="number">10000</span>)</span><br><span class="line">            <span class="comment"># 把层数编号 (i) 和 随机数 组合成一个盐值，这样不同层的哈希输入不同</span></span><br><span class="line">            <span class="comment"># 比如第一层可能是 "layer_0_842"，第二层是 "layer_1_5531"</span></span><br><span class="line">            salt_label = <span class="string">f"layer_<span class="subst">{i}</span>_<span class="subst">{random_num}</span>"</span></span><br><span class="line">            <span class="variable language_">self</span>.layer_salts.append(salt_label)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_bucket</span>(<span class="params">self, user_id, layer_index=<span class="number">0</span></span>):</span><br><span class="line">        <span class="string">"""核心哈希分桶函数"""</span></span><br><span class="line">        <span class="comment"># 选择对应层的盐值</span></span><br><span class="line">        salt = <span class="variable language_">self</span>.layer_salts[layer_index]</span><br><span class="line">        <span class="comment"># 用户user_id与盐值组合成哈希输入</span></span><br><span class="line">        key = <span class="built_in">str</span>(user_id) + salt</span><br><span class="line">        <span class="comment"># 计算哈希值</span></span><br><span class="line">        hash_val = mmh3.<span class="built_in">hash</span>(key, signed=<span class="literal">False</span>)</span><br><span class="line">        <span class="comment"># 取模得到桶编号</span></span><br><span class="line">        <span class="keyword">return</span> hash_val % <span class="variable language_">self</span>.num_buckets</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">run_simulation</span>(<span class="params">num_users=<span class="number">100000</span></span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f"🚀 开始仿真：模拟 <span class="subst">{num_users}</span> 名用户进入正交分层系统..."</span>)</span><br><span class="line"></span><br><span class="line">    sharder = TrafficSharding(num_buckets=<span class="number">100</span>, layers=<span class="number">2</span>)  <span class="comment"># 100个桶，2层实验</span></span><br><span class="line">    user_ids = []  <span class="comment"># 存放所有用户的ID</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(num_users):</span><br><span class="line">        random_identity = uuid.uuid4()  <span class="comment"># 随机数生成器</span></span><br><span class="line">        user_id_string = <span class="built_in">str</span>(random_identity)  <span class="comment"># 转换为字符串</span></span><br><span class="line">        user_ids.append(user_id_string)</span><br><span class="line"></span><br><span class="line">    results = []</span><br><span class="line">    <span class="keyword">for</span> u <span class="keyword">in</span> user_ids:</span><br><span class="line">        <span class="comment"># 模拟用户在两个独立实验层中的分桶</span></span><br><span class="line">        bucket_l1 = sharder.get_bucket(u, layer_index=<span class="number">0</span>)</span><br><span class="line">        bucket_l2 = sharder.get_bucket(u, layer_index=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">        results.append({<span class="string">"user_id"</span>: u, <span class="string">"layer_1_bucket"</span>: bucket_l1, <span class="string">"layer_2_bucket"</span>: bucket_l2})</span><br><span class="line"></span><br><span class="line">    df = pd.DataFrame(results)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">"\n✅ 分层分桶结果预览："</span>)</span><br><span class="line">    <span class="built_in">print</span>(df.head(<span class="number">5</span>))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># --- 1. 均匀性校验 ---</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">"\n📊 1. 均匀性校验 (Layer 1):"</span>)</span><br><span class="line">    column_data = df[<span class="string">"layer_1_bucket"</span>]  <span class="comment"># 取出 Layer 1 的分桶结果</span></span><br><span class="line">    raw_counts = column_data.value_counts()  <span class="comment"># 计算每个桶的用户数</span></span><br><span class="line">    total_users = <span class="built_in">len</span>(df)  <span class="comment"># 总用户数</span></span><br><span class="line">    proportions = raw_counts / total_users  <span class="comment"># 计算每个桶的占比</span></span><br><span class="line">    counts = proportions.head(<span class="number">5</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f"前5个桶的流量占比:\n<span class="subst">{counts}</span>"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># --- 2. 正交性校验 ---</span></span><br><span class="line">    <span class="comment"># 原理：如果在 Layer 1 处于桶 0 的用户，在 Layer 2 均匀分布在 0-99 桶中，则说明正交</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">"\n📐 2. 正交性校验:"</span>)</span><br><span class="line">    is_in_bucket_0 = df[<span class="string">"layer_1_bucket"</span>] == <span class="number">0</span>  <span class="comment"># 筛选出 Layer 1 在桶 0 的用户</span></span><br><span class="line">    subset_l1_bucket0 = df[is_in_bucket_0]  <span class="comment"># 取出这些用户</span></span><br><span class="line">    l2_column_for_these_people = subset_l1_bucket0[<span class="string">"layer_2_bucket"</span>]  <span class="comment"># 取出他们在 Layer 2 的分桶</span></span><br><span class="line">    counts_in_l2 = l2_column_for_these_people.value_counts()  <span class="comment"># 统计这些用户在 Layer 2 各桶的数量</span></span><br><span class="line">    total_people_in_subset = <span class="built_in">len</span>(subset_l1_bucket0)</span><br><span class="line">    proportions_in_l2 = counts_in_l2 / total_people_in_subset  <span class="comment"># 计算占比</span></span><br><span class="line">    l2_dist_in_l1_zero = proportions_in_l2.head(<span class="number">5</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f"当 Layer 1 固定在桶 0 时，这些用户在 Layer 2 的分布:\n<span class="subst">{l2_dist_in_l1_zero}</span>"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># --- 3. 模拟实验效应计算 (含简单的 CUPED 思想) ---</span></span><br><span class="line">    <span class="comment"># 假设 Layer 1 正在做一个策略：前 50 个桶是对照组，后 50 个是实验组</span></span><br><span class="line">    df[<span class="string">"group"</span>] = np.where(df[<span class="string">"layer_1_bucket"</span>] &lt; <span class="number">50</span>, <span class="string">"control"</span>, <span class="string">"treatment"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 模拟用户指标 (Baseline + 实验提升 + 随机噪音)</span></span><br><span class="line">    df[<span class="string">"metric_pre"</span>] = np.random.normal(<span class="number">100</span>, <span class="number">20</span>, num_users)  <span class="comment"># 实验前数据</span></span><br><span class="line">    lift = <span class="number">2.0</span>  <span class="comment"># 假设实验组真有 2.0 的提升</span></span><br><span class="line">    df[<span class="string">"metric_post"</span>] = df[<span class="string">"metric_pre"</span>] + np.where(df[<span class="string">"group"</span>] == <span class="string">"treatment"</span>, lift, <span class="number">0</span>) + np.random.normal(<span class="number">0</span>, <span class="number">5</span>, num_users)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">"\n📈 3. 实验结果初步观测:"</span>)</span><br><span class="line">    summary = df.groupby(<span class="string">"group"</span>)[<span class="string">"metric_post"</span>].mean()</span><br><span class="line">    <span class="built_in">print</span>(summary)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f"观测到的提升: <span class="subst">{summary[<span class="string">'treatment'</span>] - summary[<span class="string">'control'</span>]:<span class="number">.4</span>f}</span>"</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    run_simulation()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>输出结果：</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">🚀 开始仿真：模拟 <span class="number">100000</span> 名用户进入正交分层系统...</span><br><span class="line"></span><br><span class="line">✅ 分层分桶结果预览：</span><br><span class="line">                                user_id  layer_1_bucket  layer_2_bucket</span><br><span class="line"><span class="number">0</span>  9ff5d564-3c2d-4c81-8b7a-0ecc1c9825a4              <span class="number">20</span>              <span class="number">24</span></span><br><span class="line"><span class="number">1</span>  35bd6cf2-2eda-4b8c-<span class="number">8848</span>-ac7abce1cfd1              <span class="number">80</span>              <span class="number">29</span></span><br><span class="line"><span class="number">2</span>  b1086495-3ed3-<span class="number">4816</span>-a1bb-885064aed80c              <span class="number">36</span>              <span class="number">32</span></span><br><span class="line"><span class="number">3</span>  27bffaf2-<span class="number">4403</span>-4b81-86fb-ea49568674ca              <span class="number">31</span>              <span class="number">35</span></span><br><span class="line"><span class="number">4</span>  4776cecd-b414-4fe9-b975-c7ba0d459c9e              <span class="number">26</span>              <span class="number">70</span></span><br><span class="line"></span><br><span class="line">📊 <span class="number">1.</span> 均匀性校验 (Layer <span class="number">1</span>):</span><br><span class="line">前<span class="number">5</span>个桶的流量占比:</span><br><span class="line">layer_1_bucket</span><br><span class="line"><span class="number">4</span>     <span class="number">0.01074</span></span><br><span class="line"><span class="number">18</span>    <span class="number">0.01063</span></span><br><span class="line"><span class="number">32</span>    <span class="number">0.01062</span></span><br><span class="line"><span class="number">82</span>    <span class="number">0.01055</span></span><br><span class="line"><span class="number">65</span>    <span class="number">0.01052</span></span><br><span class="line">Name: count, dtype: float64</span><br><span class="line"></span><br><span class="line">📐 <span class="number">2.</span> 正交性校验:</span><br><span class="line">当 Layer <span class="number">1</span> 固定在桶 <span class="number">0</span> 时，这些用户在 Layer <span class="number">2</span> 的分布:</span><br><span class="line">layer_2_bucket</span><br><span class="line"><span class="number">78</span>    <span class="number">0.022845</span></span><br><span class="line"><span class="number">21</span>    <span class="number">0.020768</span></span><br><span class="line"><span class="number">95</span>    <span class="number">0.019730</span></span><br><span class="line"><span class="number">57</span>    <span class="number">0.016615</span></span><br><span class="line"><span class="number">50</span>    <span class="number">0.015576</span></span><br><span class="line">Name: count, dtype: float64</span><br><span class="line"></span><br><span class="line">📈 <span class="number">3.</span> 实验结果初步观测:</span><br><span class="line">group</span><br><span class="line">control      <span class="number">100.114321</span></span><br><span class="line">treatment    <span class="number">101.810012</span></span><br><span class="line">Name: metric_post, dtype: float64</span><br><span class="line">观测到的提升: <span class="number">1.6957</span></span><br></pre></td></tr></table></figure>
+<h2 id="holdout机制">4.4 Holdout机制</h2>
+<p>在推荐系统的全链路中，每个小实验都会说有提升。但由于实验之间存在正交重叠，这些提升不能简单相加。为了看清整个部门的成果，将全站流量划分为两个绝对互斥的部分：</p>
+<ul>
+<li>10%的Holdout桶：这部分用户被“冷冻”在上一周期最稳健的版本，不参与本周期的任何新实验。</li>
+<li>90%的实验桶：这部分用户参与召回、排序等所有链路的新策略迭代。</li>
+</ul>
+<p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/23b4229139c56d3095d9ed4b492d70f2.jpg"></p>
+<p>公司考核的是推荐系统对业务的净增贡献。计算公式通常如下： <span class="math display"><mjx-container class="MathJax" jax="SVG" display="true"><svg style="vertical-align: -2.059ex;" xmlns="http://www.w3.org/2000/svg" width="60.987ex" height="5.285ex" role="img" focusable="false" viewBox="0 -1426 26956.4 2336"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mtext"><text data-variant="normal" transform="scale(1,-1)" font-size="884px" font-family="serif">部</text><text data-variant="normal" transform="translate(1000,0) scale(1,-1)" font-size="884px" font-family="serif">门</text><text data-variant="normal" transform="translate(2000,0) scale(1,-1)" font-size="884px" font-family="serif">总</text><text data-variant="normal" transform="translate(3000,0) scale(1,-1)" font-size="884px" font-family="serif">体</text><text data-variant="normal" transform="translate(4000,0) scale(1,-1)" font-size="884px" font-family="serif">收</text><text data-variant="normal" transform="translate(5000,0) scale(1,-1)" font-size="884px" font-family="serif">益</text><path data-c="20" d="" transform="translate(6000,0)"></path><path data-c="28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z" transform="translate(6250,0)"></path><path data-c="4C" d="M128 622Q121 629 117 631T101 634T58 637H25V683H36Q48 680 182 680Q324 680 348 683H360V637H333Q273 637 258 635T233 622L232 342V129Q232 57 237 52Q243 47 313 47Q384 47 410 53Q470 70 498 110T536 221Q536 226 537 238T540 261T542 272T562 273H582V268Q580 265 568 137T554 5V0H25V46H58Q100 47 109 49T128 61V622Z" transform="translate(6639,0)"></path><path data-c="69" d="M69 609Q69 637 87 653T131 669Q154 667 171 652T188 609Q188 579 171 564T129 549Q104 549 87 564T69 609ZM247 0Q232 3 143 3Q132 3 106 3T56 1L34 0H26V46H42Q70 46 91 49Q100 53 102 60T104 102V205V293Q104 345 102 359T88 378Q74 385 41 385H30V408Q30 431 32 431L42 432Q52 433 70 434T106 436Q123 437 142 438T171 441T182 442H185V62Q190 52 197 50T232 46H255V0H247Z" transform="translate(7264,0)"></path><path data-c="66" d="M273 0Q255 3 146 3Q43 3 34 0H26V46H42Q70 46 91 49Q99 52 103 60Q104 62 104 224V385H33V431H104V497L105 564L107 574Q126 639 171 668T266 704Q267 704 275 704T289 705Q330 702 351 679T372 627Q372 604 358 590T321 576T284 590T270 627Q270 647 288 667H284Q280 668 273 668Q245 668 223 647T189 592Q183 572 182 497V431H293V385H185V225Q185 63 186 61T189 57T194 54T199 51T206 49T213 48T222 47T231 47T241 46T251 46H282V0H273Z" transform="translate(7542,0)"></path><path data-c="74" d="M27 422Q80 426 109 478T141 600V615H181V431H316V385H181V241Q182 116 182 100T189 68Q203 29 238 29Q282 29 292 100Q293 108 293 146V181H333V146V134Q333 57 291 17Q264 -10 221 -10Q187 -10 162 2T124 33T105 68T98 100Q97 107 97 248V385H18V422H27Z" transform="translate(7848,0)"></path><path data-c="29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z" transform="translate(8237,0)"></path></g><g data-mml-node="mo" transform="translate(8903.8,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path></g><g data-mml-node="mfrac" transform="translate(9959.6,0)"><g data-mml-node="mrow" transform="translate(220,676)"><g data-mml-node="mtext"><text data-variant="normal" transform="scale(1,-1)" font-size="884px" font-family="serif">实</text><text data-variant="normal" transform="translate(1000,0) scale(1,-1)" font-size="884px" font-family="serif">验</text><text data-variant="normal" transform="translate(2000,0) scale(1,-1)" font-size="884px" font-family="serif">桶</text><text data-variant="normal" transform="translate(3000,0) scale(1,-1)" font-size="884px" font-family="serif">指</text><text data-variant="normal" transform="translate(4000,0) scale(1,-1)" font-size="884px" font-family="serif">标</text></g><g data-mml-node="mo" transform="translate(5222.2,0)"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path></g><g data-mml-node="mtext" transform="translate(6222.4,0)"><path data-c="48" d="M128 622Q121 629 117 631T101 634T58 637H25V683H36Q57 680 180 680Q315 680 324 683H335V637H302Q262 636 251 634T233 622L232 500V378H517V622Q510 629 506 631T490 634T447 637H414V683H425Q446 680 569 680Q704 680 713 683H724V637H691Q651 636 640 634T622 622V61Q628 51 639 49T691 46H724V0H713Q692 3 569 3Q434 3 425 0H414V46H447Q489 47 498 49T517 61V332H232V197L233 61Q239 51 250 49T302 46H335V0H324Q303 3 180 3Q45 3 36 0H25V46H58Q100 47 109 49T128 61V622Z"></path><path data-c="6F" d="M28 214Q28 309 93 378T250 448Q340 448 405 380T471 215Q471 120 407 55T250 -10Q153 -10 91 57T28 214ZM250 30Q372 30 372 193V225V250Q372 272 371 288T364 326T348 362T317 390T268 410Q263 411 252 411Q222 411 195 399Q152 377 139 338T126 246V226Q126 130 145 91Q177 30 250 30Z" transform="translate(750,0)"></path><path data-c="6C" d="M42 46H56Q95 46 103 60V68Q103 77 103 91T103 124T104 167T104 217T104 272T104 329Q104 366 104 407T104 482T104 542T103 586T103 603Q100 622 89 628T44 637H26V660Q26 683 28 683L38 684Q48 685 67 686T104 688Q121 689 141 690T171 693T182 694H185V379Q185 62 186 60Q190 52 198 49Q219 46 247 46H263V0H255L232 1Q209 2 183 2T145 3T107 3T57 1L34 0H26V46H42Z" transform="translate(1250,0)"></path><path data-c="64" d="M376 495Q376 511 376 535T377 568Q377 613 367 624T316 637H298V660Q298 683 300 683L310 684Q320 685 339 686T376 688Q393 689 413 690T443 693T454 694H457V390Q457 84 458 81Q461 61 472 55T517 46H535V0Q533 0 459 -5T380 -11H373V44L365 37Q307 -11 235 -11Q158 -11 96 50T34 215Q34 315 97 378T244 442Q319 442 376 393V495ZM373 342Q328 405 260 405Q211 405 173 369Q146 341 139 305T131 211Q131 155 138 120T173 59Q203 26 251 26Q322 26 373 103V342Z" transform="translate(1528,0)"></path><path data-c="6F" d="M28 214Q28 309 93 378T250 448Q340 448 405 380T471 215Q471 120 407 55T250 -10Q153 -10 91 57T28 214ZM250 30Q372 30 372 193V225V250Q372 272 371 288T364 326T348 362T317 390T268 410Q263 411 252 411Q222 411 195 399Q152 377 139 338T126 246V226Q126 130 145 91Q177 30 250 30Z" transform="translate(2084,0)"></path><path data-c="75" d="M383 58Q327 -10 256 -10H249Q124 -10 105 89Q104 96 103 226Q102 335 102 348T96 369Q86 385 36 385H25V408Q25 431 27 431L38 432Q48 433 67 434T105 436Q122 437 142 438T172 441T184 442H187V261Q188 77 190 64Q193 49 204 40Q224 26 264 26Q290 26 311 35T343 58T363 90T375 120T379 144Q379 145 379 161T380 201T380 248V315Q380 361 370 372T320 385H302V431Q304 431 378 436T457 442H464V264Q464 84 465 81Q468 61 479 55T524 46H542V0Q540 0 467 -5T390 -11H383V58Z" transform="translate(2584,0)"></path><path data-c="74" d="M27 422Q80 426 109 478T141 600V615H181V431H316V385H181V241Q182 116 182 100T189 68Q203 29 238 29Q282 29 292 100Q293 108 293 146V181H333V146V134Q333 57 291 17Q264 -10 221 -10Q187 -10 162 2T124 33T105 68T98 100Q97 107 97 248V385H18V422H27Z" transform="translate(3140,0)"></path><path data-c="20" d="" transform="translate(3529,0)"></path><text data-variant="normal" transform="translate(3779,0) scale(1,-1)" font-size="884px" font-family="serif">桶</text><text data-variant="normal" transform="translate(4779,0) scale(1,-1)" font-size="884px" font-family="serif">指</text><text data-variant="normal" transform="translate(5779,0) scale(1,-1)" font-size="884px" font-family="serif">标</text></g></g><g data-mml-node="mtext" transform="translate(3331.2,-710)"><path data-c="48" d="M128 622Q121 629 117 631T101 634T58 637H25V683H36Q57 680 180 680Q315 680 324 683H335V637H302Q262 636 251 634T233 622L232 500V378H517V622Q510 629 506 631T490 634T447 637H414V683H425Q446 680 569 680Q704 680 713 683H724V637H691Q651 636 640 634T622 622V61Q628 51 639 49T691 46H724V0H713Q692 3 569 3Q434 3 425 0H414V46H447Q489 47 498 49T517 61V332H232V197L233 61Q239 51 250 49T302 46H335V0H324Q303 3 180 3Q45 3 36 0H25V46H58Q100 47 109 49T128 61V622Z"></path><path data-c="6F" d="M28 214Q28 309 93 378T250 448Q340 448 405 380T471 215Q471 120 407 55T250 -10Q153 -10 91 57T28 214ZM250 30Q372 30 372 193V225V250Q372 272 371 288T364 326T348 362T317 390T268 410Q263 411 252 411Q222 411 195 399Q152 377 139 338T126 246V226Q126 130 145 91Q177 30 250 30Z" transform="translate(750,0)"></path><path data-c="6C" d="M42 46H56Q95 46 103 60V68Q103 77 103 91T103 124T104 167T104 217T104 272T104 329Q104 366 104 407T104 482T104 542T103 586T103 603Q100 622 89 628T44 637H26V660Q26 683 28 683L38 684Q48 685 67 686T104 688Q121 689 141 690T171 693T182 694H185V379Q185 62 186 60Q190 52 198 49Q219 46 247 46H263V0H255L232 1Q209 2 183 2T145 3T107 3T57 1L34 0H26V46H42Z" transform="translate(1250,0)"></path><path data-c="64" d="M376 495Q376 511 376 535T377 568Q377 613 367 624T316 637H298V660Q298 683 300 683L310 684Q320 685 339 686T376 688Q393 689 413 690T443 693T454 694H457V390Q457 84 458 81Q461 61 472 55T517 46H535V0Q533 0 459 -5T380 -11H373V44L365 37Q307 -11 235 -11Q158 -11 96 50T34 215Q34 315 97 378T244 442Q319 442 376 393V495ZM373 342Q328 405 260 405Q211 405 173 369Q146 341 139 305T131 211Q131 155 138 120T173 59Q203 26 251 26Q322 26 373 103V342Z" transform="translate(1528,0)"></path><path data-c="6F" d="M28 214Q28 309 93 378T250 448Q340 448 405 380T471 215Q471 120 407 55T250 -10Q153 -10 91 57T28 214ZM250 30Q372 30 372 193V225V250Q372 272 371 288T364 326T348 362T317 390T268 410Q263 411 252 411Q222 411 195 399Q152 377 139 338T126 246V226Q126 130 145 91Q177 30 250 30Z" transform="translate(2084,0)"></path><path data-c="75" d="M383 58Q327 -10 256 -10H249Q124 -10 105 89Q104 96 103 226Q102 335 102 348T96 369Q86 385 36 385H25V408Q25 431 27 431L38 432Q48 433 67 434T105 436Q122 437 142 438T172 441T184 442H187V261Q188 77 190 64Q193 49 204 40Q224 26 264 26Q290 26 311 35T343 58T363 90T375 120T379 144Q379 145 379 161T380 201T380 248V315Q380 361 370 372T320 385H302V431Q304 431 378 436T457 442H464V264Q464 84 465 81Q468 61 479 55T524 46H542V0Q540 0 467 -5T390 -11H383V58Z" transform="translate(2584,0)"></path><path data-c="74" d="M27 422Q80 426 109 478T141 600V615H181V431H316V385H181V241Q182 116 182 100T189 68Q203 29 238 29Q282 29 292 100Q293 108 293 146V181H333V146V134Q333 57 291 17Q264 -10 221 -10Q187 -10 162 2T124 33T105 68T98 100Q97 107 97 248V385H18V422H27Z" transform="translate(3140,0)"></path><path data-c="20" d="" transform="translate(3529,0)"></path><text data-variant="normal" transform="translate(3779,0) scale(1,-1)" font-size="884px" font-family="serif">桶</text><text data-variant="normal" transform="translate(4779,0) scale(1,-1)" font-size="884px" font-family="serif">指</text><text data-variant="normal" transform="translate(5779,0) scale(1,-1)" font-size="884px" font-family="serif">标</text></g><rect width="13201.4" height="60" x="120" y="220"></rect></g><g data-mml-node="mo" transform="translate(23623.2,0)"><path data-c="D7" d="M630 29Q630 9 609 9Q604 9 587 25T493 118L389 222L284 117Q178 13 175 11Q171 9 168 9Q160 9 154 15T147 29Q147 36 161 51T255 146L359 250L255 354Q174 435 161 449T147 471Q147 480 153 485T168 490Q173 490 175 489Q178 487 284 383L389 278L493 382Q570 459 587 475T609 491Q630 491 630 471Q630 464 620 453T522 355L418 250L522 145Q606 61 618 48T630 29Z"></path></g><g data-mml-node="mn" transform="translate(24623.4,0)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z" transform="translate(500,0)"></path><path data-c="30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z" transform="translate(1000,0)"></path></g><g data-mml-node="mi" transform="translate(26123.4,0)"><path data-c="25" d="M465 605Q428 605 394 614T340 632T319 641Q332 608 332 548Q332 458 293 403T202 347Q145 347 101 402T56 548Q56 637 101 693T202 750Q241 750 272 719Q359 642 464 642Q580 642 650 732Q662 748 668 749Q670 750 673 750Q682 750 688 743T693 726Q178 -47 170 -52Q166 -56 160 -56Q147 -56 142 -45Q137 -36 142 -27Q143 -24 363 304Q469 462 525 546T581 630Q528 605 465 605ZM207 385Q235 385 263 427T292 548Q292 617 267 664T200 712Q193 712 186 709T167 698T147 668T134 615Q132 595 132 548V527Q132 436 165 403Q183 385 203 385H207ZM500 146Q500 234 544 290T647 347Q699 347 737 292T776 146T737 0T646 -56Q590 -56 545 0T500 146ZM651 -18Q679 -18 707 24T736 146Q736 215 711 262T644 309Q637 309 630 306T611 295T591 265T578 212Q577 200 577 146V124Q577 -18 647 -18H651Z"></path></g></g></g></svg></mjx-container></span>
+由于实验桶和Holdout桶的人数不对等，不能比绝对值，因此需要归一化。在周期开始时，两组指标的Diff应该趋于0。此时的任何差异都是随机误差；随着实验上线，Diff的拉大才是真正的技术红利。</p>
+<p>为了公平考核并避免“老用户效应”，即长期不更新策略可能导致用户流失或行为偏差，系统会按周期，如每季度或半年进行重启：</p>
+<ul>
+<li><p>推全与释放：周期结束，证明有效的策略全部固化，应用到100%的用户身上。此时，旧的Holdout桶消失。</p></li>
+<li><p>重新洗牌：利用哈希算法重新打散用户，随机抽取新的10%作为新一轮的Holdout。</p></li>
+<li><p>基准对齐：新周期第一天，由于100%的用户用的都是同样的策略，Diff回归到0附近。</p></li>
+<li><p>复利增长：随着新一轮召回、排序实验的滚动上线，实验桶的指标开始再次爬坡，形成新的Diff曲线。</p></li>
+</ul>
+<h1 id="实验推全与反转实验">5. 实验推全与反转实验</h1>
+<p>在小流量A/B测试中观察到显著的diff增长，则可以推全。例如，先在20%的用户上测试后，如果有效，就把这个实验关闭，将桶空出来，之后再新开一层。在推全后，因为作用的用户从20%提升到了90%，因此diff也会扩大。</p>
+<p>推全后有的指标会马上发生变化，比如点击、交互等指标会立刻受到新策略影响，但留存率等指标有滞后性，需要长期观测。</p>
+<p>实验观测到显著收益后尽快推全新策略。目的是腾出桶供其他实验使用，或需要基于新策略做后续的开发。用反转实验解决上述矛盾，既可以尽快推全，也可以长期观测实验指标。具体做法是在推全的新层中开一个旧策略的桶，长期观测实验指标。</p>
+<p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/c1aa1359953bcede403ad0470e208ef1.jpg"></p>
+<h1 id="参考资料">参考资料</h1>
+<p>[1] <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1J44y1o7gf?spm_id_from=333.788.player.switch&amp;vd_source=25c74f8e9aff6eff8b6b407f76329bbf">推荐系统公开课——王树森</a></p>
+<p>[2] <a target="_blank" rel="noopener" href="https://www.xiaohongshu.com/explore/68cfee890000000013036d43?xsec_token=ABBXNWesrrDLVfvnJMZUQTHbv2XG0jzTZLkTeYLovKNDI=&amp;xsec_source=pc_search&amp;source=unknown">王树森推荐系统学习笔记1：概要</a></p>
+<p>[3] <a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_22409661/article/details/146224996">深度解析A/B测试中的哈希分桶策略：从原理到实战的流量分层方案</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" rel="tag"># 推荐系统</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2026/01/13/PyTorch%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="prev" title="PyTorch学习笔记">
+      <i class="fa fa-chevron-left"></i> PyTorch学习笔记
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%84%E4%BB%B7%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%8C%87%E6%A0%87"><span class="nav-number">1.</span> <span class="nav-text">1. 评价推荐系统的指标</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">2. 实验流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E7%9A%84%E9%93%BE%E8%B7%AF"><span class="nav-number">3.</span> <span class="nav-text">3. 推荐系统的链路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ab%E6%B5%8B%E8%AF%95"><span class="nav-number">4.</span> <span class="nav-text">4. A&#x2F;B测试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ab%E6%B5%8B%E8%AF%95%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%B5%81%E7%A8%8B"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 A&#x2F;B测试的基本流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E5%88%86%E6%A1%B6"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 随机分桶</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8C%E5%B1%82%E4%BA%92%E6%96%A5%E4%B8%8E%E4%B8%8D%E5%90%8C%E5%B1%82%E6%AD%A3%E4%BA%A4"><span class="nav-number">4.3.</span> <span class="nav-text">4.3 同层互斥与不同层正交</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#holdout%E6%9C%BA%E5%88%B6"><span class="nav-number">4.4.</span> <span class="nav-text">4.4 Holdout机制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E6%8E%A8%E5%85%A8%E4%B8%8E%E5%8F%8D%E8%BD%AC%E5%AE%9E%E9%AA%8C"><span class="nav-number">5.</span> <span class="nav-text">5. 实验推全与反转实验</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ChuantaoLi"
+      src="/uploads/%E7%8C%AB%E5%92%AA%E5%A4%B4%E5%83%8F.jpg">
+  <p class="site-author-name" itemprop="name">ChuantaoLi</p>
+  <div class="site-description" itemprop="description">感知幸福是一种能力</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ChuantaoLi</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">15k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">53 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
