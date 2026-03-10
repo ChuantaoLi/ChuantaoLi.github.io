@@ -1200,7 +1200,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #ffffd9;
+  background: #47cde3;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -3240,4 +3240,28 @@ body {
     height: 32px;
     padding: 0 10px;
   }
+}
+table {
+  color: #dbe1ea !important;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  width: 100% !important;
+  margin: 0 0 20px 0 !important;
+}
+tbody tr:nth-of-type(odd) {
+  background: rgba(30,41,59,0.4) !important;
+}
+tbody tr:hover {
+  background: rgba(51,65,85,0.6) !important;
+}
+th,
+td {
+  border: 1px solid rgba(148,163,184,0.2) !important;
+  padding: 8px !important;
+}
+th {
+  background: rgba(17,24,33,0.94) !important;
+  border-bottom: 2px solid rgba(148,163,184,0.4) !important;
+  color: #f8fafc !important;
+  font-weight: 600 !important;
 }
