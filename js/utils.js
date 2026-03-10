@@ -8,6 +8,26 @@ HTMLElement.prototype.wrap = function(wrapper) {
 
 NexT.utils = {
 
+  scrollToTarget: function(target, top, duration) {
+    if (window.anime) {
+      window.anime({
+        targets  : target,
+        duration : duration || 500,
+        easing   : 'linear',
+        scrollTop: top
+      });
+      return;
+    }
+    if (target === document.scrollingElement) {
+      window.scrollTo({
+        top,
+        behavior: 'smooth'
+      });
+      return;
+    }
+    target.scrollTop = top;
+  },
+
   /**
    * Wrap images with fancybox.
    */
@@ -156,12 +176,7 @@ NexT.utils = {
     });
 
     backToTop && backToTop.addEventListener('click', () => {
-      window.anime({
-        targets  : document.scrollingElement,
-        duration : 500,
-        easing   : 'linear',
-        scrollTop: 0
-      });
+      NexT.utils.scrollToTarget(document.scrollingElement, 0, 500);
     });
   },
 
@@ -240,12 +255,7 @@ NexT.utils = {
       link.addEventListener('click', event => {
         event.preventDefault();
         var offset = target.getBoundingClientRect().top + window.scrollY;
-        window.anime({
-          targets  : document.scrollingElement,
-          duration : 500,
-          easing   : 'linear',
-          scrollTop: offset + 10
-        });
+        NexT.utils.scrollToTarget(document.scrollingElement, offset + 10, 500);
       });
       return target;
     });
@@ -264,12 +274,7 @@ NexT.utils = {
         parent = parent.parentNode;
       }
       // Scrolling to center active TOC element if TOC content is taller then viewport.
-      window.anime({
-        targets  : tocElement,
-        duration : 200,
-        easing   : 'linear',
-        scrollTop: tocElement.scrollTop - (tocElement.offsetHeight / 2) + target.getBoundingClientRect().top - tocElement.getBoundingClientRect().top
-      });
+      NexT.utils.scrollToTarget(tocElement, tocElement.scrollTop - (tocElement.offsetHeight / 2) + target.getBoundingClientRect().top - tocElement.getBoundingClientRect().top, 200);
     }
 
     function findIndex(entries) {
