@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 8.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="2026-01-02 今日完成  PyTorch 入门：学了 dataset、tensorboard。 电科论文：完成密度因子和判别降维的初步框架和数据集处理，基准模型和初步模型的调参正在跑。  今日心情 好累，不想写电科论文的思路了，如果能重来，我一定不会选择算法选择读研，好累，不写了。 2026-01-03 今日完成  完成了数据集的收集和处理 完成了 ODSVM 论文">
+<meta property="og:type" content="article">
+<meta property="og:title" content="我在广海的最后一学期 | 1月">
+<meta property="og:url" content="http://example.com/2026/01/02/%E6%88%91%E5%9C%A8%E5%B9%BF%E6%B5%B7%E7%9A%84%E6%9C%80%E5%90%8E%E4%B8%80%E5%AD%A6%E6%9C%9F-1%E6%9C%88/index.html">
+<meta property="og:site_name" content="梨串桃的生活日记">
+<meta property="og:description" content="2026-01-02 今日完成  PyTorch 入门：学了 dataset、tensorboard。 电科论文：完成密度因子和判别降维的初步框架和数据集处理，基准模型和初步模型的调参正在跑。  今日心情 好累，不想写电科论文的思路了，如果能重来，我一定不会选择算法选择读研，好累，不写了。 2026-01-03 今日完成  完成了数据集的收集和处理 完成了 ODSVM 论文">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-01-01T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-11T07:05:43.334Z">
+<meta property="article:author" content="ChuantaoLi">
+<meta property="article:tag" content="广海生活">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2026/01/02/%E6%88%91%E5%9C%A8%E5%B9%BF%E6%B5%B7%E7%9A%84%E6%9C%80%E5%90%8E%E4%B8%80%E5%AD%A6%E6%9C%9F-1%E6%9C%88/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>我在广海的最后一学期 | 1月 | 梨串桃的生活日记</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="梨串桃的生活日记" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">梨串桃的生活日记</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-技术博客">
+
+    <a href="/tech/" rel="section"><i class="fa fa-laptop-code fa-fw"></i>技术博客</a>
+
+  </li>
+        <li class="menu-item menu-item-想法观点">
+
+    <a href="/ideas/" rel="section"><i class="fa fa-lightbulb fa-fw"></i>想法观点</a>
+
+  </li>
+        <li class="menu-item menu-item-生活记录">
+
+    <a href="/life/" rel="section"><i class="far fa-comment-dots fa-fw"></i>生活记录</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/01/02/%E6%88%91%E5%9C%A8%E5%B9%BF%E6%B5%B7%E7%9A%84%E6%9C%80%E5%90%8E%E4%B8%80%E5%AD%A6%E6%9C%9F-1%E6%9C%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/%E7%8C%AB%E5%92%AA%E5%A4%B4%E5%83%8F.jpg">
+      <meta itemprop="name" content="ChuantaoLi">
+      <meta itemprop="description" content="感知幸福是一种能力">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梨串桃的生活日记">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          我在广海的最后一学期 | 1月
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2026-01-02 00:00:00" itemprop="dateCreated datePublished" datetime="2026-01-02T00:00:00+08:00">2026-01-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2026-03-11 15:05:43" itemprop="dateModified" datetime="2026-03-11T15:05:43+08:00">2026-03-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%94%9F%E6%B4%BB%E8%AE%B0%E5%BD%95/" itemprop="url" rel="index"><span itemprop="name">生活记录</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="section">2026-01-02</h1>
+<h2 id="今日完成">今日完成</h2>
+<ul>
+<li>PyTorch 入门：学了 dataset、tensorboard。</li>
+<li>电科论文：完成密度因子和判别降维的初步框架和数据集处理，基准模型和初步模型的调参正在跑。</li>
+</ul>
+<h2 id="今日心情">今日心情</h2>
+<p>好累，不想写电科论文的思路了，如果能重来，我一定不会选择算法选择读研，好累，不写了。</p>
+<h1 id="section-1">2026-01-03</h1>
+<h2 id="今日完成-1">今日完成</h2>
+<ul>
+<li>完成了数据集的收集和处理</li>
+<li>完成了 ODSVM 论文的推导</li>
+<li>完成了 DSLBoost 初版代码的设计</li>
+</ul>
+<h2 id="今日心情-1">今日心情</h2>
+<p>很长一段时间对读研提不起兴趣，认为没有自由，和我之前心里所期待的完全不一样。稍有起色的事情就是完成一个
+work 的模型构建。最有意思的事情莫过于克服了恐惧，重新下载了
+Ubuntu，并配置了 Docker 的配置，拉取了现在这个有意思的备忘录项目
+Memos，这是有意思的，能够让我很好地去写计划、记录完成过程和赛博日记。</p>
+<p>在完成了 Memos
+之后，还创建了公网地址，我现在可以搭建自己的博客了，也用阿里云 OSS
+解决了图片上传模糊的问题。解决问题的过程还是有意思的！</p>
+<p><img
+src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/9f552184768313b649522f9ce6185773.jpg" /></p>
+<h1 id="section-2">2026-01-04</h1>
+<h2 id="今日完成-2">今日完成</h2>
+<ul>
+<li>完成了博客的初步搭建</li>
+<li>跑完了昨天设计的模型和一部分基线模型的调参实验</li>
+<li>投稿了论文</li>
+</ul>
+<h2 id="今日心情-2">今日心情</h2>
+<p>今天是这段时间最开心的一天了！其实很早之前就想着弄一个个人博客，因为小红书啊
+CSDN 啥的都不怎么方便，一是有些不支持
+markdown，二是无法集成，我更希望有一个属于自己的赛博空间。在这里可以放我的技术笔记，也可以记录我的学习历程，同样也可以在这里写点随笔。毕竟输入的东西多了，精神世界也需要输出一些，不然就太肥胖了~</p>
+<p><img
+src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/d77c41b40f12d3a23a0ff83dc1b1cf95.jpg" /></p>
+<h1 id="section-3">2026-01-05</h1>
+<h2 id="今日完成-3">今日完成</h2>
+<ul>
+<li>学习 PyTorch</li>
+<li>整理实验结果</li>
+</ul>
+<h2 id="今日心情-3">今日心情</h2>
+<p>今天回到宿舍就不想学了，光玩游戏去了。</p>
+<p>之前在衣柜里边找到了一条棉裤，适合冬天穿，之前穿几次都没啥问题，就只是觉得裤腿太宽了。于是乎，在今天中午起床后打算调整一下，结果发现右边被绑死了…我以为左边是能调的，结果打开一看，也是被绑死了…我就弄啊弄弄啊弄，把绑的线剪开，然后一直扣这个绑的死死的结，终于啊，左边的裤腿终于解开了。这个时候已经花费我接近半个小时了，没想到右边的裤腿也是这么难绷，甚至那个结绑得更紧。我想当然地，抱有侥幸心理地，安慰自己这可能也是线，剪掉就好了。我一把剪刀咔嚓下去，没了，断了，这条裤子的右裤腿彻底变成阔脚裤了…</p>
+<p>下午三点多的时候，见太阳不是很大，于是我拉开了实验室的窗帘。</p>
+<p>我很喜欢这个靠窗的工位，本来当时我是在现在的左边的那个工位的，但因为美佳跟我换了，我才获得了这个陪伴我两年的好位置。</p>
+<p>这里可以感受风吹进来的感觉，可以看到来往的同学、花朵的绽放和凋落、鸟儿的起飞和落下，也可以见证凌日当天和夕阳西下的过程，甚至我在这里的时间久了，四季轮转，春夏秋冬，同样可以尽收眼底。</p>
+<p>我在想，一个符合年少预期的大学生活应该是什么样的？</p>
+<p>我看着窗外的绿草地、蓝天空，以及各种暖色渐变的余晖，我意识到我大一的时候，把所谓的高考分数看太重了，以至于我的生活肩负着某种沉重的使命——我需要在另一个三年或四年中去到一个更好的平台。</p>
+<p>但这是极度天真和幼稚的想法，这种想法和行为不仅让我几乎错过了大学的风景，还让我走上一条偏执的道路。我无法重来了。</p>
+<p>我以为研究生会给我一次重来的机会，但是错了，我没有选到像思婷一样的好导师，但我放大了现状的严峻、未来的迷茫和所谓的
+35
+岁危机。此外，样貌、能力、生存和生活的焦虑让我失去了对未来的期待。</p>
+<p>感知幸福是一种能力啊，对未来有期待，生活有盼头，才有好好活下去的动力。</p>
+<p><img
+src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/IMG20260105173703.jpg" /></p>
+<h1 id="section-4">2026-01-06</h1>
+<h2 id="今日完成-4">今日完成</h2>
+<ul>
+<li>把 PyTorch 过完</li>
+<li>做出了能汇报的模型</li>
+</ul>
+<h2 id="今日心情-4">今日心情</h2>
+<p>今天玩了好久的土豆兄弟，争取在回家前把所有成就解锁。电科论文的话，靠调教
+Gemini
+做出了一个能拿来汇报的版本。所谓能拿来汇报就是，有成品、有稍微能看的结果，以及能讲故事和未来工作的思路。但是吧，消融实验做得还不行，这一块只能耍
+trick 了，不要拿去调参。</p>
+<h1 id="section-5">2026-01-10</h1>
+<h2 id="今日完成-5">今日完成</h2>
+<ul>
+<li>把五个对比模型的代码全部写好</li>
+<li>整理好四个网路入侵检测的数据集</li>
+<li>完成了所提模型的初步构建</li>
+</ul>
+<h2 id="今日心情-5">今日心情</h2>
+<p>吃完肯德基，打完土豆兄弟建造者，此时此刻晚上七点零七分，天已经完全黑了，我心里非常难受，堵着，想哭。是为什么呢？其实今天非常有收获，因为之前文章的增值效应来了，很快就确定并跑通了
+baseline，也大概有模型的框架。</p>
+<p>其实应该很开心才对，但是就是特别忧愁。大概率是因为电科的 push
+组吧，我的目标和凡的利益完全不一致，太多事情矛盾了，我还没有办法把心态搞好。此外，校园已经空荡荡的了，实验室也没有人了，我不能接受这种冷清的感觉。</p>
+<p>那我还是以后得找个伴，不然后半生太难受了。那我得和淳帧保持联系，减减肥，加油吧！动起来就不会
+emo 了！</p>
+<p><img
+src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/f1ceb71928df09be6fa3c3ff01cac88c.jpg" /></p>
+<h1 id="section-6">2026-01-13</h1>
+<h2 id="今日心情-6">今日心情</h2>
+<p>一觉醒来，顿时觉得特别难受。因为我把实验室的工位收拾好了，这意味着我要撤离数模团队了。我之前打算下学期不去实验室了，因为打算找个实习。但事实上，我并不知道我是否真能找到实习呢…</p>
+<p><img
+src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/IMG20260111225724.jpg" /></p>
+<h1 id="section-7">2026-01-14</h1>
+<h2 id="今日心情-7">今日心情</h2>
+<p>怀念当初那个有竞争、单一目标、但纯粹的时光，不喜欢现在这种事情很多很杂，但很多和自己未来没关的状态。</p>
+<h1 id="section-8">2026-01-28</h1>
+<h2 id="今日心情-8">今日心情</h2>
+<p>学习了推荐系统基础和协同过滤。推荐系统基础包括评估指标、链路以及 A/B
+测试；协同过滤包括基于物品的和基于用户的。</p>
+<p>推荐系统基础里边 A/B
+测试最难理解，怎么去分桶，为什么要哈希映射而不直接抽样，怎么同层互斥不同层正交，边看课边让
+AI 弄弄代码给我仿真一下，也算是理解大意了。</p>
+<p>协同过滤里边学了 ItemCF 和
+UserCF，俩方法思路很类似，但是我搞了好久才弄清楚实现流程。依旧是在
+GitHub
+找到了别人写好的代码，往里边加点输出看看流行度、共现矩阵、相似度都是如何计算出来的。光看视频体会不到代码的逻辑，看一会代码又晕了。还好有智能体，让
+AI
+大人根据代码生成示例文档，我再边捋边整理，最后也算是明白了个大致流程。嗯如果要我自己去写的话，肯定写不出来代码.</p>
+<p>明天继续往后面学吧，等我把全部知识点过完一遍后再回头重新捋一捋。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%B9%BF%E6%B5%B7%E7%94%9F%E6%B4%BB/" rel="tag"># 广海生活</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/12/04/%E5%A4%A7%E5%9B%9B%E6%9C%88%E8%AE%B0-%E5%90%83%E5%96%9D%E7%8E%A9%E5%8D%B4%E4%B8%8D%E6%98%AF%E5%BE%88%E4%B9%90%E7%9A%84%E5%8D%81%E4%B8%80%E6%9C%88/" rel="prev" title="大四月记 | 吃喝玩却不是很乐的十一月">
+      <i class="fa fa-chevron-left"></i> 大四月记 | 吃喝玩却不是很乐的十一月
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2026/01/04/Optimal-Discriminant-Support-Vector-Machine%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/" rel="next" title="《Optimal Discriminant Support Vector Machine》阅读笔记">
+      《Optimal Discriminant Support Vector Machine》阅读笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#section"><span class="nav-number">1.</span> <span class="nav-text">2026-01-02</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8A%E6%97%A5%E5%AE%8C%E6%88%90"><span class="nav-number">1.1.</span> <span class="nav-text">今日完成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8A%E6%97%A5%E5%BF%83%E6%83%85"><span class="nav-number">1.2.</span> <span class="nav-text">今日心情</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#section-1"><span class="nav-number">2.</span> <span class="nav-text">2026-01-03</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8A%E6%97%A5%E5%AE%8C%E6%88%90-1"><span class="nav-number">2.1.</span> <span class="nav-text">今日完成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8A%E6%97%A5%E5%BF%83%E6%83%85-1"><span class="nav-number">2.2.</span> <span class="nav-text">今日心情</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#section-2"><span class="nav-number">3.</span> <span class="nav-text">2026-01-04</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8A%E6%97%A5%E5%AE%8C%E6%88%90-2"><span class="nav-number">3.1.</span> <span class="nav-text">今日完成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8A%E6%97%A5%E5%BF%83%E6%83%85-2"><span class="nav-number">3.2.</span> <span class="nav-text">今日心情</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#section-3"><span class="nav-number">4.</span> <span class="nav-text">2026-01-05</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8A%E6%97%A5%E5%AE%8C%E6%88%90-3"><span class="nav-number">4.1.</span> <span class="nav-text">今日完成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8A%E6%97%A5%E5%BF%83%E6%83%85-3"><span class="nav-number">4.2.</span> <span class="nav-text">今日心情</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#section-4"><span class="nav-number">5.</span> <span class="nav-text">2026-01-06</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8A%E6%97%A5%E5%AE%8C%E6%88%90-4"><span class="nav-number">5.1.</span> <span class="nav-text">今日完成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8A%E6%97%A5%E5%BF%83%E6%83%85-4"><span class="nav-number">5.2.</span> <span class="nav-text">今日心情</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#section-5"><span class="nav-number">6.</span> <span class="nav-text">2026-01-10</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8A%E6%97%A5%E5%AE%8C%E6%88%90-5"><span class="nav-number">6.1.</span> <span class="nav-text">今日完成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8A%E6%97%A5%E5%BF%83%E6%83%85-5"><span class="nav-number">6.2.</span> <span class="nav-text">今日心情</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#section-6"><span class="nav-number">7.</span> <span class="nav-text">2026-01-13</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8A%E6%97%A5%E5%BF%83%E6%83%85-6"><span class="nav-number">7.1.</span> <span class="nav-text">今日心情</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#section-7"><span class="nav-number">8.</span> <span class="nav-text">2026-01-14</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8A%E6%97%A5%E5%BF%83%E6%83%85-7"><span class="nav-number">8.1.</span> <span class="nav-text">今日心情</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#section-8"><span class="nav-number">9.</span> <span class="nav-text">2026-01-28</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8A%E6%97%A5%E5%BF%83%E6%83%85-8"><span class="nav-number">9.1.</span> <span class="nav-text">今日心情</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ChuantaoLi"
+      src="/uploads/%E7%8C%AB%E5%92%AA%E5%A4%B4%E5%83%8F.jpg">
+  <p class="site-author-name" itemprop="name">ChuantaoLi</p>
+  <div class="site-description" itemprop="description">感知幸福是一种能力</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ChuantaoLi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
