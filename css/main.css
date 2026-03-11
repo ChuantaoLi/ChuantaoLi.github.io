@@ -1200,7 +1200,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #ffbd20;
+  background: #5cffec;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2727,14 +2727,17 @@ body {
   align-content: start;
   padding-right: 4px;
 }
-.archive .douban-recent-block::-webkit-scrollbar {
+.archive .douban-recent-block::-webkit-scrollbar,
+.archive .home-blog-block::-webkit-scrollbar {
   width: 8px;
 }
-.archive .douban-recent-block::-webkit-scrollbar-track {
+.archive .douban-recent-block::-webkit-scrollbar-track,
+.archive .home-blog-block::-webkit-scrollbar-track {
   background: rgba(30,41,59,0.25);
   border-radius: 999px;
 }
-.archive .douban-recent-block::-webkit-scrollbar-thumb {
+.archive .douban-recent-block::-webkit-scrollbar-thumb,
+.archive .home-blog-block::-webkit-scrollbar-thumb {
   background: rgba(148,163,184,0.75);
   border-radius: 999px;
 }
