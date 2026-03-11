@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="#bber {     margin-top: 18px;   }    .bb-toolbar {     display: flex;     align-items: center;     justify-content: space-between;     gap: 12px;     margin-bottom: 14px;     padding: 10">
+  <meta name="description" content="#bber {     margin-top: 18px;   }    .bb-toolbar {     display: flex;     align-items: center;     justify-content: space-between;     gap: 12px;     margin-bottom: 14px;     padding: 10px 14px;">
 <meta property="og:type" content="website">
 <meta property="og:title" content="生活记录">
 <meta property="og:url" content="http://example.com/memos/index.html">
 <meta property="og:site_name" content="梨串桃的生活日记">
-<meta property="og:description" content="#bber {     margin-top: 18px;   }    .bb-toolbar {     display: flex;     align-items: center;     justify-content: space-between;     gap: 12px;     margin-bottom: 14px;     padding: 10">
+<meta property="og:description" content="#bber {     margin-top: 18px;   }    .bb-toolbar {     display: flex;     align-items: center;     justify-content: space-between;     gap: 12px;     margin-bottom: 14px;     padding: 10px 14px;">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-03-09T10:13:48.700Z">
 <meta property="article:modified_time" content="2026-03-09T10:13:48.700Z">
@@ -306,10 +306,9 @@
     }
   }
 </style>
+
 <div id="bber">
-<div class="bb-loading">
-<i class="fas fa-circle-notch fa-spin"></i>Loading memos…
-</div>
+  <div class="bb-loading"><i class="fas fa-circle-notch fa-spin"></i>Loading memos...</div>
 </div>
 <script src="https://fastly.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://fastly.jsdelivr.net/gh/Tokinx/ViewImage/view-image.min.js"></script>
@@ -321,104 +320,16 @@
     domId: '#bber'
   };
 
-  function normalizeMemos(raw) {
-    if (Array.isArray(raw)) return raw;
-    if (Array.isArray(raw.data)) return raw.data;
-    if (Array.isArray(raw.memos)) return raw.memos;
-    if (raw.data && Array.isArray(raw.data.memos)) return raw.data.memos;
-    return [];
-  }
-
-  function normalizeContent(memo) {
-    return memo.content || memo.displayContent || memo.memo || '';
-  }
-
-  function normalizeTimestamp(memo) {
-    if (typeof memo.createdTs === 'number') return memo.createdTs * 1000;
-    if (typeof memo.createTime === 'string') return new Date(memo.createTime).getTime();
-    if (typeof memo.createdAt === 'string') return new Date(memo.createdAt).getTime();
-    return Date.now();
-  }
-
-  function buildApiCandidates() {
-    var base = bbMemos.memos.endsWith('/') ? bbMemos.memos : bbMemos.memos + '/';
-    var limit = encodeURIComponent(bbMemos.limit);
-    var creator = encodeURIComponent(bbMemos.creatorId);
-    return [
-      base + 'api/v1/memos?creatorId=' + creator + '&limit=' + limit + '&rowStatus=NORMAL',
-      base + 'api/v1/memo?creatorId=' + creator + '&limit=' + limit + '&rowStatus=NORMAL',
-      base + 'api/v1/memos?pageSize=' + limit + '&filter=visibility%20%3D%3D%20%22PUBLIC%22',
-      base + 'api/v1/memos?pageSize=' + limit
-    ];
-  }
-
-  async function fetchWithTimeout(url, timeoutMs) {
-    var controller = new AbortController();
-    var timer = setTimeout(function () { controller.abort(); }, timeoutMs);
-    try {
-      return await fetch(url, {
-        headers: { 'Accept': 'application/json' },
-        signal: controller.signal
-      });
-    } finally {
-      clearTimeout(timer);
-    }
-  }
-
-  function renderToolbar(count) {
-    return '<div class="bb-toolbar"><div class="bb-count"><i class="far fa-comment-dots"></i><span>' + count + ' memos</span></div><button class="bb-refresh" type="button"><i class="fas fa-sync-alt"></i> Refresh</button></div>';
-  }
-
-  function renderCards(memos) {
-    return memos.map(function (memo) {
-      var content = marked.parse(normalizeContent(memo));
-      var date = new Date(normalizeTimestamp(memo)).toLocaleString();
-      return '<article class="bb-list-item"><div class="bb-content">' + content + '</div><time class="bb-datetime"><i class="far fa-clock"></i><span>' + date + '</span></time></article>';
-    }).join('');
-  }
-
-  async function fetchMemos() {
-    var candidates = buildApiCandidates();
-    var lastError = null;
-    for (var i = 0; i < candidates.length; i++) {
-      try {
-        var res = await fetchWithTimeout(candidates[i], 9000);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        var json = await res.json();
-        var memos = normalizeMemos(json);
-        if (memos.length) return memos;
-      } catch (e) {
-        lastError = e;
-      }
-    }
-    if (lastError) throw lastError;
-    return [];
-  }
-
-  async function loadMemos() {
-    var bber = document.querySelector(bbMemos.domId);
-    bber.innerHTML = '<div class="bb-loading"><i class="fas fa-circle-notch fa-spin"></i>Loading memos...</div>';
-    try {
-      var memos = await fetchMemos();
-      if (!memos.length) {
-        bber.innerHTML = '<div class="bb-empty"><i class="far fa-folder-open"></i> No memos yet.</div>';
-        return;
-      }
-      bber.innerHTML = renderToolbar(memos.length) + renderCards(memos);
-      var refreshButton = bber.querySelector('.bb-refresh');
-      if (refreshButton) refreshButton.addEventListener('click', loadMemos);
-      if (window.ViewImage) ViewImage.init('.bb-content img');
-    } catch (err) {
-      bber.innerHTML = '<div class="bb-error"><i class="fas fa-exclamation-triangle"></i> Failed to load memos.</div>';
-    }
-  }
-
-  if (document.readyState === 'loading') {
-    window.addEventListener('DOMContentLoaded', loadMemos);
-  } else {
-    loadMemos();
-  }
-</script>
+<p>  function normalizeMemos(raw) {<br>    if (Array.isArray(raw)) return raw;<br>    if (Array.isArray(raw.data)) return raw.data;<br>    if (Array.isArray(raw.memos)) return raw.memos;<br>    if (raw.data &amp;&amp; Array.isArray(raw.data.memos)) return raw.data.memos;<br>    return [];<br>  }</p>
+<p>  function normalizeContent(memo) {<br>    return memo.content || memo.displayContent || memo.memo || ‘’;<br>  }</p>
+<p>  function normalizeTimestamp(memo) {<br>    if (typeof memo.createdTs &#x3D;&#x3D;&#x3D; ‘number’) return memo.createdTs * 1000;<br>    if (typeof memo.createTime &#x3D;&#x3D;&#x3D; ‘string’) return new Date(memo.createTime).getTime();<br>    if (typeof memo.createdAt &#x3D;&#x3D;&#x3D; ‘string’) return new Date(memo.createdAt).getTime();<br>    return Date.now();<br>  }</p>
+<p>  function buildApiCandidates() {<br>    var base &#x3D; bbMemos.memos.endsWith(‘&#x2F;‘) ? bbMemos.memos : bbMemos.memos + ‘&#x2F;‘;<br>    var limit &#x3D; encodeURIComponent(bbMemos.limit);<br>    var creator &#x3D; encodeURIComponent(bbMemos.creatorId);<br>    return [<br>      base + ‘api&#x2F;v1&#x2F;memos?creatorId&#x3D;’ + creator + ‘&amp;limit&#x3D;’ + limit + ‘&amp;rowStatus&#x3D;NORMAL’,<br>      base + ‘api&#x2F;v1&#x2F;memo?creatorId&#x3D;’ + creator + ‘&amp;limit&#x3D;’ + limit + ‘&amp;rowStatus&#x3D;NORMAL’,<br>      base + ‘api&#x2F;v1&#x2F;memos?pageSize&#x3D;’ + limit + ‘&amp;filter&#x3D;visibility%20%3D%3D%20%22PUBLIC%22’,<br>      base + ‘api&#x2F;v1&#x2F;memos?pageSize&#x3D;’ + limit<br>    ];<br>  }</p>
+<p>  async function fetchWithTimeout(url, timeoutMs) {<br>    var controller &#x3D; new AbortController();<br>    var timer &#x3D; setTimeout(function () { controller.abort(); }, timeoutMs);<br>    try {<br>      return await fetch(url, {<br>        headers: { ‘Accept’: ‘application&#x2F;json’ },<br>        signal: controller.signal<br>      });<br>    } finally {<br>      clearTimeout(timer);<br>    }<br>  }</p>
+<p>  function renderToolbar(count) {<br>    return ‘<div class="bb-toolbar"><div class="bb-count"><i class="far fa-comment-dots"></i><span>‘ + count + ‘ memos</span></div><button class="bb-refresh" type="button"><i class="fas fa-sync-alt"></i> Refresh</button></div>‘;<br>  }</p>
+<p>  function renderCards(memos) {<br>    return memos.map(function (memo) {<br>      var content &#x3D; marked.parse(normalizeContent(memo));<br>      var date &#x3D; new Date(normalizeTimestamp(memo)).toLocaleString();<br>      return ‘<article class="bb-list-item"><div class="bb-content">‘ + content + ‘</div><time class="bb-datetime"><i class="far fa-clock"></i><span>‘ + date + ‘</span></time></article>‘;<br>    }).join(‘’);<br>  }</p>
+<p>  async function fetchMemos() {<br>    var candidates &#x3D; buildApiCandidates();<br>    var lastError &#x3D; null;<br>    for (var i &#x3D; 0; i &lt; candidates.length; i++) {<br>      try {<br>        var res &#x3D; await fetchWithTimeout(candidates[i], 9000);<br>        if (!res.ok) throw new Error(‘HTTP ‘ + res.status);<br>        var json &#x3D; await res.json();<br>        var memos &#x3D; normalizeMemos(json);<br>        if (memos.length) return memos;<br>      } catch (e) {<br>        lastError &#x3D; e;<br>      }<br>    }<br>    if (lastError) throw lastError;<br>    return [];<br>  }</p>
+<p>  async function loadMemos() {<br>    var bber &#x3D; document.querySelector(bbMemos.domId);<br>    bber.innerHTML &#x3D; ‘<div class="bb-loading"><i class="fas fa-circle-notch fa-spin"></i>Loading memos…</div>‘;<br>    try {<br>      var memos &#x3D; await fetchMemos();<br>      if (!memos.length) {<br>        bber.innerHTML &#x3D; ‘<div class="bb-empty"><i class="far fa-folder-open"></i> No memos yet.</div>‘;<br>        return;<br>      }<br>      bber.innerHTML &#x3D; renderToolbar(memos.length) + renderCards(memos);<br>      var refreshButton &#x3D; bber.querySelector(‘.bb-refresh’);<br>      if (refreshButton) refreshButton.addEventListener(‘click’, loadMemos);<br>      if (window.ViewImage) ViewImage.init(‘.bb-content img’);<br>    } catch (err) {<br>      bber.innerHTML &#x3D; ‘<div class="bb-error"><i class="fas fa-exclamation-triangle"></i> Failed to load memos.</div>‘;<br>    }<br>  }</p>
+<p>  if (document.readyState &#x3D;&#x3D;&#x3D; ‘loading’) {<br>    window.addEventListener(‘DOMContentLoaded’, loadMemos);<br>  } else {<br>    loadMemos();<br>  }<br></script></p>
 
       </div>
       
