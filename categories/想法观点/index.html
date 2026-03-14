@@ -240,7 +240,7 @@
   
   
   <script>
-    (function() {
+    function initCategoryPage() {
       var listEl = document.getElementById('category-post-list');
       var paginationEl = document.getElementById('category-pagination');
       if (!listEl || !paginationEl) return;
@@ -284,15 +284,19 @@
       }
 
       applyPage();
-      paginationEl.addEventListener('click', function(e) {
+      
+      paginationEl.onclick = function(e) {
         var button = e.target.closest('.section-page-btn');
         if (!button || button.classList.contains('is-disabled')) return;
         var pageNo = Number(button.getAttribute('data-page'));
         if (!pageNo || pageNo < 1) return;
         currentPage = pageNo;
         applyPage();
-      });
-    })();
+      };
+    }
+
+    initCategoryPage();
+    document.addEventListener('pjax:success', initCategoryPage);
   </script>
 
 

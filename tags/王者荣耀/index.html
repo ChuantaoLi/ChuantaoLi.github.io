@@ -158,67 +158,115 @@
   
   
   
-  <div class="post-block">
-    <div class="posts-collapse">
+  <div class="post-block tag-block">
+    <div class="posts-collapse" id="tag-post-list">
       <div class="collection-title">
         <h2 class="collection-header">王者荣耀
           <small>标签</small>
         </h2>
       </div>
-
-      
-    <div class="collection-year">
-      <span class="collection-header">2026</span>
+            <div class="collection-year section-tag-year" data-year="2026">
+              <span class="collection-header">2026</span>
+            </div>
+          <article itemscope itemtype="http://schema.org/Article" class="section-tag-item" data-year="2026">
+            <header class="post-header">
+              <div class="post-meta">
+                <time itemprop="dateCreated"
+                      datetime="2026-03-11T16:16:25+08:00"
+                      content="2026-03-11">
+                  03-11
+                </time>
+              </div>
+              <div class="post-title">
+                  <a class="post-title-link" href="/2026/03/11/%E7%8E%8B%E8%80%85%E8%8D%A3%E8%80%80%E6%97%A0%E5%B0%BD%E5%AE%88%E5%BE%A1%E4%B8%9C%E7%9A%87%E6%94%BB%E7%95%A5/" itemprop="url">
+                    <span itemprop="name">王者荣耀无尽守御东皇攻略</span>
+                  </a>
+              </div>
+            </header>
+          </article>
+          <article itemscope itemtype="http://schema.org/Article" class="section-tag-item" data-year="2026">
+            <header class="post-header">
+              <div class="post-meta">
+                <time itemprop="dateCreated"
+                      datetime="2026-03-10T16:24:00+08:00"
+                      content="2026-03-10">
+                  03-10
+                </time>
+              </div>
+              <div class="post-title">
+                  <a class="post-title-link" href="/2026/03/10/%E7%8E%8B%E8%80%85%E8%8D%A3%E8%80%80%E6%97%A0%E5%B0%BD%E5%AE%88%E5%BE%A1%E7%A8%8B%E5%92%AC%E9%87%91%E6%94%BB%E7%95%A5/" itemprop="url">
+                    <span itemprop="name">王者荣耀无尽守御程咬金攻略</span>
+                  </a>
+              </div>
+            </header>
+          </article>
+      <div class="section-empty" id="tag-empty" style="display: none;">当前标签下暂无文章</div>
     </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2026-03-11T16:16:25+08:00"
-              content="2026-03-11">
-          03-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2026/03/11/%E7%8E%8B%E8%80%85%E8%8D%A3%E8%80%80%E6%97%A0%E5%B0%BD%E5%AE%88%E5%BE%A1%E4%B8%9C%E7%9A%87%E6%94%BB%E7%95%A5/" itemprop="url">
-            <span itemprop="name">王者荣耀无尽守御东皇攻略</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2026-03-10T16:24:00+08:00"
-              content="2026-03-10">
-          03-10
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2026/03/10/%E7%8E%8B%E8%80%85%E8%8D%A3%E8%80%80%E6%97%A0%E5%B0%BD%E5%AE%88%E5%BE%A1%E7%A8%8B%E5%92%AC%E9%87%91%E6%94%BB%E7%95%A5/" itemprop="url">
-            <span itemprop="name">王者荣耀无尽守御程咬金攻略</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-    </div>
+    <nav class="section-pagination" id="tag-pagination"></nav>
   </div>
   
   
   
 
-  
+  <script>
+    function initTagPage() {
+      var listEl = document.getElementById('tag-post-list');
+      var paginationEl = document.getElementById('tag-pagination');
+      if (!listEl || !paginationEl) return;
+      var items = Array.prototype.slice.call(listEl.querySelectorAll('.section-tag-item'));
+      var years = Array.prototype.slice.call(listEl.querySelectorAll('.section-tag-year'));
+      var emptyEl = document.getElementById('tag-empty');
+      var pageSize = 5 || 10;
+      var currentPage = 1;
 
+      function renderPagination(totalPages) {
+        var total = totalPages > 0 ? totalPages : 1;
+        var pages = [];
+        for (var i = 1; i <= total; i += 1) pages.push(i);
+        paginationEl.innerHTML =
+          '<button type="button" class="section-page-btn section-page-prev' + (currentPage === 1 ? ' is-disabled' : '') + '" data-page="' + (currentPage - 1) + '"><i class="fa fa-angle-left"></i></button>' +
+          pages.map(function(pageNo) {
+            return '<button type="button" class="section-page-btn section-page-num' + (pageNo === currentPage ? ' is-active' : '') + '" data-page="' + pageNo + '">' + pageNo + '</button>';
+          }).join('') +
+          '<button type="button" class="section-page-btn section-page-next' + (currentPage === total ? ' is-disabled' : '') + '" data-page="' + (currentPage + 1) + '"><i class="fa fa-angle-right"></i></button>';
+      }
+
+      function applyPage() {
+        var totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+        if (currentPage > totalPages) currentPage = totalPages;
+        var start = (currentPage - 1) * pageSize;
+        var end = start + pageSize;
+        items.forEach(function(item) { item.style.display = 'none'; });
+        years.forEach(function(year) { year.style.display = 'none'; });
+        var visibleItems = items.slice(start, end);
+        visibleItems.forEach(function(item) { item.style.display = ''; });
+        var yearSet = {};
+        visibleItems.forEach(function(item) {
+          yearSet[item.getAttribute('data-year')] = true;
+        });
+        years.forEach(function(year) {
+          if (yearSet[year.getAttribute('data-year')]) year.style.display = '';
+        });
+        if (emptyEl) emptyEl.style.display = visibleItems.length ? 'none' : '';
+        renderPagination(totalPages);
+        window.dispatchEvent(new Event('resize'));
+      }
+
+      applyPage();
+
+      paginationEl.onclick = function(e) {
+        var button = e.target.closest('.section-page-btn');
+        if (!button || button.classList.contains('is-disabled')) return;
+        var pageNo = Number(button.getAttribute('data-page'));
+        if (!pageNo || pageNo < 1) return;
+        currentPage = pageNo;
+        applyPage();
+      };
+    }
+
+    initTagPage();
+    document.addEventListener('pjax:success', initTagPage);
+  </script>
 
 
           </div>

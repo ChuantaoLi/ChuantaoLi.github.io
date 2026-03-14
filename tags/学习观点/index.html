@@ -158,47 +158,99 @@
   
   
   
-  <div class="post-block">
-    <div class="posts-collapse">
+  <div class="post-block tag-block">
+    <div class="posts-collapse" id="tag-post-list">
       <div class="collection-title">
         <h2 class="collection-header">学习观点
           <small>标签</small>
         </h2>
       </div>
-
-      
-    <div class="collection-year">
-      <span class="collection-header">2026</span>
+            <div class="collection-year section-tag-year" data-year="2026">
+              <span class="collection-header">2026</span>
+            </div>
+          <article itemscope itemtype="http://schema.org/Article" class="section-tag-item" data-year="2026">
+            <header class="post-header">
+              <div class="post-meta">
+                <time itemprop="dateCreated"
+                      datetime="2026-03-09T20:47:42+08:00"
+                      content="2026-03-09">
+                  03-09
+                </time>
+              </div>
+              <div class="post-title">
+                  <a class="post-title-link" href="/2026/03/09/%E5%8A%A8%E6%9C%BA%E3%80%81%E8%AE%BA%E6%8D%AE%E3%80%81%E8%AF%81%E6%8D%AE%E2%80%94%E2%80%94%E6%88%91%E5%A6%82%E4%BD%95%E5%9C%A8%E7%BB%84%E4%BC%9A%E4%B8%8A%E5%81%9A%E6%B1%87%E6%8A%A5/" itemprop="url">
+                    <span itemprop="name">动机、论据、证据——我如何在组会上做汇报</span>
+                  </a>
+              </div>
+            </header>
+          </article>
+      <div class="section-empty" id="tag-empty" style="display: none;">当前标签下暂无文章</div>
     </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2026-03-09T20:47:42+08:00"
-              content="2026-03-09">
-          03-09
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2026/03/09/%E5%8A%A8%E6%9C%BA%E3%80%81%E8%AE%BA%E6%8D%AE%E3%80%81%E8%AF%81%E6%8D%AE%E2%80%94%E2%80%94%E6%88%91%E5%A6%82%E4%BD%95%E5%9C%A8%E7%BB%84%E4%BC%9A%E4%B8%8A%E5%81%9A%E6%B1%87%E6%8A%A5/" itemprop="url">
-            <span itemprop="name">动机、论据、证据——我如何在组会上做汇报</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-    </div>
+    <nav class="section-pagination" id="tag-pagination"></nav>
   </div>
   
   
   
 
-  
+  <script>
+    function initTagPage() {
+      var listEl = document.getElementById('tag-post-list');
+      var paginationEl = document.getElementById('tag-pagination');
+      if (!listEl || !paginationEl) return;
+      var items = Array.prototype.slice.call(listEl.querySelectorAll('.section-tag-item'));
+      var years = Array.prototype.slice.call(listEl.querySelectorAll('.section-tag-year'));
+      var emptyEl = document.getElementById('tag-empty');
+      var pageSize = 5 || 10;
+      var currentPage = 1;
 
+      function renderPagination(totalPages) {
+        var total = totalPages > 0 ? totalPages : 1;
+        var pages = [];
+        for (var i = 1; i <= total; i += 1) pages.push(i);
+        paginationEl.innerHTML =
+          '<button type="button" class="section-page-btn section-page-prev' + (currentPage === 1 ? ' is-disabled' : '') + '" data-page="' + (currentPage - 1) + '"><i class="fa fa-angle-left"></i></button>' +
+          pages.map(function(pageNo) {
+            return '<button type="button" class="section-page-btn section-page-num' + (pageNo === currentPage ? ' is-active' : '') + '" data-page="' + pageNo + '">' + pageNo + '</button>';
+          }).join('') +
+          '<button type="button" class="section-page-btn section-page-next' + (currentPage === total ? ' is-disabled' : '') + '" data-page="' + (currentPage + 1) + '"><i class="fa fa-angle-right"></i></button>';
+      }
+
+      function applyPage() {
+        var totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+        if (currentPage > totalPages) currentPage = totalPages;
+        var start = (currentPage - 1) * pageSize;
+        var end = start + pageSize;
+        items.forEach(function(item) { item.style.display = 'none'; });
+        years.forEach(function(year) { year.style.display = 'none'; });
+        var visibleItems = items.slice(start, end);
+        visibleItems.forEach(function(item) { item.style.display = ''; });
+        var yearSet = {};
+        visibleItems.forEach(function(item) {
+          yearSet[item.getAttribute('data-year')] = true;
+        });
+        years.forEach(function(year) {
+          if (yearSet[year.getAttribute('data-year')]) year.style.display = '';
+        });
+        if (emptyEl) emptyEl.style.display = visibleItems.length ? 'none' : '';
+        renderPagination(totalPages);
+        window.dispatchEvent(new Event('resize'));
+      }
+
+      applyPage();
+
+      paginationEl.onclick = function(e) {
+        var button = e.target.closest('.section-page-btn');
+        if (!button || button.classList.contains('is-disabled')) return;
+        var pageNo = Number(button.getAttribute('data-page'));
+        if (!pageNo || pageNo < 1) return;
+        currentPage = pageNo;
+        applyPage();
+      };
+    }
+
+    initTagPage();
+    document.addEventListener('pjax:success', initTagPage);
+  </script>
 
 
           </div>
