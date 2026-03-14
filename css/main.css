@@ -1143,11 +1143,6 @@ pre .javascript .function {
   position: fixed;
   top: 0;
 }
-@media (max-width: 991px) {
-  .sidebar {
-    display: none;
-  }
-}
 .sidebar-inner {
   color: #999;
   padding: 18px 10px;
@@ -1200,7 +1195,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #ff11af;
+  background: #d1339e;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -1319,7 +1314,6 @@ pre .javascript .function {
   .sidebar-toggle {
     left: 20px;
     opacity: 0.8;
-    display: none;
   }
 }
 .sidebar-toggle:hover .toggle-line {
@@ -3150,8 +3144,7 @@ body {
 .sidebar-nav li {
   font-size: 16px !important;
 }
-.sidebar-panel,
-.sidebar-inner {
+.sidebar-panel {
   overflow-y: visible !important;
   max-height: none !important;
 }
@@ -3416,4 +3409,10 @@ th {
   border-bottom: 2px solid rgba(148,163,184,0.4) !important;
   color: #f8fafc !important;
   font-weight: 600 !important;
+}
+.site-overview-wrap .site-author {
+  margin-bottom: 16px;
+}
+.site-overview-wrap .site-state-wrap {
+  margin-bottom: 14px;
 }

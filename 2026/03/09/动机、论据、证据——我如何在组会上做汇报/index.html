@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":360,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="汇报的目的是让同领域的工作者可以快速地了解你想传达的观点。 汇报的准备思路：动机、论据、证据。 动机 动机指的是你为什么要做这项研究。这需要思考的东西包括问题的背景，发展的脉络以及现存的问题。 假设你想要汇报一个关于流形学习在故障诊断领域应用的主题，那么问题的背景就是复杂故障模式的类别重叠导致分类器在原始空间中难以找到清晰的决策边界；发展的脉络可以是你聚焦的某个小方向的代表成果，比如 L">
@@ -77,6 +77,7 @@
   </style>
 </noscript>
 
+<link rel="alternate" href="/atom.xml" title="梨串桃的生活日记" type="application/atom+xml">
 <style>mjx-container[jax="SVG"] {
   direction: ltr;
 }
@@ -189,8 +190,7 @@ mjx-container[display="true"] {
 mjx-container[display="true"] + br {
   display: none;
 }
-</style><link rel="alternate" href="/atom.xml" title="梨串桃的生活日记" type="application/atom+xml">
-</head>
+</style></head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
   <div class="container use-motion">
@@ -391,8 +391,8 @@ LLE
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2026/03/02/%E6%AF%8F%E6%97%A5%E4%BD%93%E9%87%8D%E4%B8%8E%E6%AF%8F%E6%97%A5%E9%A3%9F%E8%B0%B1/" rel="prev" title="每日体重与每日食谱">
-      <i class="fa fa-chevron-left"></i> 每日体重与每日食谱
+    <a href="/2026/02/09/%E9%81%93%E5%88%AB%E6%98%AF%E4%B8%80%E4%BB%B6%E9%9A%BE%E4%BA%8B/" rel="prev" title="道别是一件难事">
+      <i class="fa fa-chevron-left"></i> 道别是一件难事
     </a></div>
       <div class="post-nav-item">
     <a href="/2026/03/10/%E7%8E%8B%E8%80%85%E8%8D%A3%E8%80%80%E6%97%A0%E5%B0%BD%E5%AE%88%E5%BE%A1%E7%A8%8B%E5%92%AC%E9%87%91%E6%94%BB%E7%95%A5/" rel="next" title="王者荣耀无尽守御程咬金攻略">
@@ -471,7 +471,7 @@ LLE
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-count">18</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -533,6 +533,7 @@ LLE
 
   
   <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-pjax@0/pjax.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
 
@@ -545,6 +546,65 @@ LLE
 
 
 <script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
 
 
 
@@ -565,6 +625,7 @@ LLE
 
 
 
+    <div id="pjax">
   
 
   
@@ -624,5 +685,6 @@ LLE
 
   
 
+    </div>
 </body>
 </html>
