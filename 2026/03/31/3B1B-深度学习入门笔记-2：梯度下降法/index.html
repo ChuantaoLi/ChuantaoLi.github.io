@@ -20,20 +20,25 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":360,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="保研边缘人的开学第一周 从暑假到这学期开学前，一直在保和考之间反复横跳。一方面是因为绩点实在没竞争力，另一方面是论文一直被拖着不出版，直到催了四次才在八月底见刊。这期间发了十多封邮件，有一个老师说可以接收我，往后我就没再联系其他老师了。没曾想现在把我鸽了。 因为今年保研名额增加，我侥幸作为边缘人拿到名额。但开心就持续了一个晚上，随之而来的是大多都石沉大海的二十多封邮件，以及面对专业课、套磁、报">
+  <meta name="description" content="3B1B 深度学习入门笔记 2：梯度下降法 告诉网络识别能力的好坏 现在，我们需要一种算法，给网络看一大堆训练数据，这包括手写数字图像和它们的标注，算法会调整 13000 个权重和偏置，以提高网络对训练数据的识别表现。 在一开始，所有权重和偏置都是随机化的。因此，当我们输入一张手写数字图像，输出层会一团糟。这时候，我们就需要设计一个代价函数，用来告诉网络你的输出是错误的还是正确的。 用">
 <meta property="og:type" content="article">
-<meta property="og:title" content="保研边缘人的开学第一周">
-<meta property="og:url" content="http://example.com/2025/09/08/%E4%BF%9D%E7%A0%94%E8%BE%B9%E7%BC%98%E4%BA%BA%E7%9A%84%E5%BC%80%E5%AD%A6%E7%AC%AC%E4%B8%80%E5%91%A8/index.html">
+<meta property="og:title" content="3B1B 深度学习入门笔记 2：梯度下降法">
+<meta property="og:url" content="http://example.com/2026/03/31/3B1B-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2%EF%BC%9A%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95/index.html">
 <meta property="og:site_name" content="梨串桃的生活日记">
-<meta property="og:description" content="保研边缘人的开学第一周 从暑假到这学期开学前，一直在保和考之间反复横跳。一方面是因为绩点实在没竞争力，另一方面是论文一直被拖着不出版，直到催了四次才在八月底见刊。这期间发了十多封邮件，有一个老师说可以接收我，往后我就没再联系其他老师了。没曾想现在把我鸽了。 因为今年保研名额增加，我侥幸作为边缘人拿到名额。但开心就持续了一个晚上，随之而来的是大多都石沉大海的二十多封邮件，以及面对专业课、套磁、报">
+<meta property="og:description" content="3B1B 深度学习入门笔记 2：梯度下降法 告诉网络识别能力的好坏 现在，我们需要一种算法，给网络看一大堆训练数据，这包括手写数字图像和它们的标注，算法会调整 13000 个权重和偏置，以提高网络对训练数据的识别表现。 在一开始，所有权重和偏置都是随机化的。因此，当我们输入一张手写数字图像，输出层会一团糟。这时候，我们就需要设计一个代价函数，用来告诉网络你的输出是错误的还是正确的。 用">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2025-09-07T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-10T08:46:28.722Z">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331154424103.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331155945079.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331160155872.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331161631915.png">
+<meta property="article:published_time" content="2026-03-31T08:23:44.000Z">
+<meta property="article:modified_time" content="2026-03-31T08:24:00.322Z">
 <meta property="article:author" content="ChuantaoLi">
-<meta property="article:tag" content="广海生活">
+<meta property="article:tag" content="机器学习">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331154424103.png">
 
-<link rel="canonical" href="http://example.com/2025/09/08/%E4%BF%9D%E7%A0%94%E8%BE%B9%E7%BC%98%E4%BA%BA%E7%9A%84%E5%BC%80%E5%AD%A6%E7%AC%AC%E4%B8%80%E5%91%A8/">
+<link rel="canonical" href="http://example.com/2026/03/31/3B1B-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2%EF%BC%9A%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95/">
 
 
 <script id="page-configurations">
@@ -46,7 +51,7 @@
   };
 </script>
 
-  <title>保研边缘人的开学第一周 | 梨串桃的生活日记</title>
+  <title>3B1B 深度学习入门笔记 2：梯度下降法 | 梨串桃的生活日记</title>
   
 
 
@@ -78,7 +83,119 @@
 </noscript>
 
 <link rel="alternate" href="/atom.xml" title="梨串桃的生活日记" type="application/atom+xml">
-</head>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
   <div class="container use-motion">
@@ -162,7 +279,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2025/09/08/%E4%BF%9D%E7%A0%94%E8%BE%B9%E7%BC%98%E4%BA%BA%E7%9A%84%E5%BC%80%E5%AD%A6%E7%AC%AC%E4%B8%80%E5%91%A8/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/03/31/3B1B-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2%EF%BC%9A%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/%E7%8C%AB%E5%92%AA%E5%A4%B4%E5%83%8F.jpg">
@@ -175,7 +292,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          保研边缘人的开学第一周
+          3B1B 深度学习入门笔记 2：梯度下降法
         </h1>
 
         <div class="post-meta">
@@ -184,23 +301,17 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2025-09-08 00:00:00" itemprop="dateCreated datePublished" datetime="2025-09-08T00:00:00+08:00">2025-09-08</time>
+              <time title="创建时间：2026-03-31 16:23:44 / 修改时间：16:24:00" itemprop="dateCreated datePublished" datetime="2026-03-31T16:23:44+08:00">2026-03-31</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2026-03-10 16:46:28" itemprop="dateModified" datetime="2026-03-10T16:46:28+08:00">2026-03-10</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%94%9F%E6%B4%BB%E8%AE%B0%E5%BD%95/" itemprop="url" rel="index"><span itemprop="name">生活记录</span></a>
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/" itemprop="url" rel="index"><span itemprop="name">技术博客</span></a>
                 </span>
             </span>
 
@@ -210,14 +321,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>753</span>
+              <span>1.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
+              <span>4 分钟</span>
             </span>
 
         </div>
@@ -229,15 +340,38 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="保研边缘人的开学第一周">保研边缘人的开学第一周</h1>
-<p>从暑假到这学期开学前，一直在保和考之间反复横跳。一方面是因为绩点实在没竞争力，另一方面是论文一直被拖着不出版，直到催了四次才在八月底见刊。这期间发了十多封邮件，有一个老师说可以接收我，往后我就没再联系其他老师了。没曾想现在把我鸽了。</p>
-<p>因为今年保研名额增加，我侥幸作为边缘人拿到名额。但开心就持续了一个晚上，随之而来的是大多都石沉大海的二十多封邮件，以及面对专业课、套磁、报名和英语的恐惧。</p>
-<p>低rank，无六级，我唯一能看的就是发了俩论文，况且这时候太晚太晚了，联系的老师也没有多的名额。emm，倒也能正常，唯一的办法就只有弱com海投加等鸽子起飞了。现如今的感受就是，这三年好像做事了，但又好像没把事做好。</p>
-<p>要说开心的事情也还是有的。中午午休起床不久，收到另一老师的回信，说是2点半能否电话聊一下。当时欣喜若狂，但也急的不行，因为当时已经2点了，遂立马出门回实验室。</p>
-<p>第一次面试总算让我收到一些正反馈。老师全程以一个平等的姿态听我对简历详情的介绍，没有打断没有居高临下，尽显随和。最后说是挺满意，但得前面的鸽子起飞，我才能被收下，建议我多联系其他老师。无论怎么说，能给我一个机会已经很满意了…</p>
-<p>但是吧，开心过后又是对未来不确定性的焦虑。在电脑前重复找导师、投简历、背口语、看专业课以及沉浸式悲伤。emm，我也不知道这种抱佛脚的散装口语在面试的时候讲不讲得出来（有可能我走不到面试那一步哈哈…）。</p>
-<p>此外，我联系的老师各个院都有，只要涉及机器学习我都投了简历，这让我更担心了。面试要是提问专业课，来个自控原理或数字电路什么的，我只能在台上尬笑了…希望若有机会走到面试这一关，求求别拷打专业课啦…</p>
-<p>最后，这段时间最珍贵的是一个同样保研的队友的陪伴。队友在rank和英语上比我优秀得多得多，而且是一个性格很温和人很优雅的同学。在保研答辩和联系导师等等很多事情上，可谓是相互鼓励有个照应，这让我褪去孤单，感受到这一份难得可贵的友谊。希望不久的一天，大家都能收到心仪的offer，顺利渡过难关！</p>
+        <h1 id="b1b-深度学习入门笔记-2梯度下降法">3B1B 深度学习入门笔记
+2：梯度下降法</h1>
+<h2 id="告诉网络识别能力的好坏">告诉网络识别能力的好坏</h2>
+<p>现在，我们需要一种算法，给网络看一大堆训练数据，这包括手写数字图像和它们的标注，算法会调整
+13000 个权重和偏置，以提高网络对训练数据的识别表现。</p>
+<p>在一开始，所有权重和偏置都是随机化的。因此，当我们输入一张手写数字图像，输出层会一团糟。这时候，我们就需要设计一个代价函数，用来告诉网络你的输出是错误的还是正确的。</p>
+<p>用数学语言来表示就是，把每个输出的激活值与目标激活值之间的差的平方加起来，这就是单个训练样本的代价。如果网络能够对这个图像正确分类时，代价就会小。</p>
+<p>我们有多个训练样本，我们用平均代价来评价这个网络有多糟。</p>
+<p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331154424103.png" alt="image-20260331154424103" style="zoom:33%;"></p>
+<h2 id="告诉网络如何调整权重和偏置">告诉网络如何调整权重和偏置</h2>
+<p>但我们只告诉网络好还是坏并不足够，我们还得给告诉它，怎么改变这些权重和偏置，才能有进步。</p>
+<p>这里考虑一元函数，我们输入一个随机值，看看是向左走变小，还是向右走变小。如果该点的斜率为正，那就应该向左走；反之，则应该向右走。</p>
+<p>通过重复这个过程，对每个移动的点都计算斜率，就可以逼近函数的的某个局部最小值。</p>
+<p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331155945079.png" alt="image-20260331155945079" style="zoom:50%;"></p>
+<p>因为不知道输入的值是什么，就像随机丢进去几个小球，它们会落入不同的坑中。网络也是一样，无法保证最终得到的局部最小值就是代价函数可能达到的全局最小值。</p>
+<p>值得一提的是，如果每步移动的大小和斜率成比例，那么在最小值附近会越来越平缓，每步会越来越小。这个比例叫学习率，这样可以防止调过头。</p>
+<p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331160155872.png" alt="image-20260331160155872" style="zoom: 50%;"></p>
+<p>现在考虑一个二元函数，我们同样需要了解小球往哪个方向下降得最快。微积分告诉我们，函数的梯度指出了函数的最陡增长方向。那么，我们沿着负梯度的方向走，函数值就可以降低得最快了。</p>
+<p>按照负梯度的倍数，不断调整函数输入值的过程，就叫做梯度下降法。</p>
+<p>负梯度的正负号告诉我们调整的方向，即需要增大还是减小。而数值则告诉我们改变哪个值的影响更大。</p>
+<h2 id="神经元并没有按照期待的方式去学习">神经元并没有按照期待的方式去学习</h2>
+<p>我们所直观地理解两个隐藏层，认为第一个隐藏层可以识别短边，第二个隐藏层可以识别长边，通过图案的拼接最终在输出层完成数字的识别。</p>
+<p>但事实上，对于这个多层感知机而言，输入层和第一个隐藏层之间的权重，并没有呈现出有规律的图案，也就是说，网络并不是按照我们先前的理解那样去学习的。它们看起来更像是，在
+13000 维度的空间中，找到了一个能让整体识别性能局部最优的方式。</p>
+<p>输入一张随机噪声，我们期望网络的输出应该是各个数字的概率都接近，或者都为
+0，但最终可能输出的是数字
+5，网络会将一个噪声图像自信地识别成某个数字。</p>
+<p>这让我们反思，这个网络学会了识别数字，但自己却不会手写数字。对于这个网络而言，它只是在训练集中不断调整权重和偏置，它的代价函数会促使它对最后的判断有绝对的自信。当然，多层感知机是非常古老的神经网络，现在已经诞生出更加先进的网络结构。</p>
+<p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331161631915.png" alt="image-20260331161631915" style="zoom: 33%;"></p>
+<h2 id="参考资料">参考资料</h2>
+<p>[1] <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Ux411j7ri/?spm_id_from=333.1007.top_right_bar_window_history.content.click&amp;vd_source=25c74f8e9aff6eff8b6b407f76329bbf">【官方双语】深度学习之梯度下降法
+Part 2 ver 0.9 beta</a></p>
 
     </div>
 
@@ -247,7 +381,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E5%B9%BF%E6%B5%B7%E7%94%9F%E6%B4%BB/" rel="tag"># 广海生活</a>
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
           </div>
 
         
@@ -256,13 +390,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2025/01/10/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0-%E5%B7%AE%E5%BC%82%E6%80%A7%E5%88%86%E6%9E%90/" rel="prev" title="数据挖掘笔记 | 差异性分析">
-      <i class="fa fa-chevron-left"></i> 数据挖掘笔记 | 差异性分析
+    <a href="/2026/03/30/3B1B-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-1%EF%BC%9A%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E7%BB%93%E6%9E%84/" rel="prev" title="3B1B 深度学习入门笔记 1：神经网络的结构">
+      <i class="fa fa-chevron-left"></i> 3B1B 深度学习入门笔记 1：神经网络的结构
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2025/10/23/%E5%9C%A8%E5%B9%BF%E6%B5%B7%E7%9A%84%E5%8D%81%E6%9C%88%E4%BB%BD%E6%88%91%E5%90%83%E4%BA%86%E4%BB%80%E4%B9%88/" rel="next" title="在广海的十月份我吃了什么">
-      在广海的十月份我吃了什么 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -321,7 +452,8 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BF%9D%E7%A0%94%E8%BE%B9%E7%BC%98%E4%BA%BA%E7%9A%84%E5%BC%80%E5%AD%A6%E7%AC%AC%E4%B8%80%E5%91%A8"><span class="nav-number">1.</span> <span class="nav-text">保研边缘人的开学第一周</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#b1b-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">3B1B 深度学习入门笔记
+2：梯度下降法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%8A%E8%AF%89%E7%BD%91%E7%BB%9C%E8%AF%86%E5%88%AB%E8%83%BD%E5%8A%9B%E7%9A%84%E5%A5%BD%E5%9D%8F"><span class="nav-number">1.1.</span> <span class="nav-text">告诉网络识别能力的好坏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%8A%E8%AF%89%E7%BD%91%E7%BB%9C%E5%A6%82%E4%BD%95%E8%B0%83%E6%95%B4%E6%9D%83%E9%87%8D%E5%92%8C%E5%81%8F%E7%BD%AE"><span class="nav-number">1.2.</span> <span class="nav-text">告诉网络如何调整权重和偏置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A5%9E%E7%BB%8F%E5%85%83%E5%B9%B6%E6%B2%A1%E6%9C%89%E6%8C%89%E7%85%A7%E6%9C%9F%E5%BE%85%E7%9A%84%E6%96%B9%E5%BC%8F%E5%8E%BB%E5%AD%A6%E4%B9%A0"><span class="nav-number">1.3.</span> <span class="nav-text">神经元并没有按照期待的方式去学习</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">1.4.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
