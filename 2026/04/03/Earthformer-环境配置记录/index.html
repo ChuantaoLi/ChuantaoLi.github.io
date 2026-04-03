@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 8.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":360,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Earthformer 环境配置记录 记录拉取 Earthformer 项目，在本机上配置好环境，用 docker 封装，最后放到实验室的 4090 的过程。 这是我第一次用 docker，也是第一次拉深度学习的项目进行环境配置。我是 Win11 的系统，因为要配置环境，用的是 WSL，Ubuntu 是 20.04 版本，CUDA 版本是 12.8，显卡是 5060。 安装 Anaco">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Earthformer 环境配置记录">
+<meta property="og:url" content="http://example.com/2026/04/03/Earthformer-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:site_name" content="梨串桃的生活日记">
+<meta property="og:description" content="Earthformer 环境配置记录 记录拉取 Earthformer 项目，在本机上配置好环境，用 docker 封装，最后放到实验室的 4090 的过程。 这是我第一次用 docker，也是第一次拉深度学习的项目进行环境配置。我是 Win11 的系统，因为要配置环境，用的是 WSL，Ubuntu 是 20.04 版本，CUDA 版本是 12.8，显卡是 5060。 安装 Anaco">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402125841951.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402125937518.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402130027278.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402130135725.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402131221026.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402131309487.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402132319101.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402132537376.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402132753306.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402132928697.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402133304826.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402134222989.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402135103284.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402140456965.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402141830089.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402162416953.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402181711501.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402183705831.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402200749377.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402224528089.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/eb82ab5f3a1175c105ad8afd64ccc6c1.png">
+<meta property="article:published_time" content="2026-04-03T13:40:52.000Z">
+<meta property="article:modified_time" content="2026-04-03T13:48:32.484Z">
+<meta property="article:author" content="ChuantaoLi">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402125841951.png">
+
+<link rel="canonical" href="http://example.com/2026/04/03/Earthformer-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Earthformer 环境配置记录 | 梨串桃的生活日记</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="梨串桃的生活日记" type="application/atom+xml">
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">梨串桃的生活日记</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-技术博客">
+
+    <a href="/tech/" rel="section"><i class="fa fa-laptop-code fa-fw"></i>技术博客</a>
+
+  </li>
+        <li class="menu-item menu-item-想法观点">
+
+    <a href="/ideas/" rel="section"><i class="fa fa-lightbulb fa-fw"></i>想法观点</a>
+
+  </li>
+        <li class="menu-item menu-item-生活记录">
+
+    <a href="/life/" rel="section"><i class="far fa-comment-dots fa-fw"></i>生活记录</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/04/03/Earthformer-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/%E7%8C%AB%E5%92%AA%E5%A4%B4%E5%83%8F.jpg">
+      <meta itemprop="name" content="ChuantaoLi">
+      <meta itemprop="description" content="感知幸福是一种能力">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梨串桃的生活日记">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Earthformer 环境配置记录
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2026-04-03 21:40:52 / 修改时间：21:48:32" itemprop="dateCreated datePublished" datetime="2026-04-03T21:40:52+08:00">2026-04-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/" itemprop="url" rel="index"><span itemprop="name">技术博客</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="earthformer-环境配置记录">Earthformer 环境配置记录</h1>
+<p>记录拉取 Earthformer 项目，在本机上配置好环境，用 docker
+封装，最后放到实验室的 4090 的过程。</p>
+<p>这是我第一次用 docker，也是第一次拉深度学习的项目进行环境配置。我是
+Win11 的系统，因为要配置环境，用的是 WSL，Ubuntu 是 20.04 版本，CUDA
+版本是 12.8，显卡是 5060。</p>
+<h2 id="安装-anaconda">安装 Anaconda</h2>
+<p>WSL Ubuntu 里还没有 conda，安装 Anaconda：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402125841951.png" alt="image-20260402125841951">
+<figcaption aria-hidden="true">image-20260402125841951</figcaption>
+</figure>
+<p>静默安装 Miniconda 到用户目录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash ~/miniconda.sh -b -p ~/miniconda3</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402125937518.png" alt="image-20260402125937518">
+<figcaption aria-hidden="true">image-20260402125937518</figcaption>
+</figure>
+<p>初始化 conda（写入 ~/.bashrc）并在当前终端生效：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">~/miniconda3/bin/conda init bash</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402130027278.png" alt="image-20260402130027278">
+<figcaption aria-hidden="true">image-20260402130027278</figcaption>
+</figure>
+<p>随后查看 conda 版本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda --version</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402130135725.png" alt="image-20260402130135725">
+<figcaption aria-hidden="true">image-20260402130135725</figcaption>
+</figure>
+<h2 id="创建虚拟环境">创建虚拟环境</h2>
+<p>因为 Earthformer 的配置较老，无法适配
+5060，所以根据我电脑的情况进行调整。项目里边是用 Python3.9，我这里是
+3.10：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda create -n earthformer python=3.10 -y</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402131221026.png" alt="image-20260402131221026">
+<figcaption aria-hidden="true">image-20260402131221026</figcaption>
+</figure>
+<p>按照要求激活环境，并查看 Python 版本：</p>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402131309487.png" alt="image-20260402131309487">
+<figcaption aria-hidden="true">image-20260402131309487</figcaption>
+</figure>
+<h2 id="安装-pytorch">安装 PyTorch</h2>
+<p>安装 CUDA 12.8 版本的 PyTorch：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402132319101.png" alt="image-20260402132319101">
+<figcaption aria-hidden="true">image-20260402132319101</figcaption>
+</figure>
+<p>把 torch-2.11.0+cu128 安装完成后，验证 Python 里是否识别到 GPU：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -c <span class="string">"import torch; print('torch', torch.__version__); print('cuda_available', torch.cuda.is_available()); print('cuda_version', torch.version.cuda); print('gpu', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'None')"</span></span><br></pre></td></tr></table></figure>
+<p>由于当前是 numpy 2.2.6 ，而 Earthformer 这个老项目里有些依赖在 numpy
+2.x 上会报错，先对 numpy 降级：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install <span class="string">"numpy&lt;2"</span></span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402132537376.png" alt="image-20260402132537376">
+<figcaption aria-hidden="true">image-20260402132537376</figcaption>
+</figure>
+<p>如果后续安装过程又把 numpy 升级了，运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install <span class="string">"numpy&lt;2"</span> --upgrade --no-cache-dir</span><br></pre></td></tr></table></figure>
+<p>对 pip 降级：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m pip install <span class="string">"pip&lt;24.1"</span></span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402132753306.png" alt="image-20260402132753306">
+<figcaption aria-hidden="true">image-20260402132753306</figcaption>
+</figure>
+<h2 id="安装项目依赖">安装项目依赖</h2>
+<p>安装训练框架 PyTorch Lightning：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install pytorch_lightning==1.6.4</span><br><span class="line">pip install xarray netcdf4 opencv-python earthnet==0.3.9</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402132928697.png" alt="image-20260402132928697">
+<figcaption aria-hidden="true">image-20260402132928697</figcaption>
+</figure>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402133304826.png" alt="image-20260402133304826">
+<figcaption aria-hidden="true">image-20260402133304826</figcaption>
+</figure>
+<p>以及必要的 sklearn：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install scikit-learn</span><br></pre></td></tr></table></figure>
+<p>当前 pip 源里没有 awscli，从官方单独下载：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -i https://pypi.org/simple awscli</span><br></pre></td></tr></table></figure>
+<p>安装 Earthformer：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install -U -e . --no-build-isolation -i https://pypi.org/simple</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402134222989.png" alt="image-20260402134222989">
+<figcaption aria-hidden="true">image-20260402134222989</figcaption>
+</figure>
+<h2 id="兼容性处理">兼容性处理</h2>
+<p>安装完成后，检查发现缺少了 apex。但安装时出现
+<code>--no-use-pep517</code> 的报错。这是因为 Apex 仓库声明了
+pyproject.toml 的构建后端， pip 不允许强行关闭 PEP
+517，所以这条路被封死了。由于我的环境是
+<code>Python 3.10 + torch 2.11 + CUDA 12.8</code> 较新，对项目的
+<code>apex_ddp.py</code> 进行了修改，确保没有 Apex 就自动回退到 PyTorch
+Lightning 原生 DDP。修改后验证：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python scripts/cuboid_transformer/sevir/train_cuboid_sevir.py --<span class="built_in">help</span></span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402135103284.png" alt="image-20260402135103284">
+<figcaption aria-hidden="true">image-20260402135103284</figcaption>
+</figure>
+<p>原有代码的学习率调度器和 torch 2.11 + lightning 1.6
+组合有兼容问题，修改 <code>train_cuboid_mnist.py</code>
+文件。具体而言，torch 2.11 下 Lightning 1.6 对 SequentialLR 的 API
+校验不兼容，所以训练在优化器阶段报 MisconfigurationException
+。解决方法是把 MovingMNIST 脚本改为单一 LambdaLR （warmup + cosine
+合并），避免这个兼容冲突。</p>
+<h2 id="项目运行">项目运行</h2>
+<p>首先把数据集下载到本地，我是直接去 GitHub 下载压缩包的：</p>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402140456965.png" alt="image-20260402140456965">
+<figcaption aria-hidden="true">image-20260402140456965</figcaption>
+</figure>
+<p>然后移动这个压缩包：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p datasets/moving_mnist/raw &amp;&amp; <span class="built_in">cp</span> -f datasets/mnist_test_seq.npy.gz datasets/moving_mnist/raw/mnist_test_seq.npy.gz</span><br></pre></td></tr></table></figure>
+<p>按照项目写好的脚本离线生成训练所需的 processed 文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -c <span class="string">"from earthformer.datasets.moving_mnist.moving_mnist import MovingMNIST; MovingMNIST('datasets/moving_mnist', train=True, download=True); print('processed_ok')"</span></span><br></pre></td></tr></table></figure>
+<p>最后运行项目：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MASTER_ADDR=localhost MASTER_PORT=10001 python scripts/cuboid_transformer/moving_mnist/train_cuboid_mnist.py --gpus 1 --cfg scripts/cuboid_transformer/moving_mnist/cfg.yaml --save smoke_mnist</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402141830089.png" alt="image-20260402141830089">
+<figcaption aria-hidden="true">image-20260402141830089</figcaption>
+</figure>
+<p>在脚本 <code>cfg.yaml</code> 中可以修改运行配置，我这里修改了 epoch
+为 5，其他默认。运行结束后的界面：</p>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402162416953.png" alt="image-20260402162416953">
+<figcaption aria-hidden="true">image-20260402162416953</figcaption>
+</figure>
+<p>结果存储目录：_transformer_mnist_mnist</p>
+<ul>
+<li>模型权重： …/checkpoints/ （比如 last.ckpt 、 model-epoch=xxx.ckpt
+）</li>
+<li>TensorBoard 日志： …/lightning_logs/</li>
+<li>CSV 日志： …/csv_logs/</li>
+<li>可视化样例： …/examples/</li>
+<li>分数相关文件： …/scores/</li>
+</ul>
+<h2 id="docker-封装">Docker 封装</h2>
+<p>启动 Docker Desktop，打开 Setting - Docker
+Engine，加入镜像源。没做这一步的话，我这边一直会网络错误：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">{</span><br><span class="line">  <span class="string">"builder"</span>: {</span><br><span class="line">    <span class="string">"gc"</span>: {</span><br><span class="line">      <span class="string">"defaultKeepStorage"</span>: <span class="string">"20GB"</span>,</span><br><span class="line">      <span class="string">"enabled"</span>: <span class="literal">true</span></span><br><span class="line">    }</span><br><span class="line">  },</span><br><span class="line">  <span class="string">"experimental"</span>: <span class="literal">false</span>,</span><br><span class="line">  <span class="string">"registry-mirrors"</span>: [</span><br><span class="line">    <span class="string">"https://dockerproxy.com"</span>,</span><br><span class="line">    <span class="string">"https://docker.nju.edu.cn"</span>,</span><br><span class="line">    <span class="string">"https://docker.m.daocloud.io"</span></span><br><span class="line">  ]</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>管理员模式打开 PowerShell，拉取镜像：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull nvidia/cuda:12.8.1-base-ubuntu22.04</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402181711501.png" alt="image-20260402181711501">
+<figcaption aria-hidden="true">image-20260402181711501</figcaption>
+</figure>
+<p>在项目目录下新建 Dockerfile：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">FROM nvidia/cuda:12.8.1-base-ubuntu22.04</span><br><span class="line"></span><br><span class="line">ENV DEBIAN_FRONTEND=noninteractive \</span><br><span class="line">    TZ=Etc/UTC \</span><br><span class="line">    PIP_NO_CACHE_DIR=1 \</span><br><span class="line">    PYTHONDONTWRITEBYTECODE=1 \</span><br><span class="line">    PYTHONUNBUFFERED=1</span><br><span class="line"></span><br><span class="line">RUN apt-get update &amp;&amp; apt-get install -y --no-install-recommends \</span><br><span class="line">    python3 \</span><br><span class="line">    python3-pip \</span><br><span class="line">    python3-venv \</span><br><span class="line">    python3-dev \</span><br><span class="line">    git \</span><br><span class="line">    build-essential \</span><br><span class="line">    curl \</span><br><span class="line">    ca-certificates \</span><br><span class="line">    libglib2.0-0 \</span><br><span class="line">    libsm6 \</span><br><span class="line">    libxrender1 \</span><br><span class="line">    libxext6 \</span><br><span class="line">    &amp;&amp; <span class="built_in">rm</span> -rf /var/lib/apt/lists/*</span><br><span class="line"></span><br><span class="line">RUN <span class="built_in">ln</span> -sf /usr/bin/python3 /usr/bin/python \</span><br><span class="line">    &amp;&amp; python -m pip install --upgrade <span class="string">"pip&lt;24.1"</span> setuptools wheel</span><br><span class="line"></span><br><span class="line">WORKDIR /workspace/Earthformer</span><br></pre></td></tr></table></figure>
+<p>在项目目录下的 PowerShell 构建基础镜像：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t earthformer:base .</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402183705831.png" alt="image-20260402183705831">
+<figcaption aria-hidden="true">image-20260402183705831</figcaption>
+</figure>
+<p>继续在 Dockerfile 添加：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">COPY . /workspace/Earthformer</span><br><span class="line"></span><br><span class="line">RUN python -m pip install --index-url https://download.pytorch.org/whl/cu128 torch torchvision torchaudio \</span><br><span class="line">    &amp;&amp; python -m pip install <span class="string">"numpy&lt;2"</span> \</span><br><span class="line">    &amp;&amp; python -m pip install -i https://pypi.org/simple pytorch-lightning==1.6.4 \</span><br><span class="line">    &amp;&amp; python -m pip install xarray netcdf4 opencv-python earthnet==0.3.9 scikit-learn awscli \</span><br><span class="line">    &amp;&amp; python -m pip install -U -e . --no-build-isolation -i https://pypi.org/simple \</span><br><span class="line">    &amp;&amp; python -m pip install <span class="string">"numpy&lt;2"</span> --upgrade --no-cache-dir</span><br><span class="line"></span><br><span class="line">CMD [<span class="string">"bash"</span>]</span><br></pre></td></tr></table></figure>
+<p>最后构建项目完整的运行镜像:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t earthformer:cu128 .</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402200749377.png" alt="image-20260402200749377">
+<figcaption aria-hidden="true">image-20260402200749377</figcaption>
+</figure>
+<p>最后打包成压缩包：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker save -o earthformer_cu128.tar earthformer:cu128</span><br></pre></td></tr></table></figure>
+<h2 id="d-部署项目">4090D 部署项目</h2>
+<p>在实验室的电脑上用管理员模式打开 PowerShell，实验室的电脑是
+Win10：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart</span><br><span class="line">dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart</span><br></pre></td></tr></table></figure>
+<p>下载 WSL 2 内核：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://aka.ms/wsl2kernel</span><br></pre></td></tr></table></figure>
+<p>重启电脑后设置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl --set-default-version 2</span><br></pre></td></tr></table></figure>
+<p>安装 Ubuntu：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wsl --install -d Ubuntu</span><br></pre></td></tr></table></figure>
+<p>安装完成后会弹出黑窗口输入用户名和密码。</p>
+<p>接着在 Ubuntu 命令行中执行升级：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt upgrade -y</span><br></pre></td></tr></table></figure>
+<p>安装 docker：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> add-apt-repository <span class="string">"deb [arch=amd64] https://mirrors.aliyun.com/docker-ce/linux/ubuntu <span class="subst">$(lsb_release -cs)</span> stable"</span></span><br><span class="line"><span class="built_in">sudo</span> apt install -y docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
+<p>将用户加入 docker 组：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> usermod -aG docker tjteam</span><br></pre></td></tr></table></figure>
+<p>完成这些创建工作后，就可以开始进入运行 docker 的环节了。</p>
+<p>导入镜像：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker load -i D:\lvchao\earthformer_cu128.tar</span><br><span class="line">docker images | findstr earthformer</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402224528089.png" alt="image-20260402224528089">
+<figcaption aria-hidden="true">image-20260402224528089</figcaption>
+</figure>
+<p>4090 机器上的驱动版本 560.94 支持的最高 CUDA 版本是 12.6，而我的
+docker 需要 CUDA &gt;= 12.8。这里打开 NVIDIA App，点击 “Drivers”
+选项卡，点击 “Download” 下载最新驱动即可。最后升级到了 Driver Version:
+595.97 以及 CUDA Version: 13.2。</p>
+<p>因为我会在 4090D
+上进行代码的修改，所以选择使用开发挂载模式。因此，宿主机要放代码，可以直接从已导入的镜像里把代码拷贝到宿主机：</p>
+<ol type="1">
+<li><p>在宿主机创建代码目录</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> D:\Earthformer</span><br></pre></td></tr></table></figure></li>
+<li><p>基于镜像创建一个临时容器</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker create --name ef_tmp earthformer:cu128</span><br></pre></td></tr></table></figure></li>
+<li><p>把容器里的项目代码拷到宿主机</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">cp</span> ef_tmp:/workspace/Earthformer/. D:\Earthformer</span><br></pre></td></tr></table></figure></li>
+<li><p>删除临时容器</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">rm</span> ef_tmp</span><br></pre></td></tr></table></figure></li>
+<li><p>确认代码已到宿主机</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">dir</span> D:\Earthformer</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>启动命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --<span class="built_in">rm</span> --gpus all -it -v D:\Earthformer:/workspace/Earthformer -w /workspace/Earthformer earthformer:cu128 bash</span><br></pre></td></tr></table></figure>
+<p>进入容器后的运行命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python scripts/cuboid_transformer/moving_mnist/train_cuboid_mnist.py --gpus 1 --cfg scripts/cuboid_transformer/moving_mnist/cfg.yaml --save run_4090d_mnist</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/eb82ab5f3a1175c105ad8afd64ccc6c1.png" alt="eb82ab5f3a1175c105ad8afd64ccc6c1">
+<figcaption aria-hidden="true">eb82ab5f3a1175c105ad8afd64ccc6c1</figcaption>
+</figure>
+<p>这次体验非常流畅，第一次做这些事情，大概一个下午的时间就能弄完（除去睡午觉、吃饭、跑代码）。多亏了
+AI 帮助，全程都是 GPT 带着我弄的。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2026/04/03/%E5%9C%A8%E5%B9%BF%E6%B5%B7%E7%9A%84%E4%B8%89%E6%9C%88%E4%BB%BD-%E6%88%91%E6%9C%AC%E7%A7%91%E7%9A%84%E6%9C%80%E5%90%8E%E4%B8%80%E5%AD%A6%E6%9C%9F/" rel="prev" title="在广海的三月份 | 我本科的最后一学期">
+      <i class="fa fa-chevron-left"></i> 在广海的三月份 | 我本科的最后一学期
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#earthformer-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95"><span class="nav-number">1.</span> <span class="nav-text">Earthformer 环境配置记录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-anaconda"><span class="nav-number">1.1.</span> <span class="nav-text">安装 Anaconda</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83"><span class="nav-number">1.2.</span> <span class="nav-text">创建虚拟环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-pytorch"><span class="nav-number">1.3.</span> <span class="nav-text">安装 PyTorch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E9%A1%B9%E7%9B%AE%E4%BE%9D%E8%B5%96"><span class="nav-number">1.4.</span> <span class="nav-text">安装项目依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%BC%E5%AE%B9%E6%80%A7%E5%A4%84%E7%90%86"><span class="nav-number">1.5.</span> <span class="nav-text">兼容性处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E8%BF%90%E8%A1%8C"><span class="nav-number">1.6.</span> <span class="nav-text">项目运行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#docker-%E5%B0%81%E8%A3%85"><span class="nav-number">1.7.</span> <span class="nav-text">Docker 封装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#d-%E9%83%A8%E7%BD%B2%E9%A1%B9%E7%9B%AE"><span class="nav-number">1.8.</span> <span class="nav-text">4090D 部署项目</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ChuantaoLi"
+      src="/uploads/%E7%8C%AB%E5%92%AA%E5%A4%B4%E5%83%8F.jpg">
+  <p class="site-author-name" itemprop="name">ChuantaoLi</p>
+  <div class="site-description" itemprop="description">感知幸福是一种能力</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ChuantaoLi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-pjax@0/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+    </div>
+</body>
+</html>
