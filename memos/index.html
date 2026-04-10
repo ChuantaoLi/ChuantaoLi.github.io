@@ -306,7 +306,6 @@
     }
   }
 </style>
-
 <div id="bber">
   <div class="bb-loading"><i class="fas fa-circle-notch fa-spin"></i>Loading memos...</div>
 </div>
@@ -319,17 +318,95 @@
     creatorId: 1,
     domId: '#bber'
   };
-
-<p>  function normalizeMemos(raw) {<br>    if (Array.isArray(raw)) return raw;<br>    if (Array.isArray(raw.data)) return raw.data;<br>    if (Array.isArray(raw.memos)) return raw.memos;<br>    if (raw.data &amp;&amp; Array.isArray(raw.data.memos)) return raw.data.memos;<br>    return [];<br>  }</p>
-<p>  function normalizeContent(memo) {<br>    return memo.content || memo.displayContent || memo.memo || ‘’;<br>  }</p>
-<p>  function normalizeTimestamp(memo) {<br>    if (typeof memo.createdTs &#x3D;&#x3D;&#x3D; ‘number’) return memo.createdTs * 1000;<br>    if (typeof memo.createTime &#x3D;&#x3D;&#x3D; ‘string’) return new Date(memo.createTime).getTime();<br>    if (typeof memo.createdAt &#x3D;&#x3D;&#x3D; ‘string’) return new Date(memo.createdAt).getTime();<br>    return Date.now();<br>  }</p>
-<p>  function buildApiCandidates() {<br>    var base &#x3D; bbMemos.memos.endsWith(‘&#x2F;‘) ? bbMemos.memos : bbMemos.memos + ‘&#x2F;‘;<br>    var limit &#x3D; encodeURIComponent(bbMemos.limit);<br>    var creator &#x3D; encodeURIComponent(bbMemos.creatorId);<br>    return [<br>      base + ‘api&#x2F;v1&#x2F;memos?creatorId&#x3D;’ + creator + ‘&amp;limit&#x3D;’ + limit + ‘&amp;rowStatus&#x3D;NORMAL’,<br>      base + ‘api&#x2F;v1&#x2F;memo?creatorId&#x3D;’ + creator + ‘&amp;limit&#x3D;’ + limit + ‘&amp;rowStatus&#x3D;NORMAL’,<br>      base + ‘api&#x2F;v1&#x2F;memos?pageSize&#x3D;’ + limit + ‘&amp;filter&#x3D;visibility%20%3D%3D%20%22PUBLIC%22’,<br>      base + ‘api&#x2F;v1&#x2F;memos?pageSize&#x3D;’ + limit<br>    ];<br>  }</p>
-<p>  async function fetchWithTimeout(url, timeoutMs) {<br>    var controller &#x3D; new AbortController();<br>    var timer &#x3D; setTimeout(function () { controller.abort(); }, timeoutMs);<br>    try {<br>      return await fetch(url, {<br>        headers: { ‘Accept’: ‘application&#x2F;json’ },<br>        signal: controller.signal<br>      });<br>    } finally {<br>      clearTimeout(timer);<br>    }<br>  }</p>
-<p>  function renderToolbar(count) {<br>    return ‘<div class="bb-toolbar"><div class="bb-count"><i class="far fa-comment-dots"></i><span>‘ + count + ‘ memos</span></div><button class="bb-refresh" type="button"><i class="fas fa-sync-alt"></i> Refresh</button></div>‘;<br>  }</p>
-<p>  function renderCards(memos) {<br>    return memos.map(function (memo) {<br>      var content &#x3D; marked.parse(normalizeContent(memo));<br>      var date &#x3D; new Date(normalizeTimestamp(memo)).toLocaleString();<br>      return ‘<article class="bb-list-item"><div class="bb-content">‘ + content + ‘</div><time class="bb-datetime"><i class="far fa-clock"></i><span>‘ + date + ‘</span></time></article>‘;<br>    }).join(‘’);<br>  }</p>
-<p>  async function fetchMemos() {<br>    var candidates &#x3D; buildApiCandidates();<br>    var lastError &#x3D; null;<br>    for (var i &#x3D; 0; i &lt; candidates.length; i++) {<br>      try {<br>        var res &#x3D; await fetchWithTimeout(candidates[i], 9000);<br>        if (!res.ok) throw new Error(‘HTTP ‘ + res.status);<br>        var json &#x3D; await res.json();<br>        var memos &#x3D; normalizeMemos(json);<br>        if (memos.length) return memos;<br>      } catch (e) {<br>        lastError &#x3D; e;<br>      }<br>    }<br>    if (lastError) throw lastError;<br>    return [];<br>  }</p>
-<p>  async function loadMemos() {<br>    var bber &#x3D; document.querySelector(bbMemos.domId);<br>    bber.innerHTML &#x3D; ‘<div class="bb-loading"><i class="fas fa-circle-notch fa-spin"></i>Loading memos…</div>‘;<br>    try {<br>      var memos &#x3D; await fetchMemos();<br>      if (!memos.length) {<br>        bber.innerHTML &#x3D; ‘<div class="bb-empty"><i class="far fa-folder-open"></i> No memos yet.</div>‘;<br>        return;<br>      }<br>      bber.innerHTML &#x3D; renderToolbar(memos.length) + renderCards(memos);<br>      var refreshButton &#x3D; bber.querySelector(‘.bb-refresh’);<br>      if (refreshButton) refreshButton.addEventListener(‘click’, loadMemos);<br>      if (window.ViewImage) ViewImage.init(‘.bb-content img’);<br>    } catch (err) {<br>      bber.innerHTML &#x3D; ‘<div class="bb-error"><i class="fas fa-exclamation-triangle"></i> Failed to load memos.</div>‘;<br>    }<br>  }</p>
-<p>  if (document.readyState &#x3D;&#x3D;&#x3D; ‘loading’) {<br>    window.addEventListener(‘DOMContentLoaded’, loadMemos);<br>  } else {<br>    loadMemos();<br>  }<br></script></p>
+<p>function normalizeMemos(raw) {<br />
+if (Array.isArray(raw)) return raw;<br />
+if (Array.isArray(raw.data)) return raw.data;<br />
+if (Array.isArray(raw.memos)) return raw.memos;<br />
+if (raw.data &amp;&amp; Array.isArray(raw.data.memos)) return raw.data.memos;<br />
+return [];<br />
+}</p>
+<p>function normalizeContent(memo) {<br />
+return memo.content || memo.displayContent || memo.memo || ‘’;<br />
+}</p>
+<p>function normalizeTimestamp(memo) {<br />
+if (typeof memo.createdTs === ‘number’) return memo.createdTs * 1000;<br />
+if (typeof memo.createTime === ‘string’) return new Date(memo.createTime).getTime();<br />
+if (typeof memo.createdAt === ‘string’) return new Date(memo.createdAt).getTime();<br />
+return Date.now();<br />
+}</p>
+<p>function buildApiCandidates() {<br />
+var base = bbMemos.memos.endsWith(‘/’) ? bbMemos.memos : bbMemos.memos + ‘/’;<br />
+var limit = encodeURIComponent(bbMemos.limit);<br />
+var creator = encodeURIComponent(bbMemos.creatorId);<br />
+return [<br />
+base + ‘api/v1/memos?creatorId=’ + creator + ‘&amp;limit=’ + limit + ‘&amp;rowStatus=NORMAL’,<br />
+base + ‘api/v1/memo?creatorId=’ + creator + ‘&amp;limit=’ + limit + ‘&amp;rowStatus=NORMAL’,<br />
+base + ‘api/v1/memos?pageSize=’ + limit + ‘&amp;filter=visibility%20%3D%3D%20%22PUBLIC%22’,<br />
+base + ‘api/v1/memos?pageSize=’ + limit<br />
+];<br />
+}</p>
+<p>async function fetchWithTimeout(url, timeoutMs) {<br />
+var controller = new AbortController();<br />
+var timer = setTimeout(function () { controller.abort(); }, timeoutMs);<br />
+try {<br />
+return await fetch(url, {<br />
+headers: { ‘Accept’: ‘application/json’ },<br />
+signal: controller.signal<br />
+});<br />
+} finally {<br />
+clearTimeout(timer);<br />
+}<br />
+}</p>
+<p>function renderToolbar(count) {<br />
+return ‘<div class="bb-toolbar"><div class="bb-count"><i class="far fa-comment-dots"></i><span>’ + count + ’ memos</span></div><button class="bb-refresh" type="button"><i class="fas fa-sync-alt"></i> Refresh</button></div>';<br />
+}</p>
+<p>function renderCards(memos) {<br />
+return memos.map(function (memo) {<br />
+var content = marked.parse(normalizeContent(memo));<br />
+var date = new Date(normalizeTimestamp(memo)).toLocaleString();<br />
+return ‘<article class="bb-list-item"><div class="bb-content">’ + content + ‘</div><time class="bb-datetime"><i class="far fa-clock"></i><span>’ + date + ‘</span></time></article>’;<br />
+}).join(‘’);<br />
+}</p>
+<p>async function fetchMemos() {<br />
+var candidates = buildApiCandidates();<br />
+var lastError = null;<br />
+for (var i = 0; i &lt; candidates.length; i++) {<br />
+try {<br />
+var res = await fetchWithTimeout(candidates[i], 9000);<br />
+if (!res.ok) throw new Error('HTTP ’ + res.status);<br />
+var json = await res.json();<br />
+var memos = normalizeMemos(json);<br />
+if (memos.length) return memos;<br />
+} catch (e) {<br />
+lastError = e;<br />
+}<br />
+}<br />
+if (lastError) throw lastError;<br />
+return [];<br />
+}</p>
+<p>async function loadMemos() {<br />
+var bber = document.querySelector(bbMemos.domId);<br />
+bber.innerHTML = ‘<div class="bb-loading"><i class="fas fa-circle-notch fa-spin"></i>Loading memos…</div>’;<br />
+try {<br />
+var memos = await fetchMemos();<br />
+if (!memos.length) {<br />
+bber.innerHTML = ‘<div class="bb-empty"><i class="far fa-folder-open"></i> No memos yet.</div>’;<br />
+return;<br />
+}<br />
+bber.innerHTML = renderToolbar(memos.length) + renderCards(memos);<br />
+var refreshButton = bber.querySelector(‘.bb-refresh’);<br />
+if (refreshButton) refreshButton.addEventListener(‘click’, loadMemos);<br />
+if (window.ViewImage) ViewImage.init(‘.bb-content img’);<br />
+} catch (err) {<br />
+bber.innerHTML = ‘<div class="bb-error"><i class="fas fa-exclamation-triangle"></i> Failed to load memos.</div>’;<br />
+}<br />
+}</p>
+<p>if (document.readyState === ‘loading’) {<br />
+window.addEventListener(‘DOMContentLoaded’, loadMemos);<br />
+} else {<br />
+loadMemos();<br />
+}<br />
+</script></p>
 
       </div>
       
@@ -564,58 +641,8 @@ window.addEventListener('pjax:success', () => {
 
   
       
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css">
 
-<script>
-  if (typeof MathJax === 'undefined') {
-    window.MathJax = {
-      loader: {
-        source: {
-          '[tex]/amsCd': '[tex]/amscd',
-          '[tex]/AMScd': '[tex]/amscd'
-        }
-      },
-      tex: {
-        inlineMath: {'[+]': [['$', '$']]},
-        tags: 'ams'
-      },
-      options: {
-        renderActions: {
-          findScript: [10, doc => {
-            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
-              const display = !!node.type.match(/; *mode=display/);
-              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
-              const text = document.createTextNode('');
-              node.parentNode.replaceChild(text, node);
-              math.start = {node: text, delim: '', n: 0};
-              math.end = {node: text, delim: '', n: 0};
-              doc.math.push(math);
-            });
-          }, '', false],
-          insertedScript: [200, () => {
-            document.querySelectorAll('mjx-container').forEach(node => {
-              let target = node.parentNode;
-              if (target.nodeName.toLowerCase() === 'li') {
-                target.parentNode.classList.add('has-jax');
-              }
-            });
-          }, '', false]
-        }
-      }
-    };
-    (function () {
-      var script = document.createElement('script');
-      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
-      script.defer = true;
-      document.head.appendChild(script);
-    })();
-  } else {
-    MathJax.startup.document.state(0);
-    MathJax.texReset();
-    MathJax.typeset();
-  }
-</script>
-
-    
 
   
 
