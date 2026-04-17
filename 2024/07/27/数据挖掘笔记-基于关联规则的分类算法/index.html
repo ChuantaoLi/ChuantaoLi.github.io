@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 8.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":360,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="基于关联规则的分类算法 目前使用较多且较为简洁的关联规则分类算法是基于关联规则的分类算法（Classification Based on Association, CBA），下面将从该算法的相关概念开始介绍。  这部分笔记参考论文：孙菡悦.基于多因素交互效应的农村贫困家庭精准识别研究[D].   华东师范大学,   2022. 示例和解释参考ChatGPT。   项集、频繁项集、关联规则 以一个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据挖掘笔记-基于关联规则的分类算法">
+<meta property="og:url" content="http://example.com/2024/07/27/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0-%E5%9F%BA%E4%BA%8E%E5%85%B3%E8%81%94%E8%A7%84%E5%88%99%E7%9A%84%E5%88%86%E7%B1%BB%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="梨串桃的生活日记">
+<meta property="og:description" content="基于关联规则的分类算法 目前使用较多且较为简洁的关联规则分类算法是基于关联规则的分类算法（Classification Based on Association, CBA），下面将从该算法的相关概念开始介绍。  这部分笔记参考论文：孙菡悦.基于多因素交互效应的农村贫困家庭精准识别研究[D].   华东师范大学,   2022. 示例和解释参考ChatGPT。   项集、频繁项集、关联规则 以一个">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/9b00fa7b7fbb5c60865a06346c88e8b2.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/e8dfe03f6294dc6404352b10e41876d2.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/54b174b4b7e264588e475530f511b5f1.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/ecf5c0d82062ce2599eecdc56c608392.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/14102b2458b2b7e64614aa6512f50aa5.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/a1684d500e47d96ccd09d246acf89cac.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/76ae13ee27d6365e14337d722669ee75.png">
+<meta property="article:published_time" content="2024-07-27T09:03:26.000Z">
+<meta property="article:modified_time" content="2026-04-17T09:20:42.462Z">
+<meta property="article:author" content="ChuantaoLi">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/9b00fa7b7fbb5c60865a06346c88e8b2.png">
+
+<link rel="canonical" href="http://example.com/2024/07/27/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0-%E5%9F%BA%E4%BA%8E%E5%85%B3%E8%81%94%E8%A7%84%E5%88%99%E7%9A%84%E5%88%86%E7%B1%BB%E7%AE%97%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>数据挖掘笔记-基于关联规则的分类算法 | 梨串桃的生活日记</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="梨串桃的生活日记" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">梨串桃的生活日记</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-技术博客">
+
+    <a href="/tech/" rel="section"><i class="fa fa-laptop-code fa-fw"></i>技术博客</a>
+
+  </li>
+        <li class="menu-item menu-item-想法观点">
+
+    <a href="/ideas/" rel="section"><i class="fa fa-lightbulb fa-fw"></i>想法观点</a>
+
+  </li>
+        <li class="menu-item menu-item-生活记录">
+
+    <a href="/life/" rel="section"><i class="far fa-comment-dots fa-fw"></i>生活记录</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/07/27/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0-%E5%9F%BA%E4%BA%8E%E5%85%B3%E8%81%94%E8%A7%84%E5%88%99%E7%9A%84%E5%88%86%E7%B1%BB%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/%E7%8C%AB%E5%92%AA%E5%A4%B4%E5%83%8F.jpg">
+      <meta itemprop="name" content="ChuantaoLi">
+      <meta itemprop="description" content="感知幸福是一种能力">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梨串桃的生活日记">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据挖掘笔记-基于关联规则的分类算法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-07-27 17:03:26" itemprop="dateCreated datePublished" datetime="2024-07-27T17:03:26+08:00">2024-07-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2026-04-17 17:20:42" itemprop="dateModified" datetime="2026-04-17T17:20:42+08:00">2026-04-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/" itemprop="url" rel="index"><span itemprop="name">技术博客</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>14 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="基于关联规则的分类算法"><a class="markdownIt-Anchor" href="#基于关联规则的分类算法"></a> 基于关联规则的分类算法</h2>
+<p>目前使用较多且较为简洁的关联规则分类算法是基于关联规则的分类算法（Classification Based on Association, CBA），下面将从该算法的相关概念开始介绍。</p>
+<blockquote>
+<p>这部分笔记参考论文：孙菡悦.基于多因素交互效应的农村贫困家庭精准识别研究[D].   华东师范大学,   2022.</p>
+<p>示例和解释参考ChatGPT。</p>
+</blockquote>
+<h3 id="项集-频繁项集-关联规则"><a class="markdownIt-Anchor" href="#项集-频繁项集-关联规则"></a> 项集、频繁项集、关联规则</h3>
+<p>以一个小型的交易数据集为例：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">交易ID (Transaction ID)</th>
+<th style="text-align:center">购买的商品 (Items)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">牛奶, 面包, 黄油</td>
+</tr>
+<tr>
+<td style="text-align:center">2</td>
+<td style="text-align:center">面包, 黄油, 啤酒</td>
+</tr>
+<tr>
+<td style="text-align:center">3</td>
+<td style="text-align:center">牛奶, 面包, 可乐</td>
+</tr>
+<tr>
+<td style="text-align:center">4</td>
+<td style="text-align:center">牛奶, 面包, 黄油, 啤酒</td>
+</tr>
+<tr>
+<td style="text-align:center">5</td>
+<td style="text-align:center">面包, 可乐</td>
+</tr>
+</tbody>
+</table>
+<h4 id="项集-itemsets"><a class="markdownIt-Anchor" href="#项集-itemsets"></a> 项集 (Itemsets)</h4>
+<p>在这个数据集中，项集可以是不同商品的组合。我们可以从单个商品（单项集）开始，逐步扩展到多个商品的组合（多项集）。</p>
+<ul>
+<li>单项集（1-itemset）：{牛奶}、{面包}、{黄油}、{啤酒}、{可乐}</li>
+<li>二项集（2-itemset）：{牛奶, 面包}、{牛奶, 黄油}、{面包, 黄油}、{面包, 啤酒} 等等</li>
+<li>三项集（3-itemset）：{牛奶, 面包, 黄油}、{面包, 黄油, 啤酒} 等等</li>
+</ul>
+<h4 id="频繁项集-frequent-itemsets"><a class="markdownIt-Anchor" href="#频繁项集-frequent-itemsets"></a> 频繁项集 (Frequent Itemsets)</h4>
+<p>频繁项集是指在交易数据中出现频率较高的项集。我们可以设定一个最小支持度阈值，比如 60%（即项集至少出现在60%的交易中）。</p>
+<ul>
+<li>支持度 (Support) 的计算方法是项集出现的次数除以总交易次数。例如，项集 {牛奶, 面包} 出现了3次（交易ID 1, 3, 4），总交易次数为5次，所以支持度为 3/5 = 60%。</li>
+</ul>
+<p>根据上述数据集，频繁项集可能包括：</p>
+<ul>
+<li>{牛奶, 面包}，支持度 = 3/5 = 60%</li>
+<li>{面包, 黄油}，支持度 = 3/5 = 60%</li>
+<li>{面包}，支持度 = 5/5 = 100%</li>
+</ul>
+<p>如果关联规则$ A \Rightarrow B$在发生频率不小于预先设定阈值的基础上同时符合最小置信度要求，则进一步定义该关联规则为强关联规则。</p>
+<h4 id="关联规则-association-rules"><a class="markdownIt-Anchor" href="#关联规则-association-rules"></a> 关联规则 (Association Rules)</h4>
+<p>从频繁项集中，我们可以生成关联规则，表示商品之间的关系。关联规则的形式为$ A \Rightarrow B$，表示如果购买了商品 A，则很可能会购买商品 B。关联规则有两个重要指标：</p>
+<ul>
+<li>支持度 (Support)：规则中项集的出现频率。例如，规则 {牛奶} -&gt; {面包} 的支持度为 3/5 = 60%。</li>
+<li>置信度 (Confidence)：表示在包含前件的交易中也包含后件的交易比例。例如，规则 {牛奶} -&gt; {面包} 的置信度为包含 {牛奶} 的交易中同时包含 {面包} 的比例。在包含 {牛奶} 的3笔交易（交易ID 1, 3, 4）中，有3笔同时包含 {面包}，所以置信度为 3/3 = 100%。该规则的置信度定义为在事件 A 发生的条件下，事件 B 发生的概率，用公式表示为：</li>
+</ul>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>c</mi><mi>o</mi><mi>n</mi><mi>f</mi><mi>i</mi><mi>d</mi><mi>e</mi><mi>n</mi><mi>c</mi><mi>e</mi><mo stretchy="false">(</mo><mi>A</mi><mo>⇒</mo><mi>B</mi><mo stretchy="false">)</mo><mo>=</mo><mi>P</mi><mo stretchy="false">(</mo><mi>B</mi><mi mathvariant="normal">∣</mi><mi>A</mi><mo stretchy="false">)</mo><mo>=</mo><mfrac><mrow><mi>s</mi><mi>u</mi><mi>p</mi><mi>p</mi><mo stretchy="false">(</mo><mi>A</mi><mo>∪</mo><mi>B</mi><mo stretchy="false">)</mo></mrow><mrow><mi>s</mi><mi>u</mi><mi>p</mi><mi>p</mi><mo stretchy="false">(</mo><mi>A</mi><mo stretchy="false">)</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">confidence(A\Rightarrow B)=P(B|A)=\frac{supp(A\cup B)}{supp(A)}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">c</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord mathnormal">i</span><span class="mord mathnormal">d</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mord mathnormal">c</span><span class="mord mathnormal">e</span><span class="mopen">(</span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">⇒</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">∣</span><span class="mord mathnormal">A</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.363em;vertical-align:-0.936em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="mord mathnormal">u</span><span class="mord mathnormal">p</span><span class="mord mathnormal">p</span><span class="mopen">(</span><span class="mord mathnormal">A</span><span class="mclose">)</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="mord mathnormal">u</span><span class="mord mathnormal">p</span><span class="mord mathnormal">p</span><span class="mopen">(</span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∪</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">)</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.936em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p>基于频繁项集，我们可以得出一些关联规则：</p>
+<ol>
+<li>{牛奶} -&gt; {面包}
+<ul>
+<li>支持度：3/5 = 60%</li>
+<li>置信度：3/3 = 100%</li>
+</ul>
+</li>
+<li>{面包} -&gt; {黄油}
+<ul>
+<li>支持度：3/5 = 60%</li>
+<li>置信度：3/5 = 60%</li>
+</ul>
+</li>
+<li>{黄油} -&gt; {面包}
+<ul>
+<li>支持度：3/5 = 60%</li>
+<li>置信度：3/3 = 100%</li>
+</ul>
+</li>
+</ol>
+<h3 id="apriori算法"><a class="markdownIt-Anchor" href="#apriori算法"></a> Apriori算法</h3>
+<ol>
+<li><strong>生成候选项集（Candidate Generation）</strong>：
+<ul>
+<li>通过连接频繁项集生成候选项集。频繁项集的连接是通过对频繁项集中的项进行组合来完成的。例如，从频繁1项集生成候选2项集。</li>
+</ul>
+</li>
+<li><strong>剪枝（Pruning）</strong>：
+<ul>
+<li>利用Apriori性质：如果一个项集是频繁的，那么它的所有子集也是频繁的；如果一个项集是非频繁的，那么它的所有超集也是非频繁的。因此，可以在候选项集中删除那些包含非频繁子集的项集，从而减少计算量。</li>
+</ul>
+</li>
+<li><strong>计算支持度（Support Counting）</strong>：
+<ul>
+<li>通过扫描交易数据库，计算每个候选项集的支持度。保留支持度不小于最小支持度阈值的候选项集，作为频繁项集。</li>
+</ul>
+</li>
+<li><strong>重复上述步骤</strong>：
+<ul>
+<li>从频繁k项集生成频繁(k+1)项集，直到无法生成更多的频繁项集为止。</li>
+</ul>
+</li>
+</ol>
+<p>假设有如下交易数据集，最小支持度阈值为50%（即支持度 ≥ 0.5）：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">交易ID</th>
+<th style="text-align:center">购买的商品</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">T1</td>
+<td style="text-align:center">{A, B, C}</td>
+</tr>
+<tr>
+<td style="text-align:center">T2</td>
+<td style="text-align:center">{A, C}</td>
+</tr>
+<tr>
+<td style="text-align:center">T3</td>
+<td style="text-align:center">{A, B, D}</td>
+</tr>
+<tr>
+<td style="text-align:center">T4</td>
+<td style="text-align:center">{B, C}</td>
+</tr>
+<tr>
+<td style="text-align:center">T5</td>
+<td style="text-align:center">{A, B, C, D}</td>
+</tr>
+</tbody>
+</table>
+<p><strong>步骤1：生成频繁1项集<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">L1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mord">1</span></span></span></span></strong></p>
+<p>扫描交易数据库，计算每个单项的支持度：</p>
+<ul>
+<li>{A}: 4/5 = 0.8</li>
+<li>{B}: 4/5 = 0.8</li>
+<li>{C}: 4/5 = 0.8</li>
+<li>{D}: 2/5 = 0.4</li>
+</ul>
+<p>支持度不小于0.5的项集为频繁项集：</p>
+<p><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mn>1</mn><mo>=</mo><mo stretchy="false">{</mo><mo stretchy="false">{</mo><mi>A</mi><mo stretchy="false">}</mo><mo separator="true">,</mo><mo stretchy="false">{</mo><mi>B</mi><mo stretchy="false">}</mo><mo separator="true">,</mo><mo stretchy="false">{</mo><mi>C</mi><mo stretchy="false">}</mo><mo stretchy="false">}</mo></mrow><annotation encoding="application/x-tex">L1 = \{ \{A\}, \{B\}, \{C\} \}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">{</span><span class="mopen">{</span><span class="mord mathnormal">A</span><span class="mclose">}</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mopen">{</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">}</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mopen">{</span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mclose">}</span><span class="mclose">}</span></span></span></span></p>
+<p><strong>步骤2：生成候选2项集<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">C2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mord">2</span></span></span></span></strong></p>
+<p>对频繁1项集进行连接：</p>
+<p><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mn>2</mn><mo>=</mo><mo stretchy="false">{</mo><mo stretchy="false">{</mo><mi>A</mi><mo separator="true">,</mo><mi>B</mi><mo stretchy="false">}</mo><mo separator="true">,</mo><mo stretchy="false">{</mo><mi>A</mi><mo separator="true">,</mo><mi>C</mi><mo stretchy="false">}</mo><mo separator="true">,</mo><mo stretchy="false">{</mo><mi>B</mi><mo separator="true">,</mo><mi>C</mi><mo stretchy="false">}</mo><mo stretchy="false">}</mo></mrow><annotation encoding="application/x-tex">C2 = \{ \{A, B\}, \{A, C\}, \{B, C\} \}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mord">2</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">{</span><span class="mopen">{</span><span class="mord mathnormal">A</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">}</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mopen">{</span><span class="mord mathnormal">A</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mclose">}</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mopen">{</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mclose">}</span><span class="mclose">}</span></span></span></span></p>
+<p>计算候选2项集的支持度：</p>
+<ul>
+<li>{A, B}: 3/5 = 0.6</li>
+<li>{A, C}: 3/5 = 0.6</li>
+<li>{B, C}: 3/5 = 0.6</li>
+</ul>
+<p>支持度不小于0.5的项集为频繁项集：</p>
+<p><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mn>2</mn><mo>=</mo><mo stretchy="false">{</mo><mo stretchy="false">{</mo><mi>A</mi><mo separator="true">,</mo><mi>B</mi><mo stretchy="false">}</mo><mo separator="true">,</mo><mo stretchy="false">{</mo><mi>A</mi><mo separator="true">,</mo><mi>C</mi><mo stretchy="false">}</mo><mo separator="true">,</mo><mo stretchy="false">{</mo><mi>B</mi><mo separator="true">,</mo><mi>C</mi><mo stretchy="false">}</mo><mo stretchy="false">}</mo></mrow><annotation encoding="application/x-tex">L2 = \{ \{A, B\}, \{A, C\}, \{B, C\} \}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mord">2</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">{</span><span class="mopen">{</span><span class="mord mathnormal">A</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">}</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mopen">{</span><span class="mord mathnormal">A</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mclose">}</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mopen">{</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mclose">}</span><span class="mclose">}</span></span></span></span></p>
+<p><strong>步骤3：生成候选3项集<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">C3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mord">3</span></span></span></span></strong></p>
+<p>对频繁2项集进行连接：</p>
+<p><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mn>3</mn><mo>=</mo><mrow><mo stretchy="false">{</mo><mi>A</mi><mo separator="true">,</mo><mi>B</mi><mo separator="true">,</mo><mi>C</mi></mrow><mo stretchy="false">}</mo></mrow><annotation encoding="application/x-tex">C3={\{A,B,C}\}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mord">3</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mopen">{</span><span class="mord mathnormal">A</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span><span class="mclose">}</span></span></span></span></p>
+<p>计算候选3项集的支持度：</p>
+<ul>
+<li>{A, B, C}: 2/5 = 0.4</li>
+</ul>
+<p>支持度小于0.5，故没有频繁3项集：</p>
+<p><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mn>3</mn><mo>=</mo><mtext>∅</mtext></mrow><annotation encoding="application/x-tex">L3=∅</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mord">3</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.80556em;vertical-align:-0.05556em;"></span><span class="mord">∅</span></span></span></span></p>
+<p>至此，算法终止，得到的频繁项集为：</p>
+<p><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><mo stretchy="false">{</mo><mi>L</mi><mn>1</mn><mo separator="true">,</mo><mi>L</mi><mn>2</mn><mo stretchy="false">}</mo><mo>=</mo><mrow><mo stretchy="false">{</mo><mo stretchy="false">{</mo><mo stretchy="false">{</mo><mi>A</mi><mo stretchy="false">}</mo><mo separator="true">,</mo><mo stretchy="false">{</mo><mi>B</mi><mo stretchy="false">}</mo><mo separator="true">,</mo><mo stretchy="false">{</mo><mi>C</mi><mo stretchy="false">}</mo><mo stretchy="false">}</mo><mo stretchy="false">}</mo><mo separator="true">,</mo><mo stretchy="false">{</mo><mo stretchy="false">{</mo><mi>A</mi><mo separator="true">,</mo><mi>B</mi><mo stretchy="false">}</mo><mo separator="true">,</mo><mo stretchy="false">{</mo><mi>A</mi><mo separator="true">,</mo><mi>C</mi><mo stretchy="false">}</mo><mo separator="true">,</mo><mo stretchy="false">{</mo><mi>B</mi><mo separator="true">,</mo><mi>C</mi><mo stretchy="false">}</mo><mo stretchy="false">}</mo></mrow></mrow><annotation encoding="application/x-tex">L=\{L1,L2\}={\{\{ \{A\}, \{B\}, \{C\} \}\},\{ \{A, B\}, \{A, C\}, \{B, C\} \}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">{</span><span class="mord mathnormal">L</span><span class="mord">1</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">L</span><span class="mord">2</span><span class="mclose">}</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mopen">{</span><span class="mopen">{</span><span class="mopen">{</span><span class="mord mathnormal">A</span><span class="mclose">}</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mopen">{</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">}</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mopen">{</span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mclose">}</span><span class="mclose">}</span><span class="mclose">}</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mopen">{</span><span class="mopen">{</span><span class="mord mathnormal">A</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">}</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mopen">{</span><span class="mord mathnormal">A</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mclose">}</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mopen">{</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mclose">}</span><span class="mclose">}</span></span></span></span></span></p>
+<p><strong>步骤4：关联规则生成</strong></p>
+<p>从频繁2项集中生成关联规则，并计算每条规则的置信度：</p>
+<ul>
+<li>规则 {A} -&gt; {B}
+<ul>
+<li>支持度：3/5 = 0.6</li>
+<li>置信度：3/4 = 0.75</li>
+</ul>
+</li>
+<li>规则 {B} -&gt; {A}
+<ul>
+<li>支持度：3/5 = 0.6</li>
+<li>置信度：3/4 = 0.75</li>
+</ul>
+</li>
+<li>规则 {A} -&gt; {C}
+<ul>
+<li>支持度：3/5 = 0.6</li>
+<li>置信度：3/4 = 0.75</li>
+</ul>
+</li>
+<li>规则 {C} -&gt; {A}
+<ul>
+<li>支持度：3/5 = 0.6</li>
+<li>置信度：3/4 = 0.75</li>
+</ul>
+</li>
+<li>规则 {B} -&gt; {C}
+<ul>
+<li>支持度：3/5 = 0.6</li>
+<li>置信度：3/4 = 0.75</li>
+</ul>
+</li>
+<li>规则 {C} -&gt; {B}
+<ul>
+<li>支持度：3/5 = 0.6</li>
+<li>置信度：3/4 = 0.75</li>
+</ul>
+</li>
+</ul>
+<h3 id="arulescba库的简单使用"><a class="markdownIt-Anchor" href="#arulescba库的简单使用"></a> arulesCBA库的简单使用</h3>
+<blockquote>
+<p>这里参考arulesCBA官方文档：<a target="_blank" rel="noopener" href="https://cran.r-project.org/web/packages/arulesCBA/arulesCBA.pdf%EF%BC%8C%E8%A7%A3%E9%87%8A%E5%8F%82%E8%80%83ChatGPT%E3%80%82">https://cran.r-project.org/web/packages/arulesCBA/arulesCBA.pdf，解释参考ChatGPT。</a></p>
+</blockquote>
+<h4 id="将连续特征离散化"><a class="markdownIt-Anchor" href="#将连续特征离散化"></a> 将连续特征离散化</h4>
+<p>由于CBA算法要求数据类型为离散型，arulesCBA封装好了离散化的函数，若需要根据实际问题采用其他算法，可参考上文引用的论文。</p>
+<p><code>discretizeDF.supervised</code>函数实现了几种有监督的方法，将连续变量转换为适用于关联规则挖掘和构建关联分类器的分类变量。</p>
+<p><strong>加载<code>iris</code>数据集并输出描述性统计结果：</strong></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data<span class="punctuation">(</span><span class="string">&quot;iris&quot;</span><span class="punctuation">)</span></span><br><span class="line">summary<span class="punctuation">(</span>iris<span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+<p>输出以下信息：</p>
+<p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/9b00fa7b7fbb5c60865a06346c88e8b2.png" alt="" /></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">iris.disc <span class="operator">&lt;-</span> discretizeDF.supervised<span class="punctuation">(</span>Species <span class="operator">~</span> .<span class="punctuation">,</span> iris<span class="punctuation">)</span></span><br><span class="line">summary<span class="punctuation">(</span>iris.disc<span class="punctuation">)</span></span><br><span class="line"><span class="built_in">attributes</span><span class="punctuation">(</span>iris.disc<span class="operator">$</span>Sepal.Length<span class="punctuation">)</span> <span class="comment"># 检查特定特征的属性</span></span><br></pre></td></tr></table></figure>
+<p>输出以下信息：</p>
+<p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/e8dfe03f6294dc6404352b10e41876d2.png" alt="" /></p>
+<p>以<code>Sepal.Length</code>:为例，被划分为三个区间 <code>[-Inf,5.55)</code>, <code>[5.55,6.15)</code>, <code>[6.15, Inf]</code>，每个区间的样本数量分别是59, 36, 和 55。</p>
+<p>也可以对指定的特征进行离散化：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iris.disc2 <span class="operator">&lt;-</span> discretizeDF.supervised<span class="punctuation">(</span>Species <span class="operator">~</span> Sepal.Length <span class="operator">+</span> Sepal.Width<span class="punctuation">,</span> iris<span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+<p><strong>使用前面离散规则对样本进行离散化：</strong></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">discretizeDF<span class="punctuation">(</span>head<span class="punctuation">(</span>iris<span class="punctuation">)</span><span class="punctuation">,</span> methods <span class="operator">=</span> iris.disc<span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+<p>这个命令使用之前通过<code>discretizeDF.supervised()</code>函数生成的离散化方法（<code>iris.disc</code>）对<code>iris</code>数据集的前六个样本进行离散化，输出以下信息：</p>
+<p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/54b174b4b7e264588e475530f511b5f1.png" alt="" /></p>
+<h3 id="挖掘iris数据集的关联规则"><a class="markdownIt-Anchor" href="#挖掘iris数据集的关联规则"></a> 挖掘iris数据集的关联规则</h3>
+<p><strong>导入库：</strong><code>library(arulesCBA)</code></p>
+<p><strong>创建分类器：</strong><code>classifier &lt;- CBA(Species ~ ., data = iris, supp = 0.05, conf = 0.9)</code></p>
+<p><strong>第一个参数：</strong><code>Species</code>是目标变量，而<code>.</code>表示使用数据集中除<code>Species</code>以外的所有变量作为特征。</p>
+<p>**第二个参数：**指定用于训练分类器的数据集是<code>iris</code>数据集。</p>
+<p>**第三个参数：**设置支持度的阈值，即规则在数据集中出现的最小比例。支持度是衡量某个模式在数据集中出现频率的指标。这里设置为5%，即某个规则至少需要在5%的数据中出现才会被考虑。</p>
+<p>**第四个参数：**设置置信度的阈值，即规则在预测目标变量时的可靠性程度。置信度是指规则的前件和后件同时出现的比例，通常用于评估规则的准确性。这里设置为90%，意味着我们希望规则在90%的情况下是正确的。</p>
+<p>运行后会输出以下信息：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CBA Classifier Object</span><br><span class="line">Formula<span class="operator">:</span> Species <span class="operator">~</span> .</span><br><span class="line">Number of rules<span class="operator">:</span> <span class="number">8</span></span><br><span class="line">Default Class<span class="operator">:</span> versicolor</span><br><span class="line">Classification method<span class="operator">:</span> first  </span><br><span class="line">Description<span class="operator">:</span> CBA algorithm <span class="punctuation">(</span>Liu et al.<span class="punctuation">,</span> <span class="number">1998</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+<p><strong>Formula: Species ~ .</strong></p>
+<p>这是指分类器使用的公式。<code>Species</code>是目标变量，即分类器要预测的类别。<code>.</code>表示使用数据集中除目标变量之外的所有特征来进行预测。在这个例子中，目标变量是鸢尾花的品种（<code>Species</code>），而特征包括花瓣长度、花瓣宽度、萼片长度和萼片宽度等属性。</p>
+<p><strong>Number of rules: 8</strong></p>
+<p>这是分类器生成的关联规则的数量。CBA算法根据训练数据生成规则，每个规则用于将输入数据映射到一个类别。在这个例子中，算法生成了8条规则。</p>
+<p><strong>Default Class: versicolor</strong></p>
+<p>当输入数据不符合任何规则时，分类器将预测为默认类别。在这个例子中，默认类别是<code>versicolor</code>，这意味着如果没有规则匹配，分类器将预测鸢尾花的品种为<code>versicolor</code>。</p>
+<p><strong>Classification method: first</strong></p>
+<p>这是分类器选择规则的方法。<code>first</code>表示分类器在预测时会使用匹配的第一条规则。这意味着分类器会按照规则的顺序进行匹配，一旦找到匹配的规则，就会使用该规则进行预测，而不会考虑其他规则。</p>
+<p><strong>Description: CBA algorithm (Liu et al., 1998)</strong></p>
+<p>这是对所使用的算法的描述，指出这个分类器使用的是CBA算法，这是由Liu等人于1998年提出的基于关联规则的分类算法。</p>
+<p><strong>查看生成的关联规则：</strong><code>inspect(classifier$rules)</code></p>
+<p>运行后会输出以下信息：</p>
+<p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/ecf5c0d82062ce2599eecdc56c608392.png" alt="" /></p>
+<p><strong>lhs (左侧项)</strong></p>
+<p>这些是规则的前件（条件），即规则适用的前提条件。例如，规则1中，<code>{Petal.Length=[-Inf,2.45)}</code>表示当花瓣长度在该范围内时，规则适用。</p>
+<p><strong>rhs (右侧项)</strong></p>
+<p>这些是规则的后件（结论），即在满足前件条件时，预测的类别。例如，规则1中，<code>{Species=setosa}</code>表示如果条件成立，则预测品种为<code>setosa</code>。</p>
+<p><strong>support (支持度)</strong></p>
+<p>规则适用的数据点在整个数据集中所占的比例。例如，规则1的支持度为0.3333333，表示该规则适用于33.33%的数据。</p>
+<p><strong>confidence (置信度)</strong></p>
+<p>规则的准确性，即在前件条件满足时，后件也为真的比例。例如，规则1的置信度为1.0，表示在所有花瓣长度在[-Inf,2.45)范围内的数据中，品种都是<code>setosa</code>。</p>
+<p><strong>coverage (覆盖率)</strong></p>
+<p>前件条件在整个数据集中出现的比例。例如，规则1的覆盖率为0.3333333，表示花瓣长度在[-Inf,2.45)范围内的数据占总数据的33.33%。</p>
+<p><strong>lift (提升度)</strong></p>
+<p>规则相对于随机猜测的优势。例如，提升度为3表示该规则比随机猜测提高了三倍的正确率。</p>
+<p><strong>count (计数)</strong></p>
+<p>满足该规则的实际数据点的数量。例如，规则1有50个数据点符合条件。</p>
+<p><strong>size (规则项数)</strong></p>
+<p>规则中的条件数。例如，规则1中有2个条件。</p>
+<p><strong>coveredTransactions (覆盖的事务数)</strong></p>
+<p>满足前件条件的事务数，即数据点数量。</p>
+<p><strong>totalErrors (总错误数)</strong></p>
+<p>规则预测错误的次数。</p>
+<p><strong>把剪枝后的关联规则导出：</strong></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pruned_rules_df <span class="operator">&lt;-</span> as<span class="punctuation">(</span>classifier<span class="operator">$</span>rules<span class="punctuation">,</span> <span class="string">&quot;data.frame&quot;</span><span class="punctuation">)</span></span><br><span class="line">write.csv<span class="punctuation">(</span>pruned_rules_df <span class="punctuation">,</span> file <span class="operator">=</span> <span class="string">&quot;pruned_rules_subset.csv&quot;</span><span class="punctuation">,</span> row.names <span class="operator">=</span> <span class="literal">FALSE</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+<p><strong>使用训练好的分类器对前六个样本进行预测：</strong><code>predict(classifier, head(iris))</code></p>
+<p><strong>输出混淆矩阵：</strong><code>table(pred = predict(classifier, iris), true = iris$Species)</code></p>
+<p>输出的混淆矩阵如下：</p>
+<p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/14102b2458b2b7e64614aa6512f50aa5.png" alt="" /></p>
+<p><strong>Rows (pred)</strong></p>
+<p>代表分类器的预测类别。</p>
+<p><strong>Columns (true)</strong></p>
+<p>代表数据的真实类别。</p>
+<p><strong>Cells</strong></p>
+<p>数值表示分类器在预测中正确和错误的次数。</p>
+<p><strong>转换成事务格式：</strong></p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">iris_trans <span class="operator">&lt;-</span> prepareTransactions<span class="punctuation">(</span>Species <span class="operator">~</span> .<span class="punctuation">,</span> iris<span class="punctuation">,</span> disc.method <span class="operator">=</span> <span class="string">&quot;mdlp&quot;</span><span class="punctuation">)</span></span><br><span class="line">iris_trans</span><br></pre></td></tr></table></figure>
+<p>输出以下信息：</p>
+<p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/a1684d500e47d96ccd09d246acf89cac.png" alt="" /></p>
+<p>使用<code>mdlp</code>（Minimum Description Length Principle）方法对连续变量进行离散化，输出显示数据集有150个事务（行）和15个项目（列）。每个事务对应一个数据点，每个项目对应一个离散化后的特征值。</p>
+<p><strong><code>verbose = TRUE</code>：启用详细输出，显示训练过程中的详细信息：</strong><code>classifier &lt;- CBA(Species ~ ., data = iris_trans, supp = 0.05, conf = 0.9, verbose = TRUE)</code></p>
+<p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/76ae13ee27d6365e14337d722669ee75.png" alt="" /></p>
+<ol>
+<li><strong>Apriori</strong>：使用Apriori算法来挖掘关联规则。</li>
+<li><strong>Parameter specification</strong>：列出了参数设置，包括最小置信度、最小支持度等。</li>
+<li><strong>Algorithmic control</strong>：控制算法的具体实现参数，如过滤器、排序等。</li>
+<li><strong>Absolute minimum support count: 7</strong>：绝对最小支持度计数，即规则至少应满足7个数据点。</li>
+<li><strong>Apriori过程</strong>：显示了挖掘规则的具体步骤，包括设置项出现、事务、排序和重编码、创建事务树等。最终生成了55条规则。</li>
+<li><strong>剪枝：</strong><code>CARs left: 8</code>修剪后剩余8条规则。修剪是删除冗余或不可靠规则的过程，以提高分类器的效率和准确性。</li>
+</ol>
+<p>上面的函数挖掘的是后项为目标变量的关联规则，如果不要求后项为目标变量，可以使用以下函数：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rules <span class="operator">&lt;-</span> apriori<span class="punctuation">(</span>iris<span class="punctuation">,</span> parameter <span class="operator">=</span> <span class="built_in">list</span><span class="punctuation">(</span>supp <span class="operator">=</span> <span class="number">0.05</span><span class="punctuation">,</span> conf <span class="operator">=</span> <span class="number">0.9</span><span class="punctuation">)</span><span class="punctuation">)</span></span><br><span class="line">rules_df <span class="operator">&lt;-</span> as<span class="punctuation">(</span>rules<span class="punctuation">,</span> <span class="string">&quot;data.frame&quot;</span><span class="punctuation">)</span></span><br><span class="line">write.csv<span class="punctuation">(</span>rules_df<span class="punctuation">,</span> file <span class="operator">=</span> <span class="string">&quot;rules.csv&quot;</span><span class="punctuation">,</span> row.names <span class="operator">=</span> <span class="literal">FALSE</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+<h3 id="以返贫数据集演示完整代码"><a class="markdownIt-Anchor" href="#以返贫数据集演示完整代码"></a> 以返贫数据集演示完整代码</h3>
+<blockquote>
+<p>这里以返贫数据集为例，下载数据集可直接运行代码出结果。不过用 apriori 挖掘关联规则，产生的关联规则有100多万条。代码、数据集、结果以及笔记见Gitee仓库：</p>
+<p><a target="_blank" rel="noopener" href="https://gitee.com/chuantaoli/data_mining_and_courses_learning/tree/master/CBA%E7%AE%97%E6%B3%95">https://gitee.com/chuantaoli/data_mining_and_courses_learning/tree/master/CBA算法</a></p>
+</blockquote>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 导入库和数据</span></span><br><span class="line">library<span class="punctuation">(</span>arulesCBA<span class="punctuation">)</span></span><br><span class="line">library<span class="punctuation">(</span>readxl<span class="punctuation">)</span></span><br><span class="line">excel_file <span class="operator">&lt;-</span> <span class="string">&quot;D:/贫困论文/总数据集.xlsx&quot;</span></span><br><span class="line">data <span class="operator">&lt;-</span> read_excel<span class="punctuation">(</span>excel_file<span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 数据离散化</span></span><br><span class="line">summary<span class="punctuation">(</span>data<span class="punctuation">)</span></span><br><span class="line">vars_to_discretize <span class="operator">&lt;-</span> setdiff<span class="punctuation">(</span><span class="built_in">names</span><span class="punctuation">(</span>data<span class="punctuation">)</span><span class="punctuation">,</span> <span class="built_in">c</span><span class="punctuation">(</span><span class="string">&quot;性别&quot;</span><span class="punctuation">,</span> <span class="string">&quot;学历&quot;</span><span class="punctuation">,</span><span class="string">&quot;劳动技能&quot;</span><span class="punctuation">,</span><span class="string">&quot;健康状况&quot;</span><span class="punctuation">,</span> <span class="string">&quot;是否参加城乡居民基本医疗保险&quot;</span><span class="punctuation">,</span> </span><br><span class="line">                                             <span class="string">&quot;是否参加城乡居民基本养老保险&quot;</span><span class="punctuation">,</span> <span class="string">&quot;是否享受人身意外保险补贴&quot;</span><span class="punctuation">,</span> <span class="string">&quot;就业渠道&quot;</span><span class="punctuation">,</span></span><br><span class="line">                                             <span class="string">&quot;是否有龙头企业带动&quot;</span><span class="punctuation">,</span> <span class="string">&quot;主要燃料类型&quot;</span><span class="punctuation">,</span><span class="string">&quot;是否有创业致富带头人带动&quot;</span><span class="punctuation">,</span> </span><br><span class="line">                                             <span class="string">&quot;是否有卫生厕所&quot;</span><span class="punctuation">,</span> <span class="string">&quot;入户路类型&quot;</span><span class="punctuation">,</span> <span class="string">&quot;是否通生产用电&quot;</span><span class="punctuation">,</span> </span><br><span class="line">                                             <span class="string">&quot;是否加入农民专业合作组织&quot;</span><span class="punctuation">)</span><span class="punctuation">)</span></span><br><span class="line">data_to_discretize <span class="operator">&lt;-</span> data<span class="punctuation">[</span> <span class="punctuation">,</span> vars_to_discretize<span class="punctuation">]</span></span><br><span class="line">data_to_discretize<span class="operator">$</span>`风险是否已消除` <span class="operator">&lt;-</span> as.factor<span class="punctuation">(</span>data_to_discretize<span class="operator">$</span>`风险是否已消除`<span class="punctuation">)</span></span><br><span class="line">data_to_discretize_disc <span class="operator">&lt;-</span> discretizeDF.supervised<span class="punctuation">(</span>`风险是否已消除` <span class="operator">~</span> .<span class="punctuation">,</span> data_to_discretize<span class="punctuation">,</span> disc.method <span class="operator">=</span> <span class="string">&quot;mdlp&quot;</span><span class="punctuation">)</span></span><br><span class="line">summary<span class="punctuation">(</span>data_to_discretize_disc<span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 将离散化后的特征与不离散化的特征合并</span></span><br><span class="line">non_discretized_vars <span class="operator">&lt;-</span> data<span class="punctuation">[</span> <span class="punctuation">,</span> <span class="built_in">c</span><span class="punctuation">(</span><span class="string">&quot;性别&quot;</span><span class="punctuation">,</span> <span class="string">&quot;学历&quot;</span><span class="punctuation">,</span><span class="string">&quot;劳动技能&quot;</span><span class="punctuation">,</span><span class="string">&quot;健康状况&quot;</span><span class="punctuation">,</span> <span class="string">&quot;是否参加城乡居民基本医疗保险&quot;</span><span class="punctuation">,</span> </span><br><span class="line">                                             <span class="string">&quot;是否参加城乡居民基本养老保险&quot;</span><span class="punctuation">,</span> <span class="string">&quot;是否享受人身意外保险补贴&quot;</span><span class="punctuation">,</span> <span class="string">&quot;就业渠道&quot;</span><span class="punctuation">,</span></span><br><span class="line">                                             <span class="string">&quot;是否有龙头企业带动&quot;</span><span class="punctuation">,</span> <span class="string">&quot;主要燃料类型&quot;</span><span class="punctuation">,</span><span class="string">&quot;是否有创业致富带头人带动&quot;</span><span class="punctuation">,</span> </span><br><span class="line">                                             <span class="string">&quot;是否有卫生厕所&quot;</span><span class="punctuation">,</span> <span class="string">&quot;入户路类型&quot;</span><span class="punctuation">,</span> <span class="string">&quot;是否通生产用电&quot;</span><span class="punctuation">,</span> </span><br><span class="line">                                             <span class="string">&quot;是否加入农民专业合作组织&quot;</span><span class="punctuation">)</span><span class="punctuation">]</span></span><br><span class="line">data_final <span class="operator">&lt;-</span> cbind<span class="punctuation">(</span>data_to_discretize_disc<span class="punctuation">,</span> non_discretized_vars<span class="punctuation">)</span></span><br><span class="line">summary<span class="punctuation">(</span>data_final<span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># CBA函数挖掘关联规则，后项为因变量</span></span><br><span class="line">classifier <span class="operator">&lt;-</span> CBA<span class="punctuation">(</span>`风险是否已消除` <span class="operator">~</span> .<span class="punctuation">,</span> data <span class="operator">=</span> data_final<span class="punctuation">,</span> supp <span class="operator">=</span> <span class="number">0.01</span><span class="punctuation">,</span> conf <span class="operator">=</span> <span class="number">0.7</span><span class="punctuation">)</span></span><br><span class="line">inspect<span class="punctuation">(</span>classifier<span class="operator">$</span>rules<span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 导出关联规则</span></span><br><span class="line">pruned_rules_df <span class="operator">&lt;-</span> as<span class="punctuation">(</span>classifier<span class="operator">$</span>rules<span class="punctuation">,</span> <span class="string">&quot;data.frame&quot;</span><span class="punctuation">)</span></span><br><span class="line">write.csv<span class="punctuation">(</span>pruned_rules_df <span class="punctuation">,</span> file <span class="operator">=</span> <span class="string">&quot;pruned_rules_subset.csv&quot;</span><span class="punctuation">,</span> row.names <span class="operator">=</span> <span class="literal">FALSE</span><span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 如果不能运行，就转化成事务格式</span></span><br><span class="line"><span class="comment"># data_final[] &lt;- lapply(data_final, as.factor)</span></span><br><span class="line"><span class="comment"># str(data_final)</span></span><br><span class="line"><span class="comment"># data_final_trans &lt;- as(data_final, &quot;transactions&quot;)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># apriori挖掘关联规则，后项是任何特征</span></span><br><span class="line">rules <span class="operator">&lt;-</span> apriori<span class="punctuation">(</span>data_final<span class="punctuation">,</span> parameter <span class="operator">=</span> <span class="built_in">list</span><span class="punctuation">(</span>supp <span class="operator">=</span> <span class="number">0.09</span><span class="punctuation">,</span> conf <span class="operator">=</span> <span class="number">0.9</span><span class="punctuation">)</span><span class="punctuation">)</span></span><br><span class="line">rules_df <span class="operator">&lt;-</span> as<span class="punctuation">(</span>rules<span class="punctuation">,</span> <span class="string">&quot;data.frame&quot;</span><span class="punctuation">)</span></span><br><span class="line">write.csv<span class="punctuation">(</span>rules_df<span class="punctuation">,</span> file <span class="operator">=</span> <span class="string">&quot;rules.csv&quot;</span><span class="punctuation">,</span> row.names <span class="operator">=</span> <span class="literal">FALSE</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/07/25/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0-%E6%A6%82%E7%8E%87%E8%AE%BA%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E5%9B%9E%E9%A1%BE/" rel="prev" title="数据挖掘笔记-概率论基础知识回顾">
+      <i class="fa fa-chevron-left"></i> 数据挖掘笔记-概率论基础知识回顾
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/08/06/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0-%E6%8A%95%E5%BD%B1%E5%AF%BB%E8%B8%AA%E7%BB%BC%E5%90%88%E8%AF%84%E4%BB%B7%E6%A8%A1%E5%9E%8B/" rel="next" title="数据挖掘笔记-投影寻踪综合评价模型">
+      数据挖掘笔记-投影寻踪综合评价模型 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%85%B3%E8%81%94%E8%A7%84%E5%88%99%E7%9A%84%E5%88%86%E7%B1%BB%E7%AE%97%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text"> 基于关联规则的分类算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B9%E9%9B%86-%E9%A2%91%E7%B9%81%E9%A1%B9%E9%9B%86-%E5%85%B3%E8%81%94%E8%A7%84%E5%88%99"><span class="nav-number">1.1.</span> <span class="nav-text"> 项集、频繁项集、关联规则</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A1%B9%E9%9B%86-itemsets"><span class="nav-number">1.1.1.</span> <span class="nav-text"> 项集 (Itemsets)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A2%91%E7%B9%81%E9%A1%B9%E9%9B%86-frequent-itemsets"><span class="nav-number">1.1.2.</span> <span class="nav-text"> 频繁项集 (Frequent Itemsets)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E8%81%94%E8%A7%84%E5%88%99-association-rules"><span class="nav-number">1.1.3.</span> <span class="nav-text"> 关联规则 (Association Rules)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#apriori%E7%AE%97%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text"> Apriori算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#arulescba%E5%BA%93%E7%9A%84%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8"><span class="nav-number">1.3.</span> <span class="nav-text"> arulesCBA库的简单使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B0%86%E8%BF%9E%E7%BB%AD%E7%89%B9%E5%BE%81%E7%A6%BB%E6%95%A3%E5%8C%96"><span class="nav-number">1.3.1.</span> <span class="nav-text"> 将连续特征离散化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%96%E6%8E%98iris%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E5%85%B3%E8%81%94%E8%A7%84%E5%88%99"><span class="nav-number">1.4.</span> <span class="nav-text"> 挖掘iris数据集的关联规则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A5%E8%BF%94%E8%B4%AB%E6%95%B0%E6%8D%AE%E9%9B%86%E6%BC%94%E7%A4%BA%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81"><span class="nav-number">1.5.</span> <span class="nav-text"> 以返贫数据集演示完整代码</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ChuantaoLi"
+      src="/uploads/%E7%8C%AB%E5%92%AA%E5%A4%B4%E5%83%8F.jpg">
+  <p class="site-author-name" itemprop="name">ChuantaoLi</p>
+  <div class="site-description" itemprop="description">感知幸福是一种能力</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ChuantaoLi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-pjax@0/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+      
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css">
+
+
+  
+
+    </div>
+</body>
+</html>
