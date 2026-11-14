@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":360,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":300,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="正态性检验  Jarque‐Bera test 雅克-贝拉检验 雅克-贝拉检验适用于大样本，即样本量 n≥30n\ge 30n≥30 的情况[1]，其基本思想为：如果样本来自正态分布，那么样本的偏度和峰度应该接近正态分布的偏度和峰度。正态分布中不同偏度和峰度的可视化如下图所示，其中，通过均值来调整偏度，通过标准差来调整峰度。  对于一个随机变量 XXX，其总体偏度的定义为： γ1&#x3D;E[(X−μσ">
@@ -367,13 +367,13 @@
         </div>
           
   
-  <div class="toggle sidebar-toggle">
+  <button type="button" class="toggle sidebar-toggle" aria-label="打开侧栏" aria-expanded="false" aria-controls="site-sidebar">
     <span class="toggle-line toggle-line-first"></span>
     <span class="toggle-line toggle-line-middle"></span>
     <span class="toggle-line toggle-line-last"></span>
-  </div>
+  </button>
 
-  <aside class="sidebar">
+  <aside class="sidebar" id="site-sidebar" aria-label="站点信息与文章目录" aria-hidden="true" inert>
     <div class="sidebar-inner">
 
       <ul class="sidebar-nav motion-element">

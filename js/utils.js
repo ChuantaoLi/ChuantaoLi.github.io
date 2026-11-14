@@ -323,15 +323,15 @@ NexT.utils = {
   },
 
   isTablet: function() {
-    return window.screen.width < 992 && window.screen.width > 767 && this.hasMobileUA();
+    return window.matchMedia('(min-width: 768px) and (max-width: 991px)').matches;
   },
 
   isMobile: function() {
-    return window.screen.width < 767 && this.hasMobileUA();
+    return window.matchMedia('(max-width: 767px)').matches;
   },
 
   isDesktop: function() {
-    return !this.isTablet() && !this.isMobile();
+    return window.matchMedia('(min-width: 992px)').matches;
   },
 
   supportsPDFs: function() {

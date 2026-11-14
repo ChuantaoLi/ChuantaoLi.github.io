@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":360,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":300,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="前言：一些记号问题 在概率论和统计学中，PPP和ppp通常用于表示不同层次的概率相关概念：  PPP：PPP通常用于表示概率函数或概率测度，它给出了随机事件发生的概率。它是一种映射，将一个事件（事件是样本空间中的一个子集）映射到一个区间[0,1] 上的数值。比如，$P(A) 表示事件表示事件表示事件A$ 发生的概率。在离散随机变量的情况下，PPP也可以表示随机变量取某个具体值的概率，比如P(X&#x3D;">
@@ -497,13 +497,13 @@ X落入区间[a,b]的概率为P(a\le X\le b)=\int^{b}_{a}{f(x)dx}。
         </div>
           
   
-  <div class="toggle sidebar-toggle">
+  <button type="button" class="toggle sidebar-toggle" aria-label="打开侧栏" aria-expanded="false" aria-controls="site-sidebar">
     <span class="toggle-line toggle-line-first"></span>
     <span class="toggle-line toggle-line-middle"></span>
     <span class="toggle-line toggle-line-last"></span>
-  </div>
+  </button>
 
-  <aside class="sidebar">
+  <aside class="sidebar" id="site-sidebar" aria-label="站点信息与文章目录" aria-hidden="true" inert>
     <div class="sidebar-inner">
 
       <ul class="sidebar-nav motion-element">
