@@ -17,15 +17,17 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":300,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"chuantaoli.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":300,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
+  <link rel="alternate" href="https://chuantaoli.github.io/atom.xml" title="梨串桃的生活日记" type="application/atom+xml">
+  <link rel="alternate" href="https://chuantaoli.github.io/rss.xml" title="梨串桃的生活日记" type="application/rss+xml">
 
-  <meta name="description" content="Earthformer 环境配置记录 记录拉取 Earthformer 项目，在本机上配置好环境，用 docker 封装，最后放到实验室的 4090 的过程。 这是我第一次用 docker，也是第一次拉深度学习的项目进行环境配置。我是 Win11 的系统，因为要配置环境，用的是 WSL，Ubuntu 是 20.04 版本，CUDA 版本是 12.8，显卡是 5060。  安装 Anaconda">
+  <meta name="description" content="记录在 Windows、WSL 与 CUDA 12.8 环境下配置 Earthformer 的过程，包括依赖兼容处理、Docker 封装及迁移至实验室 4090D 运行。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Earthformer 环境配置记录">
-<meta property="og:url" content="http://example.com/2026/04/03/Earthformer-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:url" content="https://chuantaoli.github.io/2026/04/03/Earthformer-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">
 <meta property="og:site_name" content="梨串桃的生活日记">
-<meta property="og:description" content="Earthformer 环境配置记录 记录拉取 Earthformer 项目，在本机上配置好环境，用 docker 封装，最后放到实验室的 4090 的过程。 这是我第一次用 docker，也是第一次拉深度学习的项目进行环境配置。我是 Win11 的系统，因为要配置环境，用的是 WSL，Ubuntu 是 20.04 版本，CUDA 版本是 12.8，显卡是 5060。  安装 Anaconda">
+<meta property="og:description" content="记录在 Windows、WSL 与 CUDA 12.8 环境下配置 Earthformer 的过程，包括依赖兼容处理、Docker 封装及迁移至实验室 4090D 运行。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402125841951.png">
 <meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402125937518.png">
@@ -55,7 +57,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260402125841951.png">
 
-<link rel="canonical" href="http://example.com/2026/04/03/Earthformer-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">
+<link rel="canonical" href="https://chuantaoli.github.io/2026/04/03/Earthformer-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">
 
 
 <script id="page-configurations">
@@ -101,7 +103,6 @@
   </style>
 </noscript>
 
-<link rel="alternate" href="/atom.xml" title="梨串桃的生活日记" type="application/atom+xml">
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
@@ -186,7 +187,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/04/03/Earthformer-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">
+    <link itemprop="mainEntityOfPage" href="https://chuantaoli.github.io/2026/04/03/Earthformer-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/%E7%8C%AB%E5%92%AA%E5%A4%B4%E5%83%8F.jpg">
@@ -237,6 +238,7 @@
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               <span>6 分钟</span>
             </span>
+            <div class="post-description">记录在 Windows、WSL 与 CUDA 12.8 环境下配置 Earthformer 的过程，包括依赖兼容处理、Docker 封装及迁移至实验室 4090D 运行。</div>
 
         </div>
       </header>
@@ -566,7 +568,7 @@
   <script>
 var pjax = new Pjax({
   selectors: [
-    'head title',
+    'head',
     '#page-configurations',
     '.content-wrap',
     '.post-toc-wrap',
@@ -574,6 +576,26 @@ var pjax = new Pjax({
     '#pjax'
   ],
   switches: {
+    // Image and article tag counts vary by page. Sync metadata as a group
+    // without reloading the shared styles or scripts in the head.
+    head: function(oldHead, newHead) {
+      var metadata = [
+        'title',
+        'link[rel="canonical"]',
+        'meta[name="description"]',
+        'meta[name="keywords"]',
+        'meta[property^="og:"]',
+        'meta[property^="article:"]',
+        'meta[name^="twitter:"]',
+        'link[rel="alternate"][type="application/atom+xml"]',
+        'link[rel="alternate"][type="application/rss+xml"]'
+      ].join(',');
+      oldHead.querySelectorAll(metadata).forEach(element => element.remove());
+      newHead.querySelectorAll(metadata).forEach(element => {
+        oldHead.appendChild(element.cloneNode(true));
+      });
+      this.onSwitch();
+    },
     '.post-toc-wrap': Pjax.switches.innerHTML
   },
   analytics: false,

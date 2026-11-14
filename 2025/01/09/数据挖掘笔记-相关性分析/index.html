@@ -17,15 +17,17 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":300,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"chuantaoli.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":300,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
+  <link rel="alternate" href="https://chuantaoli.github.io/atom.xml" title="梨串桃的生活日记" type="application/atom+xml">
+  <link rel="alternate" href="https://chuantaoli.github.io/rss.xml" title="梨串桃的生活日记" type="application/rss+xml">
 
-  <meta name="description" content="相关性分析  Pearson 皮尔逊相关系数 对于两组总体数据 X:{X1,X2,⋯ ,Xn}X:\{X_1,X_2,\cdots,X_n\}X:{X1​,X2​,⋯,Xn​} 和 Y:{Y1,Y2,⋯Yn}Y:\{Y_1,Y_2,\cdots Y_n\}Y:{Y1​,Y2​,⋯Yn​}，其总体均值为： E(X)&#x3D;∑i&#x3D;1nXin,E(Y)&#x3D;∑i&#x3D;0nYin.(1)E(X)&#x3D;\frac{\sum">
+  <meta name="description" content="从协方差出发推导 Pearson 相关系数，对照 Spearman 与 Kendall 的秩相关方法，说明不同数据条件下的选择依据。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数据挖掘笔记 | 相关性分析">
-<meta property="og:url" content="http://example.com/2025/01/09/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90/index.html">
+<meta property="og:url" content="https://chuantaoli.github.io/2025/01/09/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90/">
 <meta property="og:site_name" content="梨串桃的生活日记">
-<meta property="og:description" content="相关性分析  Pearson 皮尔逊相关系数 对于两组总体数据 X:{X1,X2,⋯ ,Xn}X:\{X_1,X_2,\cdots,X_n\}X:{X1​,X2​,⋯,Xn​} 和 Y:{Y1,Y2,⋯Yn}Y:\{Y_1,Y_2,\cdots Y_n\}Y:{Y1​,Y2​,⋯Yn​}，其总体均值为： E(X)&#x3D;∑i&#x3D;1nXin,E(Y)&#x3D;∑i&#x3D;0nYin.(1)E(X)&#x3D;\frac{\sum">
+<meta property="og:description" content="从协方差出发推导 Pearson 相关系数，对照 Spearman 与 Kendall 的秩相关方法，说明不同数据条件下的选择依据。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/Spearman%20Correlation%20Heatmap%20of%20All%20Columns.png">
 <meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/7f1848fc3a12700a197fd3c1890eed57.png">
@@ -36,7 +38,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/Spearman%20Correlation%20Heatmap%20of%20All%20Columns.png">
 
-<link rel="canonical" href="http://example.com/2025/01/09/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90/">
+<link rel="canonical" href="https://chuantaoli.github.io/2025/01/09/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90/">
 
 
 <script id="page-configurations">
@@ -82,7 +84,6 @@
   </style>
 </noscript>
 
-<link rel="alternate" href="/atom.xml" title="梨串桃的生活日记" type="application/atom+xml">
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
@@ -167,7 +168,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2025/01/09/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="https://chuantaoli.github.io/2025/01/09/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0-%E7%9B%B8%E5%85%B3%E6%80%A7%E5%88%86%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/%E7%8C%AB%E5%92%AA%E5%A4%B4%E5%83%8F.jpg">
@@ -224,6 +225,7 @@
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               <span>7 分钟</span>
             </span>
+            <div class="post-description">从协方差出发推导 Pearson 相关系数，对照 Spearman 与 Kendall 的秩相关方法，说明不同数据条件下的选择依据。</div>
 
         </div>
       </header>
@@ -546,7 +548,7 @@ c-4-3.333-8.333-7.667-13 -13l-13-13l77-155 77-156c66 199.333 139 419.667
   <script>
 var pjax = new Pjax({
   selectors: [
-    'head title',
+    'head',
     '#page-configurations',
     '.content-wrap',
     '.post-toc-wrap',
@@ -554,6 +556,26 @@ var pjax = new Pjax({
     '#pjax'
   ],
   switches: {
+    // Image and article tag counts vary by page. Sync metadata as a group
+    // without reloading the shared styles or scripts in the head.
+    head: function(oldHead, newHead) {
+      var metadata = [
+        'title',
+        'link[rel="canonical"]',
+        'meta[name="description"]',
+        'meta[name="keywords"]',
+        'meta[property^="og:"]',
+        'meta[property^="article:"]',
+        'meta[name^="twitter:"]',
+        'link[rel="alternate"][type="application/atom+xml"]',
+        'link[rel="alternate"][type="application/rss+xml"]'
+      ].join(',');
+      oldHead.querySelectorAll(metadata).forEach(element => element.remove());
+      newHead.querySelectorAll(metadata).forEach(element => {
+        oldHead.appendChild(element.cloneNode(true));
+      });
+      this.onSwitch();
+    },
     '.post-toc-wrap': Pjax.switches.innerHTML
   },
   analytics: false,

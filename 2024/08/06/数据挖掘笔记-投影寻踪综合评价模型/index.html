@@ -17,15 +17,17 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":300,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"chuantaoli.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":300,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
+  <link rel="alternate" href="https://chuantaoli.github.io/atom.xml" title="梨串桃的生活日记" type="application/atom+xml">
+  <link rel="alternate" href="https://chuantaoli.github.io/rss.xml" title="梨串桃的生活日记" type="application/rss+xml">
 
-  <meta name="description" content="投影寻踪是处理和分析高维数据的一类统计方法，其基本思想是将高维数据投影到低维子空间上，寻找出能反映高维数据结构和特征的最佳投影向量，以达到研究分析高维数据的目的[1]。由于投影寻踪具有强稳健性、抗干扰项和准确性高等特点，该方法被广泛应用于高维数据的样本评价问题上。 投影寻踪分析评价方法的输入样本为X∈Rm×nX\in R^{m\times n}X∈Rm×n，并且需要对数据进行正向化和归一化。本文采">
+  <meta name="description" content="介绍投影寻踪综合评价的建模思路，说明数据正向化、归一化和最佳投影方向的求解如何将高维样本转化为综合评价结果。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数据挖掘笔记-投影寻踪综合评价模型">
-<meta property="og:url" content="http://example.com/2024/08/06/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0-%E6%8A%95%E5%BD%B1%E5%AF%BB%E8%B8%AA%E7%BB%BC%E5%90%88%E8%AF%84%E4%BB%B7%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:url" content="https://chuantaoli.github.io/2024/08/06/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0-%E6%8A%95%E5%BD%B1%E5%AF%BB%E8%B8%AA%E7%BB%BC%E5%90%88%E8%AF%84%E4%BB%B7%E6%A8%A1%E5%9E%8B/">
 <meta property="og:site_name" content="梨串桃的生活日记">
-<meta property="og:description" content="投影寻踪是处理和分析高维数据的一类统计方法，其基本思想是将高维数据投影到低维子空间上，寻找出能反映高维数据结构和特征的最佳投影向量，以达到研究分析高维数据的目的[1]。由于投影寻踪具有强稳健性、抗干扰项和准确性高等特点，该方法被广泛应用于高维数据的样本评价问题上。 投影寻踪分析评价方法的输入样本为X∈Rm×nX\in R^{m\times n}X∈Rm×n，并且需要对数据进行正向化和归一化。本文采">
+<meta property="og:description" content="介绍投影寻踪综合评价的建模思路，说明数据正向化、归一化和最佳投影方向的求解如何将高维样本转化为综合评价结果。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-08-06T09:12:05.000Z">
 <meta property="article:modified_time" content="2026-04-17T09:12:57.011Z">
@@ -33,7 +35,7 @@
 <meta property="article:tag" content="机器学习">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/2024/08/06/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0-%E6%8A%95%E5%BD%B1%E5%AF%BB%E8%B8%AA%E7%BB%BC%E5%90%88%E8%AF%84%E4%BB%B7%E6%A8%A1%E5%9E%8B/">
+<link rel="canonical" href="https://chuantaoli.github.io/2024/08/06/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0-%E6%8A%95%E5%BD%B1%E5%AF%BB%E8%B8%AA%E7%BB%BC%E5%90%88%E8%AF%84%E4%BB%B7%E6%A8%A1%E5%9E%8B/">
 
 
 <script id="page-configurations">
@@ -79,7 +81,6 @@
   </style>
 </noscript>
 
-<link rel="alternate" href="/atom.xml" title="梨串桃的生活日记" type="application/atom+xml">
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
@@ -164,7 +165,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/08/06/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0-%E6%8A%95%E5%BD%B1%E5%AF%BB%E8%B8%AA%E7%BB%BC%E5%90%88%E8%AF%84%E4%BB%B7%E6%A8%A1%E5%9E%8B/">
+    <link itemprop="mainEntityOfPage" href="https://chuantaoli.github.io/2024/08/06/%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98%E7%AC%94%E8%AE%B0-%E6%8A%95%E5%BD%B1%E5%AF%BB%E8%B8%AA%E7%BB%BC%E5%90%88%E8%AF%84%E4%BB%B7%E6%A8%A1%E5%9E%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/%E7%8C%AB%E5%92%AA%E5%A4%B4%E5%83%8F.jpg">
@@ -221,6 +222,7 @@
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               <span>7 分钟</span>
             </span>
+            <div class="post-description">介绍投影寻踪综合评价的建模思路，说明数据正向化、归一化和最佳投影方向的求解如何将高维样本转化为综合评价结果。</div>
 
         </div>
       </header>
@@ -488,7 +490,7 @@ q_i=\sum_{k=1}^i{\mathrm{eval}(y(k))},\quad i=1,2,\cdots,N
   <script>
 var pjax = new Pjax({
   selectors: [
-    'head title',
+    'head',
     '#page-configurations',
     '.content-wrap',
     '.post-toc-wrap',
@@ -496,6 +498,26 @@ var pjax = new Pjax({
     '#pjax'
   ],
   switches: {
+    // Image and article tag counts vary by page. Sync metadata as a group
+    // without reloading the shared styles or scripts in the head.
+    head: function(oldHead, newHead) {
+      var metadata = [
+        'title',
+        'link[rel="canonical"]',
+        'meta[name="description"]',
+        'meta[name="keywords"]',
+        'meta[property^="og:"]',
+        'meta[property^="article:"]',
+        'meta[name^="twitter:"]',
+        'link[rel="alternate"][type="application/atom+xml"]',
+        'link[rel="alternate"][type="application/rss+xml"]'
+      ].join(',');
+      oldHead.querySelectorAll(metadata).forEach(element => element.remove());
+      newHead.querySelectorAll(metadata).forEach(element => {
+        oldHead.appendChild(element.cloneNode(true));
+      });
+      this.onSwitch();
+    },
     '.post-toc-wrap': Pjax.switches.innerHTML
   },
   analytics: false,

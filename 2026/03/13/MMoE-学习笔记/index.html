@@ -17,15 +17,17 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":300,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"chuantaoli.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":300,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
+  <link rel="alternate" href="https://chuantaoli.github.io/atom.xml" title="梨串桃的生活日记" type="application/atom+xml">
+  <link rel="alternate" href="https://chuantaoli.github.io/rss.xml" title="梨串桃的生活日记" type="application/rss+xml">
 
-  <meta name="description" content="MMoE 学习笔记 多目标模型的一个示例：一个电商推荐系统，将商品推荐给用户，主目标是让用户点击商品，其他目标可以是购买商品、收藏商品或分享商品。 不仅要推荐用户感兴趣的商品，还要尽可能地促进转化和购买，因此要对用户评分和购买两种目标同时建模。  样本 Loss 加权 这种方法的思想是：不直接去建模“购买”这个目标，而是通过给某些样本更高的权重，让模型在训练时更关注那些“可能购买”的样本。 Lo">
+  <meta name="description" content="整理推荐系统多目标建模中的样本加权、Shared-Bottom、MoE 与 MMoE，并对照 ESMM 和 PLE 理解任务间的信息共享与负迁移。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MMoE 学习笔记">
-<meta property="og:url" content="http://example.com/2026/03/13/MMoE-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:url" content="https://chuantaoli.github.io/2026/03/13/MMoE-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
 <meta property="og:site_name" content="梨串桃的生活日记">
-<meta property="og:description" content="MMoE 学习笔记 多目标模型的一个示例：一个电商推荐系统，将商品推荐给用户，主目标是让用户点击商品，其他目标可以是购买商品、收藏商品或分享商品。 不仅要推荐用户感兴趣的商品，还要尽可能地促进转化和购买，因此要对用户评分和购买两种目标同时建模。  样本 Loss 加权 这种方法的思想是：不直接去建模“购买”这个目标，而是通过给某些样本更高的权重，让模型在训练时更关注那些“可能购买”的样本。 Lo">
+<meta property="og:description" content="整理推荐系统多目标建模中的样本加权、Shared-Bottom、MoE 与 MMoE，并对照 ESMM 和 PLE 理解任务间的信息共享与负迁移。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260307210551886.png">
 <meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260307211326913.png">
@@ -40,7 +42,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260307210551886.png">
 
-<link rel="canonical" href="http://example.com/2026/03/13/MMoE-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+<link rel="canonical" href="https://chuantaoli.github.io/2026/03/13/MMoE-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
 
 
 <script id="page-configurations">
@@ -86,7 +88,6 @@
   </style>
 </noscript>
 
-<link rel="alternate" href="/atom.xml" title="梨串桃的生活日记" type="application/atom+xml">
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
@@ -171,7 +172,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/03/13/MMoE-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+    <link itemprop="mainEntityOfPage" href="https://chuantaoli.github.io/2026/03/13/MMoE-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/%E7%8C%AB%E5%92%AA%E5%A4%B4%E5%83%8F.jpg">
@@ -228,6 +229,7 @@
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               <span>10 分钟</span>
             </span>
+            <div class="post-description">整理推荐系统多目标建模中的样本加权、Shared-Bottom、MoE 与 MMoE，并对照 ESMM 和 PLE 理解任务间的信息共享与负迁移。</div>
 
         </div>
       </header>
@@ -526,7 +528,7 @@ pCTCVR &amp;= pCTR \times pCVR,
   <script>
 var pjax = new Pjax({
   selectors: [
-    'head title',
+    'head',
     '#page-configurations',
     '.content-wrap',
     '.post-toc-wrap',
@@ -534,6 +536,26 @@ var pjax = new Pjax({
     '#pjax'
   ],
   switches: {
+    // Image and article tag counts vary by page. Sync metadata as a group
+    // without reloading the shared styles or scripts in the head.
+    head: function(oldHead, newHead) {
+      var metadata = [
+        'title',
+        'link[rel="canonical"]',
+        'meta[name="description"]',
+        'meta[name="keywords"]',
+        'meta[property^="og:"]',
+        'meta[property^="article:"]',
+        'meta[name^="twitter:"]',
+        'link[rel="alternate"][type="application/atom+xml"]',
+        'link[rel="alternate"][type="application/rss+xml"]'
+      ].join(',');
+      oldHead.querySelectorAll(metadata).forEach(element => element.remove());
+      newHead.querySelectorAll(metadata).forEach(element => {
+        oldHead.appendChild(element.cloneNode(true));
+      });
+      this.onSwitch();
+    },
     '.post-toc-wrap': Pjax.switches.innerHTML
   },
   analytics: false,

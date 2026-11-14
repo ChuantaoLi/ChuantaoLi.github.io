@@ -17,15 +17,17 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":300,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"chuantaoli.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":300,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
+  <link rel="alternate" href="https://chuantaoli.github.io/atom.xml" title="梨串桃的生活日记" type="application/atom+xml">
+  <link rel="alternate" href="https://chuantaoli.github.io/rss.xml" title="梨串桃的生活日记" type="application/rss+xml">
 
-  <meta name="description" content="3B1B 深度学习入门笔记 2：梯度下降法  告诉网络识别能力的好坏 现在，我们需要一种算法，给网络看一大堆训练数据，这包括手写数字图像和它们的标注，算法会调整 13000 个权重和偏置，以提高网络对训练数据的识别表现。 在一开始，所有权重和偏置都是随机化的。因此，当我们输入一张手写数字图像，输出层会一团糟。这时候，我们就需要设计一个代价函数，用来告诉网络你的输出是错误的还是正确的。 用数学语言">
+  <meta name="description" content="从手写数字识别的代价函数出发，理解梯度如何指导权重与偏置更新，并记录神经网络实际学到的特征与直觉之间的差异。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="3B1B 深度学习入门笔记 2：梯度下降法">
-<meta property="og:url" content="http://example.com/2026/03/31/3B1B-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2%EF%BC%9A%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95/index.html">
+<meta property="og:url" content="https://chuantaoli.github.io/2026/03/31/3B1B-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2%EF%BC%9A%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95/">
 <meta property="og:site_name" content="梨串桃的生活日记">
-<meta property="og:description" content="3B1B 深度学习入门笔记 2：梯度下降法  告诉网络识别能力的好坏 现在，我们需要一种算法，给网络看一大堆训练数据，这包括手写数字图像和它们的标注，算法会调整 13000 个权重和偏置，以提高网络对训练数据的识别表现。 在一开始，所有权重和偏置都是随机化的。因此，当我们输入一张手写数字图像，输出层会一团糟。这时候，我们就需要设计一个代价函数，用来告诉网络你的输出是错误的还是正确的。 用数学语言">
+<meta property="og:description" content="从手写数字识别的代价函数出发，理解梯度如何指导权重与偏置更新，并记录神经网络实际学到的特征与直觉之间的差异。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331154424103.png">
 <meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331155945079.png">
@@ -38,7 +40,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331154424103.png">
 
-<link rel="canonical" href="http://example.com/2026/03/31/3B1B-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2%EF%BC%9A%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95/">
+<link rel="canonical" href="https://chuantaoli.github.io/2026/03/31/3B1B-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2%EF%BC%9A%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95/">
 
 
 <script id="page-configurations">
@@ -84,7 +86,6 @@
   </style>
 </noscript>
 
-<link rel="alternate" href="/atom.xml" title="梨串桃的生活日记" type="application/atom+xml">
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
@@ -169,7 +170,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2026/03/31/3B1B-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2%EF%BC%9A%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95/">
+    <link itemprop="mainEntityOfPage" href="https://chuantaoli.github.io/2026/03/31/3B1B-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2%EF%BC%9A%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/%E7%8C%AB%E5%92%AA%E5%A4%B4%E5%83%8F.jpg">
@@ -220,6 +221,7 @@
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               <span>4 分钟</span>
             </span>
+            <div class="post-description">从手写数字识别的代价函数出发，理解梯度如何指导权重与偏置更新，并记录神经网络实际学到的特征与直觉之间的差异。</div>
 
         </div>
       </header>
@@ -433,7 +435,7 @@
   <script>
 var pjax = new Pjax({
   selectors: [
-    'head title',
+    'head',
     '#page-configurations',
     '.content-wrap',
     '.post-toc-wrap',
@@ -441,6 +443,26 @@ var pjax = new Pjax({
     '#pjax'
   ],
   switches: {
+    // Image and article tag counts vary by page. Sync metadata as a group
+    // without reloading the shared styles or scripts in the head.
+    head: function(oldHead, newHead) {
+      var metadata = [
+        'title',
+        'link[rel="canonical"]',
+        'meta[name="description"]',
+        'meta[name="keywords"]',
+        'meta[property^="og:"]',
+        'meta[property^="article:"]',
+        'meta[name^="twitter:"]',
+        'link[rel="alternate"][type="application/atom+xml"]',
+        'link[rel="alternate"][type="application/rss+xml"]'
+      ].join(',');
+      oldHead.querySelectorAll(metadata).forEach(element => element.remove());
+      newHead.querySelectorAll(metadata).forEach(element => {
+        oldHead.appendChild(element.cloneNode(true));
+      });
+      this.onSwitch();
+    },
     '.post-toc-wrap': Pjax.switches.innerHTML
   },
   analytics: false,
