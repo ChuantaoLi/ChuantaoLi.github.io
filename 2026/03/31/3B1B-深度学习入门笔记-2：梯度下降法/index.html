@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 8.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"chuantaoli.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","width":300,"display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+  <link rel="alternate" href="https://chuantaoli.github.io/atom.xml" title="梨串桃的生活日记" type="application/atom+xml">
+  <link rel="alternate" href="https://chuantaoli.github.io/rss.xml" title="梨串桃的生活日记" type="application/rss+xml">
+
+  <meta name="description" content="从手写数字识别的代价函数出发，理解梯度如何指导权重与偏置更新，并记录神经网络实际学到的特征与直觉之间的差异。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="3B1B 深度学习入门笔记 2：梯度下降法">
+<meta property="og:url" content="https://chuantaoli.github.io/2026/03/31/3B1B-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2%EF%BC%9A%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95/">
+<meta property="og:site_name" content="梨串桃的生活日记">
+<meta property="og:description" content="从手写数字识别的代价函数出发，理解梯度如何指导权重与偏置更新，并记录神经网络实际学到的特征与直觉之间的差异。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331154424103.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331155945079.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331160155872.png">
+<meta property="og:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331161631915.png">
+<meta property="article:published_time" content="2026-03-31T08:23:44.000Z">
+<meta property="article:modified_time" content="2026-03-31T08:24:00.322Z">
+<meta property="article:author" content="ChuantaoLi">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331154424103.png">
+
+<link rel="canonical" href="https://chuantaoli.github.io/2026/03/31/3B1B-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2%EF%BC%9A%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<meta name="color-scheme" content="dark">
+<script src="/js/daily-background.js" defer></script>
+<script src="/js/image-viewer.js" defer></script>
+
+  <title>3B1B 深度学习入门笔记 2：梯度下降法 | 梨串桃的生活日记</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">梨串桃的生活日记</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-技术博客">
+
+    <a href="/tech/" rel="section"><i class="fa fa-laptop-code fa-fw"></i>技术博客</a>
+
+  </li>
+        <li class="menu-item menu-item-想法观点">
+
+    <a href="/ideas/" rel="section"><i class="fa fa-lightbulb fa-fw"></i>想法观点</a>
+
+  </li>
+        <li class="menu-item menu-item-生活记录">
+
+    <a href="/life/" rel="section"><i class="far fa-comment-dots fa-fw"></i>生活记录</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://chuantaoli.github.io/2026/03/31/3B1B-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2%EF%BC%9A%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/%E7%8C%AB%E5%92%AA%E5%A4%B4%E5%83%8F.jpg">
+      <meta itemprop="name" content="ChuantaoLi">
+      <meta itemprop="description" content="感知幸福是一种能力">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="梨串桃的生活日记">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          3B1B 深度学习入门笔记 2：梯度下降法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2026-03-31 16:23:44 / 修改时间：16:24:00" itemprop="dateCreated datePublished" datetime="2026-03-31T16:23:44+08:00">2026-03-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/" itemprop="url" rel="index"><span itemprop="name">技术博客</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+            <div class="post-description">从手写数字识别的代价函数出发，理解梯度如何指导权重与偏置更新，并记录神经网络实际学到的特征与直觉之间的差异。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="3b1b-深度学习入门笔记-2梯度下降法"><a class="markdownIt-Anchor" href="#3b1b-深度学习入门笔记-2梯度下降法"></a> 3B1B 深度学习入门笔记 2：梯度下降法</h1>
+<h2 id="告诉网络识别能力的好坏"><a class="markdownIt-Anchor" href="#告诉网络识别能力的好坏"></a> 告诉网络识别能力的好坏</h2>
+<p>现在，我们需要一种算法，给网络看一大堆训练数据，这包括手写数字图像和它们的标注，算法会调整 13000 个权重和偏置，以提高网络对训练数据的识别表现。</p>
+<p>在一开始，所有权重和偏置都是随机化的。因此，当我们输入一张手写数字图像，输出层会一团糟。这时候，我们就需要设计一个代价函数，用来告诉网络你的输出是错误的还是正确的。</p>
+<p>用数学语言来表示就是，把每个输出的激活值与目标激活值之间的差的平方加起来，这就是单个训练样本的代价。如果网络能够对这个图像正确分类时，代价就会小。</p>
+<p>我们有多个训练样本，我们用平均代价来评价这个网络有多糟。</p>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331154424103.png" alt="image-20260331154424103" style="zoom:33%;" />
+<h2 id="告诉网络如何调整权重和偏置"><a class="markdownIt-Anchor" href="#告诉网络如何调整权重和偏置"></a> 告诉网络如何调整权重和偏置</h2>
+<p>但我们只告诉网络好还是坏并不足够，我们还得给告诉它，怎么改变这些权重和偏置，才能有进步。</p>
+<p>这里考虑一元函数，我们输入一个随机值，看看是向左走变小，还是向右走变小。如果该点的斜率为正，那就应该向左走；反之，则应该向右走。</p>
+<p>通过重复这个过程，对每个移动的点都计算斜率，就可以逼近函数的的某个局部最小值。</p>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331155945079.png" alt="image-20260331155945079" style="zoom:50%;" />
+<p>因为不知道输入的值是什么，就像随机丢进去几个小球，它们会落入不同的坑中。网络也是一样，无法保证最终得到的局部最小值就是代价函数可能达到的全局最小值。</p>
+<p>值得一提的是，如果每步移动的大小和斜率成比例，那么在最小值附近会越来越平缓，每步会越来越小。这个比例叫学习率，这样可以防止调过头。</p>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331160155872.png" alt="image-20260331160155872" style="zoom: 50%;" />
+<p>现在考虑一个二元函数，我们同样需要了解小球往哪个方向下降得最快。微积分告诉我们，函数的梯度指出了函数的最陡增长方向。那么，我们沿着负梯度的方向走，函数值就可以降低得最快了。</p>
+<p>按照负梯度的倍数，不断调整函数输入值的过程，就叫做梯度下降法。</p>
+<p>负梯度的正负号告诉我们调整的方向，即需要增大还是减小。而数值则告诉我们改变哪个值的影响更大。</p>
+<h2 id="神经元并没有按照期待的方式去学习"><a class="markdownIt-Anchor" href="#神经元并没有按照期待的方式去学习"></a> 神经元并没有按照期待的方式去学习</h2>
+<p>我们所直观地理解两个隐藏层，认为第一个隐藏层可以识别短边，第二个隐藏层可以识别长边，通过图案的拼接最终在输出层完成数字的识别。</p>
+<p>但事实上，对于这个多层感知机而言，输入层和第一个隐藏层之间的权重，并没有呈现出有规律的图案，也就是说，网络并不是按照我们先前的理解那样去学习的。它们看起来更像是，在 13000 维度的空间中，找到了一个能让整体识别性能局部最优的方式。</p>
+<p>输入一张随机噪声，我们期望网络的输出应该是各个数字的概率都接近，或者都为 0，但最终可能输出的是数字 5，网络会将一个噪声图像自信地识别成某个数字。</p>
+<p>这让我们反思，这个网络学会了识别数字，但自己却不会手写数字。对于这个网络而言，它只是在训练集中不断调整权重和偏置，它的代价函数会促使它对最后的判断有绝对的自信。当然，多层感知机是非常古老的神经网络，现在已经诞生出更加先进的网络结构。</p>
+<img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/image-20260331161631915.png" alt="image-20260331161631915" style="zoom: 33%;" />
+<h2 id="参考资料"><a class="markdownIt-Anchor" href="#参考资料"></a> 参考资料</h2>
+<p>[1] <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Ux411j7ri/?spm_id_from=333.1007.top_right_bar_window_history.content.click&amp;vd_source=25c74f8e9aff6eff8b6b407f76329bbf">【官方双语】深度学习之梯度下降法 Part 2 ver 0.9 beta</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2026/03/30/3B1B-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-1%EF%BC%9A%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E7%BB%93%E6%9E%84/" rel="prev" title="3B1B 深度学习入门笔记 1：神经网络的结构">
+      <i class="fa fa-chevron-left"></i> 3B1B 深度学习入门笔记 1：神经网络的结构
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2026/04/03/%E5%9C%A8%E5%B9%BF%E6%B5%B7%E7%9A%84%E4%B8%89%E6%9C%88%E4%BB%BD-%E6%88%91%E6%9C%AC%E7%A7%91%E7%9A%84%E6%9C%80%E5%90%8E%E4%B8%80%E5%AD%A6%E6%9C%9F/" rel="next" title="在广海的三月份 | 我本科的最后一学期">
+      在广海的三月份 | 我本科的最后一学期 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <button type="button" class="toggle sidebar-toggle" aria-label="打开侧栏" aria-expanded="false" aria-controls="site-sidebar">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </button>
+
+  <aside class="sidebar" id="site-sidebar" aria-label="站点信息与文章目录" aria-hidden="true" inert>
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#3b1b-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0-2%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text"> 3B1B 深度学习入门笔记 2：梯度下降法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%8A%E8%AF%89%E7%BD%91%E7%BB%9C%E8%AF%86%E5%88%AB%E8%83%BD%E5%8A%9B%E7%9A%84%E5%A5%BD%E5%9D%8F"><span class="nav-number">1.1.</span> <span class="nav-text"> 告诉网络识别能力的好坏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%8A%E8%AF%89%E7%BD%91%E7%BB%9C%E5%A6%82%E4%BD%95%E8%B0%83%E6%95%B4%E6%9D%83%E9%87%8D%E5%92%8C%E5%81%8F%E7%BD%AE"><span class="nav-number">1.2.</span> <span class="nav-text"> 告诉网络如何调整权重和偏置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A5%9E%E7%BB%8F%E5%85%83%E5%B9%B6%E6%B2%A1%E6%9C%89%E6%8C%89%E7%85%A7%E6%9C%9F%E5%BE%85%E7%9A%84%E6%96%B9%E5%BC%8F%E5%8E%BB%E5%AD%A6%E4%B9%A0"><span class="nav-number">1.3.</span> <span class="nav-text"> 神经元并没有按照期待的方式去学习</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">1.4.</span> <span class="nav-text"> 参考资料</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ChuantaoLi"
+      src="/uploads/%E7%8C%AB%E5%92%AA%E5%A4%B4%E5%83%8F.jpg">
+  <p class="site-author-name" itemprop="name">ChuantaoLi</p>
+  <div class="site-description" itemprop="description">感知幸福是一种能力</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ChuantaoLi</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-pjax@0/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    // Image and article tag counts vary by page. Sync metadata as a group
+    // without reloading the shared styles or scripts in the head.
+    head: function(oldHead, newHead) {
+      var metadata = [
+        'title',
+        'link[rel="canonical"]',
+        'meta[name="description"]',
+        'meta[name="keywords"]',
+        'meta[property^="og:"]',
+        'meta[property^="article:"]',
+        'meta[name^="twitter:"]',
+        'link[rel="alternate"][type="application/atom+xml"]',
+        'link[rel="alternate"][type="application/rss+xml"]'
+      ].join(',');
+      oldHead.querySelectorAll(metadata).forEach(element => element.remove());
+      newHead.querySelectorAll(metadata).forEach(element => {
+        oldHead.appendChild(element.cloneNode(true));
+      });
+      this.onSwitch();
+    },
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+      
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css">
+
+
+  
+
+    </div>
+</body>
+</html>
