@@ -1195,7 +1195,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #ffbeff;
+  background: #f587a6;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2946,6 +2946,29 @@ body {
   display: block !important;
   margin: 0 auto 18px auto !important;
   border-radius: 12px;
+}
+.post-body .life-photo-original {
+  display: block;
+  margin: 0 auto 20px;
+  border-bottom: none !important;
+  text-align: center;
+  cursor: zoom-in;
+}
+.post-body img.life-photo {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 0 !important;
+}
+.post-body .life-photo-hint {
+  display: block;
+  margin-top: 5px;
+  color: #a8b3c2;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.post-body .life-photo-original:hover .life-photo-hint,
+.post-body .life-photo-original:focus-visible .life-photo-hint {
+  color: #f3f4f6;
 }
 .post-tags a {
   color: #dbe1ea !important;
