@@ -1195,7 +1195,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #18fb66;
+  background: #916690;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2418,16 +2418,26 @@ hr {
 .sub-menu .menu-item {
   display: inline-block;
 }
+html {
+  color-scheme: dark;
+}
 body {
   --frame-edge-gap: 10px;
+  isolation: isolate;
   background-color: #0f141b !important;
-  background-image: linear-gradient(180deg, rgba(10,14,20,0.84) 0%, rgba(12,17,24,0.9) 100%), var(--daily-bg-image, url("https://bing.img.run/uhd.php")) !important;
-  background-size: cover, cover !important;
-  background-position: center, center !important;
-  background-repeat: no-repeat, no-repeat !important;
-  background-attachment: fixed, fixed !important;
   color: #dbe1ea;
   font-family: "NeoRoman", "Times New Roman", Times, FangSong, STFangsong, "仿宋", serif;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: linear-gradient(180deg, rgba(10,14,20,0.62) 0%, rgba(12,17,24,0.82) 100%), var(--daily-bg-image, url("../uploads/background.png"));
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 html,
 body {
