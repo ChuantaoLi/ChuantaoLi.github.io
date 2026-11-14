@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2026-11-14T08:07:11.591Z</updated>
+  <updated>2026-11-14T09:07:24.157Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>成电生活周记4</title>
+    <link href="http://example.com/2026/11/14/%E6%88%90%E7%94%B5%E7%94%9F%E6%B4%BB%E5%91%A8%E8%AE%B04/"/>
+    <id>http://example.com/2026/11/14/%E6%88%90%E7%94%B5%E7%94%9F%E6%B4%BB%E5%91%A8%E8%AE%B04/</id>
+    <published>2026-11-14T09:07:13.000Z</published>
+    <updated>2026-11-14T09:07:24.157Z</updated>
+    
+    <content type="html"><![CDATA[<p>开学的第十一周马上就要结束了，对我而言是有标志性的一周。</p><p>开学到现在主要是在做两件事，一件是重做毕业论文，经过两个多月的实验、整理和写作，终于把英文手稿磨好了。因为这篇文章和组里的研究方向没啥关联，原本会担心导师有意见，但最终无论是写作绘图还是作者挂名，导师都表达了积极的意见。这两天按意见修改了一下参考文献，等导师把终稿看完就能投稿了。</p><p>另一件是组里的研究内容，其实从保研到现在，导师给我的方向和我本科做的是一样的，只是场景换了。得益于研究的自由和本科团队资源的支持，这一年多来我在学习上都走得相对顺畅。但遗憾也是有的，或许到毕业，能和我在学术上讨论的也只有我的导了。昨晚轮到我汇报，我准备了很久。过去每次听别人汇报，我都记下同门被导师蛐蛐的理由，然后回去复盘，告诉自己应该做一个怎么样的PPT，应该怎么表达才算是一场有意义的汇报。十一周的积累，PPT我是满意了，但内容还是太多了，我期望的时长是10分钟左右，我介绍了我近期很感兴趣的一种解决策略，怕同门不了解我的研究方向，我从研究背景讲起，讲现有研究有什么问题，讲解决策略的动机是什么，概述方法流程，给出近年的发展趋势，复现了实验，进行了讨论和总结。可我的同门似乎还是没听懂，因为他们的提问很浅白。</p><p>昨晚汇报结束后我有些失落，我乐在其中的工作却没人可以分享。情绪上的低落是一方面，更重要的是我没有一个第三方的交互，让我跳出局部最优。保研后导师让我继续做我本科的研究方向，发了两篇文章给我，是组里两个博士生在22年发表的文章，但他们现在都毕业了，我做的东西和我的同门几乎都不相关。</p><p>成都近期有时候会出大太阳，下午三点半左右从图书馆出门，眼前的画面总会让我感到很治愈。草坪上有相聚一起打牌的同伴，也有相向而坐交心谈话的情侣，如果是一个人那也没关系，刷刷手机躺着晒太阳也是十分惬意。晴朗的天气下游客有很多，时间广场有小朋友嬉戏打闹，东湖西湖有游客喂天鹅赏花拍照，这是我期待的大学校园，拿得起放得下，和谐友好。</p><p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/IMG_20261113_215404.jpg" alt="IMG_20261113_215404" /></p><p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/IMG_20261113_215425.jpg" alt="IMG_20261113_215425" /></p><p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/IMG_20261113_215504.jpg" alt="IMG_20261113_215504" /></p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;开学的第十一周马上就要结束了，对我而言是有标志性的一周。&lt;/p&gt;
+&lt;p&gt;开学到现在主要是在做两件事，一件是重做毕业论文，经过两个多月的实验、整理和写作，终于把英文手稿磨好了。因为这篇文章和组里的研究方向没啥关联，原本会担心导师有意见，但最终无论是写作绘图还是作者挂名，导师都</summary>
+      
+    
+    
+    
+    <category term="生活记录" scheme="http://example.com/categories/%E7%94%9F%E6%B4%BB%E8%AE%B0%E5%BD%95/"/>
+    
+    
+    <category term="成电生活" scheme="http://example.com/tags/%E6%88%90%E7%94%B5%E7%94%9F%E6%B4%BB/"/>
+    
+  </entry>
   
   <entry>
     <title>读研两个半月，现在的我如何准备汇报</title>
@@ -493,31 +518,6 @@
     
     
     <category term="机器学习" scheme="http://example.com/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>大四月记 | 吃喝玩却不是很乐的十一月</title>
-    <link href="http://example.com/2025/12/04/%E5%A4%A7%E5%9B%9B%E6%9C%88%E8%AE%B0-%E5%90%83%E5%96%9D%E7%8E%A9%E5%8D%B4%E4%B8%8D%E6%98%AF%E5%BE%88%E4%B9%90%E7%9A%84%E5%8D%81%E4%B8%80%E6%9C%88/"/>
-    <id>http://example.com/2025/12/04/%E5%A4%A7%E5%9B%9B%E6%9C%88%E8%AE%B0-%E5%90%83%E5%96%9D%E7%8E%A9%E5%8D%B4%E4%B8%8D%E6%98%AF%E5%BE%88%E4%B9%90%E7%9A%84%E5%8D%81%E4%B8%80%E6%9C%88/</id>
-    <published>2025-12-03T16:00:00.000Z</published>
-    <updated>2026-03-10T08:43:25.525Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="图1-每天晚上最开心的事情是买半个西瓜吃"><a class="markdownIt-Anchor" href="#图1-每天晚上最开心的事情是买半个西瓜吃"></a> 图1. 每天晚上最开心的事情是买半个西瓜吃</h1><p>有时候会点在钟海楼，然后抱着凉凉的西瓜一路走回宿舍，这大约十五分钟的路程让我觉得很开心。我通常在宿舍一边看解说一边挖着吃，在这些西瓜的陪伴下，令我印象最深的剧有《救姜刑警》、《重影》、《命悬一生》、《无限密室》、《黑暗面》、《不眠日》、《无可奈何》和《如何中彩票》。</p><p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/%E6%AF%8F%E5%A4%A9%E6%99%9A%E4%B8%8A%E6%9C%80%E5%BC%80%E5%BF%83%E7%9A%84%E4%BA%8B%E6%83%85%E6%98%AF%E4%B9%B0%E5%8D%8A%E4%B8%AA%E8%A5%BF%E7%93%9C%E5%90%83.jpg" alt="" /></p><h1 id="图2-学校旁边新开的旋转火锅"><a class="markdownIt-Anchor" href="#图2-学校旁边新开的旋转火锅"></a> 图2. 学校旁边新开的旋转火锅</h1><p>学校旁边新开了家旋转火锅，我已经光顾了三次，把三种锅底都尝了个遍，最喜欢的汤底是贵州酸汤。牛油锅底太辣了，菌汤锅底又寡淡，还是酸汤对我胃口。我是很喜欢这种氛围的，不用跟别人过多交流，选好喜欢的食材，丢进咕噜咕噜的汤水里煮熟就行。</p><p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/%E5%AD%A6%E6%A0%A1%E6%97%81%E8%BE%B9%E6%96%B0%E5%BC%80%E7%9A%84%E6%97%8B%E8%BD%AC%E7%81%AB%E9%94%85.jpg" alt="" /></p><h1 id="图3-库迪咖啡好喝"><a class="markdownIt-Anchor" href="#图3-库迪咖啡好喝"></a> 图3. 库迪咖啡好喝</h1><p>之前一直喝四块半的幸运咖，便宜量大，觉得过瘾。前阵子试了库迪，味道更让人惊艳。现在已经喝过三种拿铁，还是原味的最好喝。</p><p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/%E5%BA%93%E8%BF%AA%E5%92%96%E5%95%A1%E5%A5%BD%E5%96%9D.jpg" alt="" /></p><h1 id="图4-肠粉和米线"><a class="markdownIt-Anchor" href="#图4-肠粉和米线"></a> 图4. 肠粉和米线</h1><p>明现哥的肠粉一如既往好吃，我经常当午饭吃，因为我通常11点才起床。</p><p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/%E8%82%A0%E7%B2%89%E5%92%8C%E7%B1%B3%E7%BA%BF.jpg" alt="" /></p><h1 id="图5-今天的午饭和晚餐"><a class="markdownIt-Anchor" href="#图5-今天的午饭和晚餐"></a> 图5. 今天的午饭和晚餐</h1><p>今天中午吃了泰国打抛饭，虽然不太懂打抛是什么意思，但味道不错。晚饭是舍友请的疯狂星期四，因为我帮他弄了选调生材料，他太客气了。我觉得，肯德基的蛋挞真是最好吃的蛋挞。</p><p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/%E4%BB%8A%E5%A4%A9%E7%9A%84%E5%8D%88%E9%A5%AD%E5%92%8C%E6%99%9A%E9%A4%90.jpg" alt="" /></p><h1 id="图6-越南粉和迪乐汉堡"><a class="markdownIt-Anchor" href="#图6-越南粉和迪乐汉堡"></a> 图6. 越南粉和迪乐汉堡</h1><p>越南粉真是棒啊，量大管饱，无需多言，店里头吃氛围也棒。迪乐汉堡性价比太高了，拉稀我都觉得值，虽然并没有拉稀，但吃得是真爽。此外，迪乐汉堡会给两包番茄酱，好评！</p><p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/%E8%B6%8A%E5%8D%97%E7%B2%89%E5%92%8C%E8%BF%AA%E4%B9%90%E6%B1%89%E5%A0%A1.jpg" alt="" /></p><h1 id="图7-手柄和土豆兄弟"><a class="markdownIt-Anchor" href="#图7-手柄和土豆兄弟"></a> 图7. 手柄和土豆兄弟</h1><p>我买了个游戏手柄，现在可以躺在椅子上打游戏了。用手柄真是舒服，如果我的电脑是游戏本就更好了，这样可以玩很多我想玩的游戏，比如《柏林公寓》。虽然说画质开最低也能玩，但是吧，不清晰不流畅就没那味了。土豆兄弟是我觉得最爽的游戏之一，回宿舍还能跟同学一起三排，多亏了手柄。</p><p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/%E6%89%8B%E6%9F%84%E5%92%8C%E5%9C%9F%E8%B1%86%E5%85%84%E5%BC%9F.jpg" alt="" /></p><h1 id="图8-钟海楼的景色"><a class="markdownIt-Anchor" href="#图8-钟海楼的景色"></a> 图8. 钟海楼的景色</h1><p>钟海楼楼下有棵开紫色花的树，特别漂亮。每次路过都想拍照，但又觉得不好意思。后来我想到一句歌词“花开堪折直须折，青春最可爱”，觉得应该用文字或图像记录这些美好的当下。</p><p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/%E9%92%9F%E6%B5%B7%E6%A5%BC%E7%9A%84%E6%99%AF%E8%89%B2.jpg" alt="" /></p><h1 id="图9-90周年校庆"><a class="markdownIt-Anchor" href="#图9-90周年校庆"></a> 图9. 90周年校庆</h1><p>因为晚会我是后面才去的，没有拍到啥有意思的照片。不过去小卖部买了联名牛奶，还去文创中心买了红色保温杯和蓝色鼠标垫，店员送了我两张明信片。我挑了明德楼的那张，因为数计院在那栋楼里。</p><p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/90%E5%91%A8%E5%B9%B4%E6%A0%A1%E5%BA%86.jpg" alt="" /></p><h1 id="图10-大院的猫"><a class="markdownIt-Anchor" href="#图10-大院的猫"></a> 图10. 大院的猫</h1><p>有意思的是它们把健身器材那块当成了自己的领地，还把来健身的同学当成同伴，一起守护这片家园。</p><p><img src="https://lctmemos.oss-cn-beijing.aliyuncs.com/img/%E5%A4%A7%E9%99%A2%E7%9A%84%E7%8C%AB.jpg" alt="" /></p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;h1 id=&quot;图1-每天晚上最开心的事情是买半个西瓜吃&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#图1-每天晚上最开心的事情是买半个西瓜吃&quot;&gt;&lt;/a&gt; 图1. 每天晚上最开心的事情是买半个西瓜吃&lt;/h1&gt;
-&lt;p&gt;有时候会点在钟海楼，然后抱着凉凉的</summary>
-      
-    
-    
-    
-    <category term="生活记录" scheme="http://example.com/categories/%E7%94%9F%E6%B4%BB%E8%AE%B0%E5%BD%95/"/>
-    
-    
-    <category term="广海生活" scheme="http://example.com/tags/%E5%B9%BF%E6%B5%B7%E7%94%9F%E6%B4%BB/"/>
     
   </entry>
   
